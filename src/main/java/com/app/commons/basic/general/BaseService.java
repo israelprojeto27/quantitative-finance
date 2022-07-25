@@ -1,6 +1,5 @@
 package com.app.commons.basic.general;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -8,18 +7,24 @@ import java.util.List;
 
 public interface BaseService<E, T> {
 
-    public List<T> getListAll();
+     List<T> getListAll();
 
-    public boolean uploadFile(MultipartFile file, String periodo) throws IOException;
+     boolean uploadFile(MultipartFile file, String periodo) throws IOException;
 
-    public T findById(Long id);
+     boolean uploadFileFull(MultipartFile file) throws IOException;
 
-    public T findBySigla(String sigla);
+     T findById(Long id);
 
-    public boolean deleteById(Long id);
+     T findBySigla(String sigla);
 
-    public T update (T dto);
+     boolean calculaIncreasePercent(String periodo);
 
-    public boolean cleanAll();
+     boolean calculaIncreasePercentFull();
+
+     boolean deleteById(Long id);
+
+     T update (T dto);
+
+     boolean cleanAll();
 
 }

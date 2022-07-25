@@ -15,6 +15,7 @@ import com.app.api.parametro.ParametroService;
 import com.app.api.parametro.dto.ParametroDTO;
 import com.app.api.parametro.enums.TipoParametroEnum;
 import com.app.commons.basic.general.BaseService;
+import com.app.commons.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -52,9 +53,7 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
     ParametroService parametroService;
 
 
-    private static final String IGNORED_LINE = ",Date,Open,High,Low,Close,Adj Close,Volume";
 
-    private static final String IGNORED_LINE2 = "Date,Open,High,Low,Close,Adj Close,Volume,Dividends,Stock Splits";
 
     @Override
     public List<AcaoDTO> getListAll() {
@@ -78,7 +77,7 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
             File destDir = Files.createTempDirectory("tmpDirPrefix").toFile();
 
             while (zipEntry != null) {
-                File newFile = newFile(destDir, zipEntry);
+                File newFile = Utils.newFile(destDir, zipEntry);
 
                 LogUploadAcao log = logUploadAcaoService.startUpload(zipEntry.getName());
 
@@ -99,7 +98,7 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
                     i++;
                     System.out.println("Linha: " + line);
                     // read next line
-                    if (!line.contains(IGNORED_LINE) && !line.contains(IGNORED_LINE2)){
+                    if (Utils.isLineIgnored(line)){
                         cotacaoAcaoService.addCotacaoAtivo(line, acao, periodo);
                     }
                     line = reader.readLine();
@@ -112,7 +111,6 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
             }
             zis.closeEntry();
             zis.close();
-
             destDir.delete();
         }
         return true;
@@ -129,7 +127,7 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
         String periodo = null;
 
         while (zipEntry != null) {
-            File newFile = newFile(destDir, zipEntry);
+            File newFile = Utils.newFile(destDir, zipEntry);
 
             // write file content
             FileOutputStream fos = new FileOutputStream(newFile);
@@ -170,7 +168,7 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
         File destDir = Files.createTempDirectory("tmpDirPrefix2").toFile();
 
         while (zipEntry != null) {
-            File newFile = newFile(destDir, zipEntry);
+            File newFile = Utils.newFile(destDir, zipEntry);
 
             LogUploadAcao log = logUploadAcaoService.startUpload(zipEntry.getName());
 
@@ -193,24 +191,19 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
                 i++;
                 System.out.println("Linha: " + line);
                 // read next line
-                if (!line.contains(IGNORED_LINE) && !line.contains(IGNORED_LINE2)){
+                if (Utils.isLineIgnored(line)){
                     cotacaoAcaoService.addCotacaoAtivo(line, acao, periodo);
                 }
 
                 line = reader.readLine();
             }
             reader.close();
-
-
             zipEntry = zis.getNextEntry();
-
         }
 
         zis.closeEntry();
         zis.close();
-
         destDir.delete();
-
     }
 
     private Acao saveAcao(String sigla) {
@@ -226,18 +219,6 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
         }
     }
 
-    public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
-        File destFile = new File(destinationDir, zipEntry.getName());
-
-        String destDirPath = destinationDir.getCanonicalPath();
-        String destFilePath = destFile.getCanonicalPath();
-
-        if (!destFilePath.startsWith(destDirPath + File.separator)) {
-            throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
-        }
-
-        return destFile;
-    }
 
     private void handleLine(String s) {
         System.out.println("Line: " + s);
@@ -289,6 +270,7 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
         return true;
     }
 
+    @Override
     public boolean calculaIncreasePercent(String periodo) {
 
         // testando inicialmente o calculo para a Lista de cotacoes diarias
@@ -311,6 +293,7 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
         return true;
     }
 
+    @Override
     public boolean calculaIncreasePercentFull() {
 
         List<AcaoDTO> listAcao = this.getListAll();

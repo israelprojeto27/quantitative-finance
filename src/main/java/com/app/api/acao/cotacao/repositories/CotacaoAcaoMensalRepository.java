@@ -1,8 +1,7 @@
 package com.app.api.acao.cotacao.repositories;
 
-import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
-import com.app.api.acao.principal.entity.Acao;
 import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
+import com.app.api.acao.principal.entity.Acao;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
