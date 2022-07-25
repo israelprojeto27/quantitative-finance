@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  mysql-mineracao-java-db:
+    image: mysql:8.0
+    container_name: db-quantitative-finance-java-db
+    environment:
+      - MYSQL_DATABASE=db-quantitative-financ-db
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_USER=administrator
+      - MYSQL_PASSWORD=1234
+    ports:
+      - "3307:3306"

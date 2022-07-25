@@ -1,0 +1,33 @@
+package com.app.commons.basic.dividendo;
+
+import com.app.commons.dtos.FilterPeriodDTO;
+import com.app.commons.dtos.SumAtivoDividendosDTO;
+import com.app.commons.dtos.SumCalculateYieldDividendosAtivoDTO;
+
+import java.util.List;
+
+public interface BaseDividendoService<E, T, L> {
+
+    void save(E e);
+
+    void cleanAll();
+
+    List<T> findDividendoByIdAtivo(Long id);
+
+    List<T> findDividendoBySigla(String sigla);
+
+    List<L> findAtivoListDividendos();
+
+    List<L> filterDividendosByPeriod(FilterPeriodDTO dto);
+
+    List<SumAtivoDividendosDTO> sumDividendosByAtivo();
+
+    List<SumAtivoDividendosDTO> filterSumDividendosByAtivoByPeriod(FilterPeriodDTO dto);
+
+    SumCalculateYieldDividendosAtivoDTO calculateYieldByIdAtivoByQuantCotas(Long id, Long quantidadeCotas);
+
+    SumCalculateYieldDividendosAtivoDTO calculateYieldBySiglaAtivoByQuantCotas(String sigla, Long quantidadeCotas);
+
+    SumCalculateYieldDividendosAtivoDTO calculateYieldByIdAtivoByQuantCotasByPeriod(Long id, Long quantidadeCotas, FilterPeriodDTO filterPeriodDTO);
+
+}
