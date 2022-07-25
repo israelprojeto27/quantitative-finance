@@ -16,5 +16,9 @@ public interface  BaseCotacaoController<T>{
 
     ResponseEntity<T> findCotacaoBySiglaByPeriodo(String sigla, String periodo);
 
-    ResponseEntity<List<ResultFilterAtivoCotacaoGrowDTO>> findAtivosCotacaoGrow(FilterAtivoCotacaoGrowDTO dto);
+    ResponseEntity<List<ResultFilterAtivoCotacaoGrowDTO>> findAtivosCotacaoGrowDiary(FilterAtivoCotacaoGrowDTO dto);
+
+    ResponseEntity<List<ResultFilterAtivoCotacaoGrowDTO>> findAtivosCotacaoGrowWeek(FilterAtivoCotacaoGrowDTO dto);
+
+    ResponseEntity<List<ResultFilterAtivoCotacaoGrowDTO>> findAtivosCotacaoGrowMonth(FilterAtivoCotacaoGrowDTO dto);
 }

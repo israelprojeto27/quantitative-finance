@@ -40,6 +40,12 @@ public interface BaseCotacaoService<E, T, CD, CS, CM> {
 
      T findCotacaoBySiglaByPeriodo(String sigla, String periodo);
 
-     List<ResultFilterAtivoCotacaoGrowDTO> findAtivosCotacaoGrow(FilterAtivoCotacaoGrowDTO dto);
+     List<ResultFilterAtivoCotacaoGrowDTO> findAtivosCotacaoGrowDiary(FilterAtivoCotacaoGrowDTO dto);
+
+     List<ResultFilterAtivoCotacaoGrowDTO> findAtivosCotacaoGrowWeek(FilterAtivoCotacaoGrowDTO dto);
+
+     List<ResultFilterAtivoCotacaoGrowDTO> findAtivosCotacaoGrowMonth(FilterAtivoCotacaoGrowDTO dto);
 
 }
+
+

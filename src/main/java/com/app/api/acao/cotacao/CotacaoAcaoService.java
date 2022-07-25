@@ -218,7 +218,7 @@ public class CotacaoAcaoService implements BaseCotacaoService<Acao, AcaoCotacaoD
     }
 
     @Override
-    public List<ResultFilterAtivoCotacaoGrowDTO> findAtivosCotacaoGrow(FilterAtivoCotacaoGrowDTO dto) {
+    public List<ResultFilterAtivoCotacaoGrowDTO> findAtivosCotacaoGrowDiary(FilterAtivoCotacaoGrowDTO dto) {
 
         LocalDate dtStart = Utils.converteStringToLocalDateTime3(dto.getDataInicio());
         LocalDate dtEnd = Utils.converteStringToLocalDateTime3(dto.getDataFim());
@@ -237,7 +237,9 @@ public class CotacaoAcaoService implements BaseCotacaoService<Acao, AcaoCotacaoD
                     ResultFilterAtivoCotacaoGrowDTO  resultFilterAtivoCotacaoGrowDTO = ResultFilterAtivoCotacaoGrowDTO.from(valorPercentGrow,
                                                                                                                             cotacaoInicio.getAcao().getSigla(),
                                                                                                                             cotacaoInicio.getClose(),
-                                                                                                                            cotacaoAcaoDiarioFimOpt.get().getClose());
+                                                                                                                            cotacaoAcaoDiarioFimOpt.get().getClose(),
+                                                                                                                            Utils.converteLocalDateToString(cotacaoInicio.getData()),
+                                                                                                                            Utils.converteLocalDateToString(cotacaoAcaoDiarioFimOpt.get().getData()));
                     listResultFilterAtivoCotacaoGrow.add(resultFilterAtivoCotacaoGrowDTO);
                 }
             });
@@ -259,9 +261,109 @@ public class CotacaoAcaoService implements BaseCotacaoService<Acao, AcaoCotacaoD
         return listFinal;
     }
 
+    @Override
+    public List<ResultFilterAtivoCotacaoGrowDTO> findAtivosCotacaoGrowWeek(FilterAtivoCotacaoGrowDTO dto) {
+
+        LocalDate dtStart = Utils.converteStringToLocalDateTime3(dto.getDataInicio());
+        LocalDate dtEnd = Utils.converteStringToLocalDateTime3(dto.getDataFim());
+
+        List<CotacaoAcaoSemanal> listCotacaoInicio = cotacaoAcaoSemanalRepository.findByData(dtStart);
+        List<CotacaoAcaoSemanal> listCotacaoFim = cotacaoAcaoSemanalRepository.findByData(dtEnd);
+
+        List<ResultFilterAtivoCotacaoGrowDTO> listResultFilterAtivoCotacaoGrow = new ArrayList<>();
+
+        if ( !listCotacaoInicio.isEmpty() && !listCotacaoFim.isEmpty() ){
+
+            listCotacaoInicio.forEach(cotacaoInicio -> {
+                Optional<CotacaoAcaoSemanal> cotacaoAcaoSemanalFimOpt = this.getCotacaoSemanalFim(cotacaoInicio, listCotacaoFim);
+                if ( cotacaoAcaoSemanalFimOpt.isPresent()){
+                    Double valorPercentGrow = (cotacaoAcaoSemanalFimOpt.get().getClose() - cotacaoInicio.getClose()) / cotacaoInicio.getClose();
+                    ResultFilterAtivoCotacaoGrowDTO  resultFilterAtivoCotacaoGrowDTO = ResultFilterAtivoCotacaoGrowDTO.from(valorPercentGrow,
+                            cotacaoInicio.getAcao().getSigla(),
+                            cotacaoInicio.getClose(),
+                            cotacaoAcaoSemanalFimOpt.get().getClose(),
+                            Utils.converteLocalDateToString(cotacaoInicio.getData()),
+                            Utils.converteLocalDateToString(cotacaoAcaoSemanalFimOpt.get().getData()));
+                    listResultFilterAtivoCotacaoGrow.add(resultFilterAtivoCotacaoGrowDTO);
+                }
+            });
+        }
+
+        List<ResultFilterAtivoCotacaoGrowDTO> listFinal = new ArrayList<>();
+        if ( !listResultFilterAtivoCotacaoGrow.isEmpty()){
+            if (dto.getTipoOrdenacaoGrow().equals(TipoOrdenacaoGrowEnum.MAIS)){
+                listFinal =  listResultFilterAtivoCotacaoGrow.stream()
+                        .sorted(Comparator.comparingDouble(ResultFilterAtivoCotacaoGrowDTO::getValorPercentGrow).reversed())
+                        .collect(Collectors.toList());
+            }
+            else {
+                listFinal =  listResultFilterAtivoCotacaoGrow.stream()
+                        .sorted(Comparator.comparingDouble(ResultFilterAtivoCotacaoGrowDTO::getValorPercentGrow))
+                        .collect(Collectors.toList());
+            }
+        }
+        return listFinal;
+    }
+
+    @Override
+    public List<ResultFilterAtivoCotacaoGrowDTO> findAtivosCotacaoGrowMonth(FilterAtivoCotacaoGrowDTO dto) {
+
+        LocalDate dtStart = Utils.converteStringToLocalDateTime3(dto.getDataInicio());
+        LocalDate dtEnd = Utils.converteStringToLocalDateTime3(dto.getDataFim());
+
+        List<CotacaoAcaoMensal> listCotacaoInicio = cotacaoAcaoMensalRepository.findByData(dtStart);
+        List<CotacaoAcaoMensal> listCotacaoFim = cotacaoAcaoMensalRepository.findByData(dtEnd);
+
+        List<ResultFilterAtivoCotacaoGrowDTO> listResultFilterAtivoCotacaoGrow = new ArrayList<>();
+
+        if ( !listCotacaoInicio.isEmpty() && !listCotacaoFim.isEmpty() ){
+
+            listCotacaoInicio.forEach(cotacaoInicio -> {
+                Optional<CotacaoAcaoMensal> cotacaoAcaoMensalFimOpt = this.getCotacaoMensalFim(cotacaoInicio, listCotacaoFim);
+                if ( cotacaoAcaoMensalFimOpt.isPresent()){
+                    Double valorPercentGrow = (cotacaoAcaoMensalFimOpt.get().getClose() - cotacaoInicio.getClose()) / cotacaoInicio.getClose();
+                    ResultFilterAtivoCotacaoGrowDTO  resultFilterAtivoCotacaoGrowDTO = ResultFilterAtivoCotacaoGrowDTO.from(valorPercentGrow,
+                            cotacaoInicio.getAcao().getSigla(),
+                            cotacaoInicio.getClose(),
+                            cotacaoAcaoMensalFimOpt.get().getClose(),
+                            Utils.converteLocalDateToString(cotacaoInicio.getData()),
+                            Utils.converteLocalDateToString(cotacaoAcaoMensalFimOpt.get().getData()));
+                    listResultFilterAtivoCotacaoGrow.add(resultFilterAtivoCotacaoGrowDTO);
+                }
+            });
+        }
+
+        List<ResultFilterAtivoCotacaoGrowDTO> listFinal = new ArrayList<>();
+        if ( !listResultFilterAtivoCotacaoGrow.isEmpty()){
+            if (dto.getTipoOrdenacaoGrow().equals(TipoOrdenacaoGrowEnum.MAIS)){
+                listFinal =  listResultFilterAtivoCotacaoGrow.stream()
+                        .sorted(Comparator.comparingDouble(ResultFilterAtivoCotacaoGrowDTO::getValorPercentGrow).reversed())
+                        .collect(Collectors.toList());
+            }
+            else {
+                listFinal =  listResultFilterAtivoCotacaoGrow.stream()
+                        .sorted(Comparator.comparingDouble(ResultFilterAtivoCotacaoGrowDTO::getValorPercentGrow))
+                        .collect(Collectors.toList());
+            }
+        }
+        return listFinal;
+    }
+
     private Optional<CotacaoAcaoDiario> getCotacaoDiarioFim(CotacaoAcaoDiario cotacao, List<CotacaoAcaoDiario> listCotacaoFim) {
         return listCotacaoFim.stream()
-                             .filter(cotacaoFim -> cotacaoFim.getData().equals(cotacao.getData()) && cotacaoFim.getAcao().getSigla().equals(cotacao.getAcao().getSigla()))
+                             .filter(cotacaoFim -> cotacaoFim.getAcao().getSigla().equals(cotacao.getAcao().getSigla()))
                               .findFirst();
+    }
+
+    private Optional<CotacaoAcaoSemanal> getCotacaoSemanalFim(CotacaoAcaoSemanal cotacao, List<CotacaoAcaoSemanal> listCotacaoFim) {
+        return listCotacaoFim.stream()
+                .filter(cotacaoFim -> cotacaoFim.getAcao().getSigla().equals(cotacao.getAcao().getSigla()))
+                .findFirst();
+    }
+
+    private Optional<CotacaoAcaoMensal> getCotacaoMensalFim(CotacaoAcaoMensal cotacao, List<CotacaoAcaoMensal> listCotacaoFim) {
+        return listCotacaoFim.stream()
+                .filter(cotacaoFim -> cotacaoFim.getAcao().getSigla().equals(cotacao.getAcao().getSigla()))
+                .findFirst();
     }
 }

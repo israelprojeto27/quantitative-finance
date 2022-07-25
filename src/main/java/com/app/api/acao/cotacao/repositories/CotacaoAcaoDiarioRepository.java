@@ -16,5 +16,5 @@ public interface CotacaoAcaoDiarioRepository extends JpaRepository<CotacaoAcaoDi
 
     List<CotacaoAcaoDiario> findByAcao(Acao acao, Sort sort);
 
-    List<CotacaoAcaoDiario> findByData(LocalDate dtStart);
+    List<CotacaoAcaoDiario> findByData(LocalDate dt);
 }

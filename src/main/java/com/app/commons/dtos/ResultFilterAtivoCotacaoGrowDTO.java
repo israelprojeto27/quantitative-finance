@@ -15,22 +15,31 @@ public class ResultFilterAtivoCotacaoGrowDTO {
 
     private Double valorCotacaoFim;
 
+    private String dataInicio;
+
+    private String dataFim;
+
     public ResultFilterAtivoCotacaoGrowDTO() {
     }
 
-    public ResultFilterAtivoCotacaoGrowDTO(String sigla, Double valorPercentGrow, Double valorCotacaoInicio, Double valorCotacaoFim) {
+    public ResultFilterAtivoCotacaoGrowDTO(String sigla, Double valorPercentGrow, Double valorCotacaoInicio, Double valorCotacaoFim, String dataInicio, String dataFim) {
         this.sigla = sigla;
         this.valorPercentGrow = valorPercentGrow;
         this.valorCotacaoInicio = valorCotacaoInicio;
         this.valorCotacaoFim = valorCotacaoFim;
+        this.dataInicio = dataInicio;
+        this.dataFim = dataFim;
     }
 
-    public static ResultFilterAtivoCotacaoGrowDTO from(Double valorPercentGrow, String sigla, Double valorCotacaoInicio, Double valorCotacaoFim) {
+    public static ResultFilterAtivoCotacaoGrowDTO from(Double valorPercentGrow, String sigla, Double valorCotacaoInicio, Double valorCotacaoFim, String dataInicio, String dataFim) {
         return ResultFilterAtivoCotacaoGrowDTO.builder()
                 .sigla(sigla)
-                .valorCotacaoFim(valorPercentGrow)
+                .valorPercentGrow(valorPercentGrow)
                 .valorCotacaoInicio(valorCotacaoInicio)
                 .valorCotacaoFim(valorCotacaoFim)
+                .dataInicio(dataInicio)
+                .dataFim(dataFim)
                 .build();
     }
 }
+

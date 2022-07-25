@@ -3,6 +3,7 @@ package com.app.api.acao.principal;
 import com.app.api.acao.principal.dto.AcaoDTO;
 import com.app.api.acao.principal.entity.Acao;
 import com.app.commons.basic.general.BaseController;
+import com.app.commons.messages.Message;
 import com.app.commons.utils.Utils;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,12 +40,15 @@ public class AcaoController implements BaseController<Acao, AcaoDTO> {
     public ResponseEntity<?> uploadFile(@RequestPart MultipartFile document, @PathVariable String periodo) throws IOException {
 
         if (!Utils.isPeriodValid(periodo)){
-            return new ResponseEntity<>("Periodo informado invalido !!! São permitidos apenas: diario, semanal, mensal", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Message.ERROR_MESSAGE_PERIODO_INVALID, HttpStatus.BAD_REQUEST);
         }
 
         if ( ! document.getOriginalFilename().contains(periodo)){
-            return new ResponseEntity<>("Não é possível realizar upload do arquivo, pois o periodo selecionado e o arquivo nao coincidem !!! ", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_PERIODO, HttpStatus.BAD_REQUEST);
         }
+
+        if ( document.isEmpty())
+            return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_EMPTY, HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity<>(service.uploadFile(document, periodo), HttpStatus.OK);
     }
@@ -52,8 +56,10 @@ public class AcaoController implements BaseController<Acao, AcaoDTO> {
     @Operation(summary = "Realiza upload do arquivo de cotações em todos os periodos (diario, semanal, mensal)")
     @PostMapping(path = "/uploadFull", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> uploadFileFull(@RequestPart MultipartFile document) throws IOException {
-
-        return new ResponseEntity<>(service.uploadFileFull(document), HttpStatus.OK);
+        if ( ! document.isEmpty())
+            return new ResponseEntity<>(service.uploadFileFull(document), HttpStatus.OK);
+        else
+            return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_EMPTY, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -61,14 +67,22 @@ public class AcaoController implements BaseController<Acao, AcaoDTO> {
     @GetMapping("/{id}")
     @Override
     public ResponseEntity<AcaoDTO> findById(@PathVariable Long id) {
-        return new ResponseEntity<>(service.findById(id), HttpStatus.OK);
+        AcaoDTO acaoDTO = service.findById(id);
+        if ( acaoDTO != null )
+            return new ResponseEntity<>(service.findById(id), HttpStatus.OK);
+        else
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     @Operation(summary = "Recupera informações de uma Ação por sigla")
     @GetMapping("/sigla/{sigla}")
     @Override
     public ResponseEntity<AcaoDTO> findBySigla(@PathVariable String sigla) {
-        return new ResponseEntity<>(service.findBySigla(sigla), HttpStatus.OK);
+        AcaoDTO acaoDTO = service.findBySigla(sigla);
+        if ( acaoDTO != null )
+            return new ResponseEntity<>(acaoDTO, HttpStatus.OK);
+        else
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     @Operation(summary = "Calcula e armazena o percentual que um Ação cresceu de uma data para outra. Esse cálculo é feito a partir de um periodo selecionado (diario, semanal, mensal) ")
@@ -76,7 +90,7 @@ public class AcaoController implements BaseController<Acao, AcaoDTO> {
     public ResponseEntity<?> calculaIncreasePercent(@PathVariable String periodo) {
 
         if (!Utils.isPeriodValid(periodo)){
-            return new ResponseEntity<>("Periodo informado invalido !!! São permitidos apenas: diario, semanal, mensal", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_PERIODO, HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(service.calculaIncreasePercent(periodo), HttpStatus.OK);
