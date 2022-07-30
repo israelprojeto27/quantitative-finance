@@ -8,6 +8,7 @@ import com.app.api.acao.principal.entity.Acao;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoSemanal;
+import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import lombok.Builder;
 import lombok.Data;
 
@@ -44,7 +45,7 @@ public class FundoCotacaoDTO {
         this.listCotacaoMensal = listCotacaoMensal;
     }
 
-    public static FundoCotacaoDTO fromEntity(Acao entity, List<CotacaoFundoDiario> listCotacaoDiario, List<CotacaoFundoSemanal> listCotacaoSemanal, List<CotacaoFundoMensal> listCotacaoMensal) {
+    public static FundoCotacaoDTO fromEntity(FundoImobiliario entity, List<CotacaoFundoDiario> listCotacaoDiario, List<CotacaoFundoSemanal> listCotacaoSemanal, List<CotacaoFundoMensal> listCotacaoMensal) {
         return FundoCotacaoDTO.builder()
                 .id(entity.getId())
                 .sigla(entity.getSigla())

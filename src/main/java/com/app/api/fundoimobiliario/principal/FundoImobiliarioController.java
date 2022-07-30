@@ -63,6 +63,16 @@ public class FundoImobiliarioController implements BaseController<FundoImobiliar
             return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_EMPTY, HttpStatus.BAD_REQUEST);
     }
 
+
+    @Operation(summary = "Realiza upload do arquivo de dividendos de Fundos Imobiliarios")
+    @PostMapping(path = "/uploadDividendos", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> uploadFileDividendos(@RequestPart MultipartFile document) throws IOException {
+        if ( ! document.isEmpty())
+            return new ResponseEntity<>(service.uploadFileDividendos(document), HttpStatus.OK);
+        else
+            return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_EMPTY, HttpStatus.BAD_REQUEST);
+    }
+
     @Operation(summary = "Recupera informações de um Fundo Imobilario por id")
     @GetMapping("/{id}")
     @Override

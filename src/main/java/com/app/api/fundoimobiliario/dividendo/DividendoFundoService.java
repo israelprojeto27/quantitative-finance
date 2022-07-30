@@ -43,8 +43,8 @@ public class DividendoFundoService implements BaseDividendoService<DividendoFund
 
     @Transactional
     @Override
-    public void save(DividendoFundo dividendoAcao) {
-        repository.save(dividendoAcao);
+    public void save(DividendoFundo dividendoFundo) {
+        repository.save(dividendoFundo);
     }
 
     @Transactional
@@ -324,4 +324,16 @@ public class DividendoFundoService implements BaseDividendoService<DividendoFund
     }
 
 
+    @Transactional
+    public boolean addDividendoFundoImobiliario(String line, FundoImobiliario fundoImobiliario) {
+        //0,HGLG11,2019-12-01, 0.78
+
+        String[] arr = line.split(",");
+        LocalDate dataDividendo = Utils.converteStringToLocalDateTime3(arr[2]);
+        Double dividendo = Double.parseDouble(arr[3].replaceAll("G",""));
+
+        DividendoFundo dividendoFundo = DividendoFundo.toEntity(fundoImobiliario, dataDividendo, dividendo);
+        repository.save(dividendoFundo);
+        return true;
+    }
 }

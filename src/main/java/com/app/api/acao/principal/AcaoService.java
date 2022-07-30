@@ -147,7 +147,7 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
                 periodo = PeriodoEnum.MENSAL.getLabel();
             }
             cotacaoAcaoService.cleanByPeriodo(periodo);
-            loadFileAcaoZipado(newFile, periodo);
+            loadFileAtivoZipado(newFile, periodo);
 
             zipEntry = zis.getNextEntry();
         }
@@ -160,7 +160,8 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
         return true;
     }
 
-    private void loadFileAcaoZipado(File file, String periodo) throws IOException{
+    @Override
+    public void loadFileAtivoZipado(File file, String periodo) throws IOException{
 
         ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
         ZipEntry zipEntry = zis.getNextEntry();
@@ -313,7 +314,7 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
 
     private void calculateIncreasePercentDiario(AcaoDTO acao) {
         List<CotacaoAcaoDiario> listCotacaoDiario = cotacaoAcaoService.findCotacaoDiarioByAtivo(AcaoDTO.toEntity(acao), Sort.by(Sort.Direction.DESC, "data"));
-        if ( !listCotacaoDiario.isEmpty()){
+        if ( listCotacaoDiario != null && !listCotacaoDiario.isEmpty()){
             List<ParametroDTO> listParametros = parametroService.findByTipoParametro(TipoParametroEnum.INTERVALO_COTACAO_DIARIO);
             CotacaoAcaoDiario ultimaCotacao = listCotacaoDiario.stream().findFirst().get();
 
@@ -329,7 +330,7 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
 
     private void calculateIncreasePercentSemanal(AcaoDTO acao) {
         List<CotacaoAcaoSemanal> listCotacaoSemanal = cotacaoAcaoService.findCotacaoSemanalByAtivo(AcaoDTO.toEntity(acao), Sort.by(Sort.Direction.DESC, "data"));
-        if ( !listCotacaoSemanal.isEmpty()){
+        if ( listCotacaoSemanal != null && !listCotacaoSemanal.isEmpty()){
             List<ParametroDTO> listParametros = parametroService.findByTipoParametro(TipoParametroEnum.INTERVALO_COTACAO_SEMANAL);
             CotacaoAcaoSemanal ultimaCotacao = listCotacaoSemanal.stream().findFirst().get();
 
@@ -345,7 +346,7 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
 
     private void calculateIncreasePercentMensal(AcaoDTO acao) {
         List<CotacaoAcaoMensal> listCotacaoMensal = cotacaoAcaoService.findCotacaoMensalByAtivo(AcaoDTO.toEntity(acao), Sort.by(Sort.Direction.DESC, "data"));
-        if ( !listCotacaoMensal.isEmpty()){
+        if ( listCotacaoMensal != null && !listCotacaoMensal.isEmpty()){
             List<ParametroDTO> listParametros = parametroService.findByTipoParametro(TipoParametroEnum.INTERVALO_COTACAO_MENSAL);
             CotacaoAcaoMensal ultimaCotacao = listCotacaoMensal.stream().findFirst().get();
 

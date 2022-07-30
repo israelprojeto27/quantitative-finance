@@ -56,4 +56,12 @@ public class DividendoFundo {
                 .fundo(entity.getFundo())
                 .build();
     }
+
+    public static DividendoFundo toEntity(FundoImobiliario fundoImobiliario, LocalDate dataDividendo, Double dividendo) {
+        return DividendoFundo.builder()
+                .data(dataDividendo)
+                .dividend(dividendo)
+                .fundo(fundoImobiliario)
+                .build();
+    }
 }

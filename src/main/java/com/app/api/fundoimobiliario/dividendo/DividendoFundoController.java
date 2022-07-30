@@ -25,14 +25,14 @@ public class DividendoFundoController implements BaseDividendoController<Dividen
 
     @GetMapping("/dividendos-by-idativo/{idAtivo}")
     @Override
-    @Operation(summary = "Lista os dividendos de uma Ação a partir de um id")
+    @Operation(summary = "Lista os dividendos de um Fundo a partir de um id")
     public ResponseEntity<List<DividendoFundoDTO>> findDividendoByIdAtivo(@PathVariable Long idAtivo) {
         return new ResponseEntity<>(service.findDividendoByIdAtivo(idAtivo), HttpStatus.OK);
     }
 
     @GetMapping("/dividendos-by-sigla/{sigla}")
     @Override
-    @Operation(summary = "Lista os dividendos de uma Ação a partir de uma sigla")
+    @Operation(summary = "Lista os dividendos de um Fundo a partir de uma sigla")
     public ResponseEntity<List<DividendoFundoDTO>> findDividendoBySigla(@PathVariable String sigla) {
         return new ResponseEntity<>(service.findDividendoBySigla(sigla), HttpStatus.OK);
     }
@@ -53,33 +53,33 @@ public class DividendoFundoController implements BaseDividendoController<Dividen
         return new ResponseEntity<>(service.filterDividendosByPeriod(dto), HttpStatus.OK);
     }
 
-    @GetMapping("/sum-dividendos-by-acao")
+    @GetMapping("/sum-dividendos-by-fundo")
     @Override
-    @Operation(summary = "Lista para cada Ação cadastrada o respectivo somatório de todos os seus dividendos ")
+    @Operation(summary = "Lista para cada Fundo cadastrado o respectivo somatório de todos os seus dividendos ")
     public ResponseEntity<List<SumAtivoDividendosDTO>> sumDividendosByAtivo() {
         return new ResponseEntity<>(service.sumDividendosByAtivo(), HttpStatus.OK);
     }
 
-    @PostMapping("/sum-dividendos-by-acao-by-period")
+    @PostMapping("/sum-dividendos-by-fundo-by-period")
     @Override
-    @Operation(summary = "Filtra os dividendos em um período e exibe o somatório recuperado por Ação ")
+    @Operation(summary = "Filtra os dividendos em um período e exibe o somatório recuperado por Fundo ")
     public ResponseEntity<List<SumAtivoDividendosDTO>> sumDividendosByAtivoByPeriod(@RequestBody FilterPeriodDTO dto) {
         return new ResponseEntity<>(service.filterSumDividendosByAtivoByPeriod(dto), HttpStatus.OK);
     }
 
 
-    @GetMapping("/calculate-yield-by-cotas-by-id-acao/{idAtivo}/{quantidadeCotas}")
+    @GetMapping("/calculate-yield-by-cotas-by-id-fundo/{idAtivo}/{quantidadeCotas}")
     @Override
-    @Operation(summary = "Calcula o rendimento em dividendos de uma Ação a partir do Id e a quantidade de cotas informados",
-              description = "Deverá ser exibido a Sigla da Ação, Data, o Valor Rendimento em dividendos, Cotação da Ação, Valor Dividendo" )
+    @Operation(summary = "Calcula o rendimento em dividendos de um Fundo a partir do Id e a quantidade de cotas informados",
+              description = "Deverá ser exibido a Sigla do Fundo, Data, o Valor Rendimento em dividendos, Cotação do Fundo, Valor Dividendo" )
     public ResponseEntity<SumCalculateYieldDividendosAtivoDTO> calculateYieldByIdAtivoByQuantCotas(@PathVariable Long idAtivo, @PathVariable Long quantidadeCotas) {
         return new ResponseEntity<>(service.calculateYieldByIdAtivoByQuantCotas(idAtivo, quantidadeCotas), HttpStatus.OK);
     }
 
     @GetMapping("/calculate-yield-by-cotas-by-sigla/{sigla}/{quantidadeCotas}")
     @Override
-    @Operation(summary = "Calcula o rendimento em dividendos de uma Ação a partir da Sigla e a quantidade de cotas informados",
-            description = "Deverá ser exibido a Sigla da Ação, Data, o Valor Rendimento em dividendos, Cotação da Ação, Valor Dividendo" )
+    @Operation(summary = "Calcula o rendimento em dividendos de um Fundo a partir da Sigla e a quantidade de cotas informados",
+            description = "Deverá ser exibido a Sigla do Fundo, Data, o Valor Rendimento em dividendos, Cotação da Fundo, Valor Dividendo" )
     public ResponseEntity<SumCalculateYieldDividendosAtivoDTO> calculateYieldBySiglaAtivoByQuantCotas(@PathVariable String sigla,@PathVariable Long quantidadeCotas) {
         return new ResponseEntity<>(service.calculateYieldBySiglaAtivoByQuantCotas(sigla, quantidadeCotas), HttpStatus.OK);
     }
@@ -87,24 +87,24 @@ public class DividendoFundoController implements BaseDividendoController<Dividen
     @GetMapping("/calculate-yield-by-cotas-all-acoes/{quantidadeCotas}")
     @Override
     @Operation(summary = "Calcula o rendimento em dividendos de todas as Ações e é informada a quantidade de cotas",
-            description = "Deverá ser exibido a Sigla da Ação, Data, o Valor Rendimento em dividendos, Cotação da Ação, Valor Dividendo" )
+            description = "Deverá ser exibido a Sigla do Fundo, Data, o Valor Rendimento em dividendos, Cotação do Fundo, Valor Dividendo" )
     public ResponseEntity<List<SumCalculateYieldDividendosAtivoDTO>> calculateYieldBySiglaAllAtivosByQuantCotas(@PathVariable Long quantidadeCotas) {
         return new ResponseEntity<>(service.calculateYieldBySiglaAllAtivosByQuantCotas(quantidadeCotas), HttpStatus.OK);
     }
 
 
-    @PostMapping("/calculate-yield-by-cotas-by-id-acao-by-period/{idAtivo}/{quantidadeCotas}")
+    @PostMapping("/calculate-yield-by-cotas-by-id-fundo-by-period/{idAtivo}/{quantidadeCotas}")
     @Override
-    @Operation(summary = "Calcula o rendimento em dividendos de uma Ação a partir do Id, e a quantidade de cotas informados em um periodo especifico",
-            description = "Deverá ser exibido a Sigla da Ação, Data, o Valor Rendimento em dividendos, Cotação da Ação, Valor Dividendo" )
+    @Operation(summary = "Calcula o rendimento em dividendos de um Fundo a partir do Id, e a quantidade de cotas informados em um periodo especifico",
+            description = "Deverá ser exibido a Sigla do Fundo, Data, o Valor Rendimento em dividendos, Cotação da Fundo, Valor Dividendo" )
     public ResponseEntity<SumCalculateYieldDividendosAtivoDTO> calculateYieldByIdAtivoByQuantCotasByPeriod(@PathVariable Long idAtivo, @PathVariable Long quantidadeCotas, @RequestBody FilterPeriodDTO filterPeriodDTO) {
         return new ResponseEntity<>(service.calculateYieldByIdAtivoByQuantCotasByPeriod(idAtivo, quantidadeCotas, filterPeriodDTO), HttpStatus.OK);
     }
 
     @PostMapping("/calculate-yield-by-cotas-by-sigla-by-period/{sigla}/{quantidadeCotas}")
     @Override
-    @Operation(summary = "Calcula o rendimento em dividendos de uma Ação a partir do Id, e a quantidade de cotas informados em um periodo especifico",
-            description = "Deverá ser exibido a Sigla da Ação, Data, o Valor Rendimento em dividendos, Cotação da Ação, Valor Dividendo" )
+    @Operation(summary = "Calcula o rendimento em dividendos de um Fundo a partir do Id, e a quantidade de cotas informados em um periodo especifico",
+            description = "Deverá ser exibido a Sigla do Fundo, Data, o Valor Rendimento em dividendos, Cotação da Fundo, Valor Dividendo" )
     public ResponseEntity<SumCalculateYieldDividendosAtivoDTO> calculateYieldBySiglaByQuantCotasByPeriod(@PathVariable String sigla, @PathVariable Long quantidadeCotas, @RequestBody FilterPeriodDTO filterPeriodDTO) {
         return new ResponseEntity<>(service.calculateYieldBySiglaByQuantCotasByPeriod(sigla, quantidadeCotas, filterPeriodDTO), HttpStatus.OK);
     }

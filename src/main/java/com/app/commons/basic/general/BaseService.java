@@ -2,6 +2,7 @@ package com.app.commons.basic.general;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -26,5 +27,7 @@ public interface BaseService<E, T> {
      T update (T dto);
 
      boolean cleanAll();
+
+     void loadFileAtivoZipado(File file, String periodo) throws IOException;
 
 }
