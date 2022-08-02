@@ -1,7 +1,7 @@
-package com.app.api.acao.increasepercent;
+package com.app.api.bdr.increasepercent;
 
-import com.app.api.acao.principal.entity.Acao;
 import com.app.api.acao.enums.PeriodoEnum;
+import com.app.api.bdr.principal.entity.Bdr;
 import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -14,8 +14,8 @@ import java.time.LocalDate;
 @Builder
 @Data
 @Entity
-@Table(name = "increase_percent")
-public class IncreasePercent {
+@Table(name = "increase_percent_bdr")
+public class IncreasePercentBdr {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,8 +44,8 @@ public class IncreasePercent {
 
 
     @ManyToOne
-    @JoinColumn(name = "acao_id")
-    private Acao acao;
+    @JoinColumn(name = "bdr_id")
+    private Bdr bdr;
 
 
     @CreationTimestamp
@@ -56,11 +56,10 @@ public class IncreasePercent {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
-    public IncreasePercent() {
+    public IncreasePercentBdr() {
     }
 
-
-    public IncreasePercent(Long id, LocalDate dataBase, LocalDate dataReference, PeriodoEnum periodo, Integer intervaloPeriodo, Double percentual, Double valorFechamentoAtual, Double valorFechamentoAnterior, Acao acao, Timestamp createdAt, Timestamp updatedAt) {
+    public IncreasePercentBdr(Long id, LocalDate dataBase, LocalDate dataReference, PeriodoEnum periodo, Integer intervaloPeriodo, Double percentual, Double valorFechamentoAtual, Double valorFechamentoAnterior, Bdr bdr, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.dataBase = dataBase;
         this.dataReference = dataReference;
@@ -69,7 +68,7 @@ public class IncreasePercent {
         this.percentual = percentual;
         this.valorFechamentoAtual = valorFechamentoAtual;
         this.valorFechamentoAnterior = valorFechamentoAnterior;
-        this.acao = acao;
+        this.bdr = bdr;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

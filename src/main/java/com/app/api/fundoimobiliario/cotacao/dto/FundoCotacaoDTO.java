@@ -1,10 +1,6 @@
 package com.app.api.fundoimobiliario.cotacao.dto;
 
 
-import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
-import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
-import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
-import com.app.api.acao.principal.entity.Acao;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoSemanal;

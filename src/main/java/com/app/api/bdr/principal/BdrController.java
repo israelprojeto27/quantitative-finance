@@ -1,9 +1,8 @@
-package com.app.api.fundoimobiliario.principal;
+package com.app.api.bdr.principal;
 
-import com.app.api.acao.principal.dto.AcaoDTO;
-import com.app.api.acao.principal.entity.Acao;
+import com.app.api.bdr.principal.dto.BdrDTO;
+import com.app.api.bdr.principal.entity.Bdr;
 import com.app.api.fundoimobiliario.principal.dto.FundoImobiliarioDTO;
-import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import com.app.commons.basic.general.BaseController;
 import com.app.commons.messages.Message;
 import com.app.commons.utils.Utils;
@@ -20,22 +19,22 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/fundo-imobiliario")
-@Tag(name = "Fundo Imobiliário")
-public class FundoImobiliarioController implements BaseController<FundoImobiliario, FundoImobiliarioDTO> {
+@RequestMapping("/bdr")
+@Tag(name = "BDR")
+public class BdrController implements BaseController<Bdr, BdrDTO> {
 
     @Autowired
-    FudoImobiliarioService service;
+    BdrService service;
 
 
     @GetMapping
     @Override
-    @Operation(summary = "Lista todas os Fundos imobiliários cadastrados")
-    public ResponseEntity<List<FundoImobiliarioDTO>> getListAll() {
+    @Operation(summary = "Lista todas os BDRs cadastrados")
+    public ResponseEntity<List<BdrDTO>> getListAll() {
         return new ResponseEntity<>(service.getListAll(), HttpStatus.OK);
     }
 
-
+    @Override
     @Operation(summary = "Realiza upload do arquivo de cotações em um período específico")
     @PostMapping(path = "/{periodo}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> uploadFile(@RequestPart MultipartFile document, @PathVariable String periodo) throws IOException {
@@ -63,39 +62,31 @@ public class FundoImobiliarioController implements BaseController<FundoImobiliar
             return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_EMPTY, HttpStatus.BAD_REQUEST);
     }
 
-
-    @Operation(summary = "Realiza upload do arquivo de dividendos de Fundos Imobiliarios")
-    @PostMapping(path = "/uploadDividendos", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> uploadFileDividendos(@RequestPart MultipartFile document) throws IOException {
-        if ( ! document.isEmpty())
-            return new ResponseEntity<>(service.uploadFileDividendos(document), HttpStatus.OK);
-        else
-            return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_EMPTY, HttpStatus.BAD_REQUEST);
-    }
-
-    @Operation(summary = "Recupera informações de um Fundo Imobilario por id")
+    @Operation(summary = "Recupera informações de um BDR por id")
     @GetMapping("/{id}")
     @Override
-    public ResponseEntity<FundoImobiliarioDTO> findById(@PathVariable Long id) {
-        FundoImobiliarioDTO fundoImobiliarioDTO = service.findById(id);
-        if ( fundoImobiliarioDTO != null )
+    public ResponseEntity<BdrDTO> findById(@PathVariable Long id) {
+        BdrDTO bdrDTO = service.findById(id);
+        if ( bdrDTO != null )
             return new ResponseEntity<>(service.findById(id), HttpStatus.OK);
         else
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
-    @Operation(summary = "Recupera informações de  um Fundo Imobilario por sigla")
+    @Operation(summary = "Recupera informações de  um BDR por sigla")
     @GetMapping("/sigla/{sigla}")
     @Override
-    public ResponseEntity<FundoImobiliarioDTO> findBySigla(@PathVariable String sigla) {
-        FundoImobiliarioDTO fundoImobiliarioDTO = service.findBySigla(sigla);
-        if ( fundoImobiliarioDTO != null )
+    public ResponseEntity<BdrDTO> findBySigla(@PathVariable String sigla) {
+        BdrDTO bdrDTO = service.findBySigla(sigla);
+        if ( bdrDTO != null )
             return new ResponseEntity<>(service.findBySigla(sigla), HttpStatus.OK);
         else
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
-    @Operation(summary = "Calcula e armazena o percentual que um Fundo Imobiliario cresceu de uma data para outra. Esse cálculo é feito a partir de um periodo selecionado (diario, semanal, mensal) ")
+
+
+    @Operation(summary = "Calcula e armazena o percentual que um BDR cresceu de uma data para outra. Esse cálculo é feito a partir de um periodo selecionado (diario, semanal, mensal) ")
     @PostMapping("/calculate-increase-percent/{periodo}")
     @Override
     public ResponseEntity<?> calculaIncreasePercent(@PathVariable String periodo) {
@@ -106,28 +97,28 @@ public class FundoImobiliarioController implements BaseController<FundoImobiliar
         return new ResponseEntity<>(service.calculaIncreasePercent(periodo), HttpStatus.OK);
     }
 
-    @Operation(summary = "Calcula e armazena o percentual que  um Fundo Imobiliario cresceu de uma data para outra. Esse cálculo é feito para todos os periodos de uma vez (diario, semanal, mensal) ")
+    @Operation(summary = "Calcula e armazena o percentual que  um BDR cresceu de uma data para outra. Esse cálculo é feito para todos os periodos de uma vez (diario, semanal, mensal) ")
     @PostMapping("/calculate-increase-percent-full")
     @Override
     public ResponseEntity<?> calculaIncreasePercentFull() {
         return new ResponseEntity<>(service.calculaIncreasePercentFull(), HttpStatus.OK);
     }
 
-    @Operation(summary = "Deleta um Fundo Imobiliario por Id")
+    @Operation(summary = "Deleta um BDR por Id")
     @DeleteMapping("/{id}")
     @Override
-    public ResponseEntity<?> deleteById(@PathVariable Long id) {
+    public ResponseEntity<?> deleteById(Long id) {
         return null;
     }
 
-    @Operation(summary = "Atualiza as informações de um Fundo Imobiliario")
+    @Operation(summary = "Atualiza as informações de um BDR")
     @PatchMapping
     @Override
-    public ResponseEntity<FundoImobiliarioDTO> update(@RequestBody FundoImobiliarioDTO dto) {
+    public ResponseEntity<BdrDTO> update(BdrDTO dto) {
         return null;
     }
 
-    @Operation(summary = "Limpa todos os registros das tabelas de Fundo Imobiliario, Cotação e Dividendo ")
+    @Operation(summary = "Limpa todos os registros das tabelas de BDR, Cotação e Dividendo ")
     @GetMapping("/cleanAll")
     @Override
     public ResponseEntity<?> cleanAll() {

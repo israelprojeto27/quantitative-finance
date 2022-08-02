@@ -1,5 +1,6 @@
-package com.app.api.fundoimobiliario.cotacao.dto;
+package com.app.api.bdr.cotacao.dto;
 
+import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import lombok.Builder;
 import lombok.Data;
@@ -8,9 +9,9 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class CotacaoFundoDiarioDTO {
+public class CotacaoBdrDiarioDTO {
 
-    public CotacaoFundoDiarioDTO() {
+    public CotacaoBdrDiarioDTO() {
     }
 
     private Long id;
@@ -29,7 +30,7 @@ public class CotacaoFundoDiarioDTO {
 
     private Long volume;
 
-    public CotacaoFundoDiarioDTO(Long id, LocalDate data, Double high, Double low, Double open, Double close, Double adjclose, Long volume) {
+    public CotacaoBdrDiarioDTO(Long id, LocalDate data, Double high, Double low, Double open, Double close, Double adjclose, Long volume) {
         this.id = id;
         this.data = data;
         this.high = high;
@@ -41,8 +42,8 @@ public class CotacaoFundoDiarioDTO {
     }
 
 
-    public static CotacaoFundoDiarioDTO fromEntity(CotacaoFundoDiario entity) {
-        return CotacaoFundoDiarioDTO.builder()
+    public static CotacaoBdrDiarioDTO fromEntity(CotacaoBdrDiario entity) {
+        return CotacaoBdrDiarioDTO.builder()
                 .id(entity.getId())
                 .data(entity.getData())
                 .high(entity.getHigh())
