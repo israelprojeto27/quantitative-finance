@@ -19,4 +19,6 @@ public interface CotacaoBdrDiarioRepository extends JpaRepository<CotacaoBdrDiar
     List<CotacaoBdrDiario> findByBdr(Bdr bdr, Sort sort);
 
     List<CotacaoBdrDiario> findByData(LocalDate dt);
+
+
 }

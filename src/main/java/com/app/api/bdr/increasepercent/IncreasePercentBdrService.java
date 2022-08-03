@@ -76,5 +76,8 @@ public class IncreasePercentBdrService {
     }
 
 
-
+    @Transactional
+    public void cleanAll() {
+        repository.deleteAll();
+    }
 }

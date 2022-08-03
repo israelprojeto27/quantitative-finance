@@ -24,6 +24,8 @@ public class Utils {
 
     private static final String IGNORED_LINE = ",Date,Open,High,Low,Close,Adj Close,Volume";
 
+    private static final String IGNORED_LINE3 = "Date,Open,High,Low,Close,Adj Close,Volume";
+
     private static final String IGNORED_LINE2 = "Date,Open,High,Low,Close,Adj Close,Volume,Dividends,Stock Splits";
 
     public static LocalDate converteStringToLocalDateTime3(String data) {
@@ -82,7 +84,7 @@ public class Utils {
     }
 
     public static boolean isLineIgnored(String line){
-        if ( line != null && !line.contains(IGNORED_LINE) && !line.contains(IGNORED_LINE2)){
+        if ( line != null && !line.contains(IGNORED_LINE) && !line.contains(IGNORED_LINE2)  && !line.contains(IGNORED_LINE3)   ){
             return true;
         }
         else {

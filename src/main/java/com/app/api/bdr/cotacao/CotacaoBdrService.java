@@ -1,5 +1,6 @@
 package com.app.api.bdr.cotacao;
 
+import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.acao.enums.PeriodoEnum;
 import com.app.api.bdr.BdrRepository;
 import com.app.api.bdr.cotacao.dto.BdrCotacaoDTO;
@@ -9,6 +10,8 @@ import com.app.api.bdr.cotacao.entities.CotacaoBdrSemanal;
 import com.app.api.bdr.cotacao.repositories.CotacaoBdrDiarioRepository;
 import com.app.api.bdr.cotacao.repositories.CotacaoBdrMensalRepository;
 import com.app.api.bdr.cotacao.repositories.CotacaoBdrSemanalRepository;
+import com.app.api.bdr.dividendo.DividendoBdrService;
+import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.api.bdr.principal.entity.Bdr;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
@@ -46,6 +49,9 @@ public class CotacaoBdrService implements BaseCotacaoService<Bdr, BdrCotacaoDTO,
     @Autowired
     BdrRepository bdrRepository;
 
+    @Autowired
+    DividendoBdrService dividendoBdrService;
+
 
     @Transactional
     @Override
@@ -54,16 +60,24 @@ public class CotacaoBdrService implements BaseCotacaoService<Bdr, BdrCotacaoDTO,
 
         if ( periodo.equals(PeriodoEnum.DIARIO.getLabel())){
             CotacaoBdrDiario cotacaoBdrDiario = CotacaoBdrDiario.toEntity(array, bdr);
-            this.createCotacaoDiario(cotacaoBdrDiario);
+            if ( cotacaoBdrDiario != null)
+                this.createCotacaoDiario(cotacaoBdrDiario);
+
+            if (cotacaoBdrDiario.getDividend().doubleValue() > 0.0d){
+                DividendoBdr dividendoBdr = DividendoBdr.toEntity(cotacaoBdrDiario);
+                dividendoBdrService.save(dividendoBdr);
+            }
 
         }
         else if ( periodo.equals(PeriodoEnum.SEMANAL.getLabel())){
             CotacaoBdrSemanal cotacaoBdrSemanal = CotacaoBdrSemanal.toEntity(array, bdr);
-            this.createCotacaoSemanal(cotacaoBdrSemanal);
+            if ( cotacaoBdrSemanal != null)
+                this.createCotacaoSemanal(cotacaoBdrSemanal);
         }
         else if ( periodo.equals(PeriodoEnum.MENSAL.getLabel())){
             CotacaoBdrMensal cotacaoBdrMensal = CotacaoBdrMensal.toEntity(array, bdr);
-            this.createCotacaoMensal(cotacaoBdrMensal);
+            if ( cotacaoBdrMensal != null)
+                this.createCotacaoMensal(cotacaoBdrMensal);
         }
     }
 

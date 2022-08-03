@@ -9,7 +9,7 @@ create table cotacao_bdr_mensal(
     volume bigint,
     created_at timestamp,
     updated_at timestamp,
-    acao_id bigint,
+    bdr_id bigint,
     constraint fk_cotacao_bdr_mensal FOREIGN KEY (bdr_id) REFERENCES bdr(id),
 	constraint pk_cotacao_bdr_mensal primary key(id)
 )

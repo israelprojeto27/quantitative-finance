@@ -45,7 +45,7 @@ public class CotacaoBdrSemanal {
     private Timestamp updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "fundo_id")
+    @JoinColumn(name = "bdr_id")
     private Bdr bdr;
 
     public CotacaoBdrSemanal() {
@@ -68,15 +68,20 @@ public class CotacaoBdrSemanal {
     //,Date,Open,High,Low,Close,Adj Close,Volume
     //0,2019-12-02,18.049999,18.16,17.889999,17.969999,16.340429,10259800
     public static CotacaoBdrSemanal toEntity(String[] array, Bdr bdr) {
-        return CotacaoBdrSemanal.builder()
-                .data(Utils.converteStringToLocalDateTime3(array[1]))
-                .open(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[2])))
-                .high(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[3])))
-                .low(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[4])))
-                .close(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[5])))
-                .adjclose(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[6])))
-                .volume(Long.parseLong(array[7]))
-                .bdr(bdr)
-                .build();
+        try{
+            return CotacaoBdrSemanal.builder()
+                    .data(Utils.converteStringToLocalDateTime3(array[1]))
+                    .open(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[2])))
+                    .high(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[3])))
+                    .low(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[4])))
+                    .close(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[5])))
+                    .adjclose(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[6])))
+                    .volume(array[7] != null && !array[7].replaceAll(".0", "").equals("") ? Long.parseLong(array[7].replaceAll(".0", "")): 0l)
+                    .bdr(bdr)
+                    .build();
+        }
+        catch (Exception e){
+            return null;
+        }
     }
 }

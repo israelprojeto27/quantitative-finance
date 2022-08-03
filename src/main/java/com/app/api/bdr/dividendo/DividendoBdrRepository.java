@@ -21,4 +21,6 @@ public interface DividendoBdrRepository extends JpaRepository<DividendoBdr, Long
     List<DividendoBdr> findByDataBetween(LocalDate start, LocalDate end, Sort sort);
 
     List<DividendoBdr> findByBdrAndDataBetween(Bdr bdr, LocalDate start, LocalDate end, Sort sort);
+
+
 }

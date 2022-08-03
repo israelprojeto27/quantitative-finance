@@ -1,7 +1,6 @@
 package com.app.api.bdr.cotacao;
 
 import com.app.api.bdr.cotacao.dto.BdrCotacaoDTO;
-import com.app.api.fundoimobiliario.cotacao.dto.FundoCotacaoDTO;
 import com.app.commons.basic.cotacao.BaseCotacaoController;
 import com.app.commons.dtos.FilterAtivoCotacaoGrowDTO;
 import com.app.commons.dtos.ResultFilterAtivoCotacaoGrowDTO;
@@ -60,23 +59,23 @@ public class CotacaoBdrController implements BaseCotacaoController<BdrCotacaoDTO
         return new ResponseEntity<>(service.findCotacaoBySiglaByPeriodo (sigla, periodo), HttpStatus.OK);
     }
 
-    @PostMapping("/cotacao-fundo-grow-diary")
+    @PostMapping("/cotacao-bdr-grow-diary")
     @Override
-    @Operation(summary = "Recupera os Fundos cujas as cotações diarias mais cresceram ou menos cresceram em um determinado periodo")
+    @Operation(summary = "Recupera os BDRs cujas as cotações diarias mais cresceram ou menos cresceram em um determinado periodo")
     public ResponseEntity<List<ResultFilterAtivoCotacaoGrowDTO>> findAtivosCotacaoGrowDiary(@RequestBody FilterAtivoCotacaoGrowDTO dto) {
         return new ResponseEntity<>(service.findAtivosCotacaoGrowDiary(dto), HttpStatus.OK);
     }
 
-    @PostMapping("/cotacao-fundo-grow-week")
+    @PostMapping("/cotacao-bdr-grow-week")
     @Override
-    @Operation(summary = "Recupera os Fundos cujas as cotações semanais mais cresceram ou menos cresceram em um determinado periodo")
+    @Operation(summary = "Recupera os BDRs cujas as cotações semanais mais cresceram ou menos cresceram em um determinado periodo")
     public ResponseEntity<List<ResultFilterAtivoCotacaoGrowDTO>> findAtivosCotacaoGrowWeek(@RequestBody FilterAtivoCotacaoGrowDTO dto) {
         return new ResponseEntity<>(service.findAtivosCotacaoGrowWeek(dto), HttpStatus.OK);
     }
 
-    @PostMapping("/cotacao-fundo-grow-month")
+    @PostMapping("/cotacao-bdr-grow-month")
     @Override
-    @Operation(summary = "Recupera os Fundos cujas as cotações mensais mais cresceram ou menos cresceram em um determinado periodo")
+    @Operation(summary = "Recupera os BDRs cujas as cotações mensais mais cresceram ou menos cresceram em um determinado periodo")
     public ResponseEntity<List<ResultFilterAtivoCotacaoGrowDTO>> findAtivosCotacaoGrowMonth(@RequestBody FilterAtivoCotacaoGrowDTO dto) {
         return new ResponseEntity<>(service.findAtivosCotacaoGrowMonth(dto), HttpStatus.OK);
     }

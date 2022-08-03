@@ -1,6 +1,7 @@
 package com.app.commons.dtos;
 
 import com.app.api.acao.principal.entity.Acao;
+import com.app.api.bdr.principal.entity.Bdr;
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import com.app.commons.utils.Utils;
 import lombok.Builder;
@@ -32,6 +33,13 @@ public class SumAtivoDividendosDTO {
     public static SumAtivoDividendosDTO from(FundoImobiliario fundoImobiliario, double sumDividendos) {
         return SumAtivoDividendosDTO.builder()
                 .sigla(fundoImobiliario.getSigla())
+                .sumDividendo(Utils.converterDoubleSeisDecimais(sumDividendos))
+                .build();
+    }
+
+    public static SumAtivoDividendosDTO from(Bdr bdr, double sumDividendos) {
+        return SumAtivoDividendosDTO.builder()
+                .sigla(bdr.getSigla())
                 .sumDividendo(Utils.converterDoubleSeisDecimais(sumDividendos))
                 .build();
     }

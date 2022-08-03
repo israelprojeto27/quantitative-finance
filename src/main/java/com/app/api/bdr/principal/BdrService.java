@@ -317,8 +317,13 @@ public class BdrService  implements BaseService<Bdr, BdrDTO>  {
     }
 
     @Override
+    @Transactional
     public boolean cleanAll() {
-        return false;
+        cotacaoBdrService.cleanAll();
+        dividendoBdrService.cleanAll();
+        increasePercentBdrService.cleanAll();
+        repository.deleteAll();
+        return true;
     }
 
 
