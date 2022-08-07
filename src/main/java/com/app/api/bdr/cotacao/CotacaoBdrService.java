@@ -1,8 +1,6 @@
 package com.app.api.bdr.cotacao;
 
-import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.acao.enums.PeriodoEnum;
-import com.app.api.bdr.BdrRepository;
 import com.app.api.bdr.cotacao.dto.BdrCotacaoDTO;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrMensal;
@@ -12,12 +10,11 @@ import com.app.api.bdr.cotacao.repositories.CotacaoBdrMensalRepository;
 import com.app.api.bdr.cotacao.repositories.CotacaoBdrSemanalRepository;
 import com.app.api.bdr.dividendo.DividendoBdrService;
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
+import com.app.api.bdr.principal.BdrRepository;
 import com.app.api.bdr.principal.entity.Bdr;
-import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
-import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
-import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoSemanal;
 import com.app.commons.basic.cotacao.BaseCotacaoService;
 import com.app.commons.dtos.FilterAtivoCotacaoGrowDTO;
+import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
 import com.app.commons.dtos.ResultFilterAtivoCotacaoGrowDTO;
 import com.app.commons.enums.TipoOrdenacaoGrowEnum;
 import com.app.commons.utils.Utils;
@@ -356,6 +353,18 @@ public class CotacaoBdrService implements BaseCotacaoService<Bdr, BdrCotacaoDTO,
         return listFinal;
     }
 
+    @Override
+    public LastCotacaoAtivoDiarioDTO getLastCotacaoDiario(Bdr bdr) {
+        List<CotacaoBdrDiario> listCotacaoBdrDiario = cotacaoBdrDiarioRepository.findByBdr(bdr, Sort.by(Sort.Direction.DESC, "data"));
+        if (! listCotacaoBdrDiario.isEmpty()){
+            Optional<CotacaoBdrDiario> optCotacaoBdrDiario = listCotacaoBdrDiario.stream()
+                    .findFirst();
+            if ( optCotacaoBdrDiario.isPresent()){
+                return LastCotacaoAtivoDiarioDTO.from(optCotacaoBdrDiario.get());
+            }
+        }
+        return null;
+    }
 
 
     private Optional<CotacaoBdrDiario> getCotacaoDiarioFim(CotacaoBdrDiario cotacao, List<CotacaoBdrDiario> listCotacaoFim) {

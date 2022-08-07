@@ -27,4 +27,6 @@ public class DividendoDTO {
                 .dividend(dividendoAcao.getDividend())
                 .build();
     }
+
+
 }

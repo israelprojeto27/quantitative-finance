@@ -1,6 +1,7 @@
 package com.app.api.bdr.dividendo;
 
-import com.app.api.bdr.BdrRepository;
+import com.app.api.acao.dividendo.entity.DividendoAcao;
+import com.app.api.bdr.principal.BdrRepository;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.bdr.cotacao.repositories.CotacaoBdrDiarioRepository;
 import com.app.api.bdr.dividendo.dto.BdrListDividendoDTO;
@@ -20,7 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class DividendoBdrService implements BaseDividendoService<DividendoBdr, DividendoBdrDTO, BdrListDividendoDTO> {
+public class DividendoBdrService implements BaseDividendoService<DividendoBdr, DividendoBdrDTO, BdrListDividendoDTO, Bdr> {
 
     @Autowired
     DividendoBdrRepository repository;
@@ -280,6 +281,7 @@ public class DividendoBdrService implements BaseDividendoService<DividendoBdr, D
         return null;
     }
 
+
     public SumCalculateYieldDividendosAtivoDTO calculateYieldBySiglaByQuantCotasByPeriod(String sigla, Long quantidadeCotas, FilterPeriodDTO filterPeriodDTO) {
         Optional<Bdr> bdrOpt = bdrRepository.findBySigla(sigla);
         if (bdrOpt.isPresent()){
@@ -333,5 +335,18 @@ public class DividendoBdrService implements BaseDividendoService<DividendoBdr, D
         DividendoBdr dividendoBdr = DividendoBdr.toEntity(bdr, dataDividendo, dividendo);
         repository.save(dividendoBdr);
         return true;
+    }
+
+    @Override
+    public LastDividendoAtivoDTO getLastDividendo(Bdr bdr) {
+        List<DividendoBdr> listDividendos = repository.findAllByBdr(bdr, Sort.by(Sort.Direction.DESC, "data"));
+        if ( !listDividendos.isEmpty()){
+            Optional<DividendoBdr> optDividendoBdr = listDividendos.stream()
+                    .findFirst();
+            if ( optDividendoBdr.isPresent()){
+                return LastDividendoAtivoDTO.from(optDividendoBdr.get());
+            }
+        }
+        return null;
     }
 }

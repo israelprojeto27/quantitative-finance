@@ -1,7 +1,7 @@
 package com.app.api.bdr.principal;
 
 import com.app.api.acao.enums.PeriodoEnum;
-import com.app.api.bdr.BdrRepository;
+import com.app.api.acao.principal.entity.Acao;
 import com.app.api.bdr.cotacao.CotacaoBdrService;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrMensal;
@@ -12,16 +12,13 @@ import com.app.api.bdr.logupload.LogUploadBdr;
 import com.app.api.bdr.logupload.LogUploadBdrService;
 import com.app.api.bdr.principal.dto.BdrDTO;
 import com.app.api.bdr.principal.entity.Bdr;
-import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
-import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
-import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoSemanal;
-import com.app.api.fundoimobiliario.logupload.LogUploadFundoImobiliario;
-import com.app.api.fundoimobiliario.principal.dto.FundoImobiliarioDTO;
-import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import com.app.api.parametro.ParametroService;
 import com.app.api.parametro.dto.ParametroDTO;
 import com.app.api.parametro.enums.TipoParametroEnum;
 import com.app.commons.basic.general.BaseService;
+import com.app.commons.dtos.AtivoInfoGeraisDTO;
+import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
+import com.app.commons.dtos.LastDividendoAtivoDTO;
 import com.app.commons.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -31,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -66,6 +64,25 @@ public class BdrService  implements BaseService<Bdr, BdrDTO>  {
                 .stream()
                 .map(BdrDTO::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AtivoInfoGeraisDTO> getInfoGerais() {
+
+        List<Bdr> listBDRs = repository.findAll();
+        if ( !listBDRs.isEmpty()){
+            List<AtivoInfoGeraisDTO> list =  new ArrayList<>();
+            listBDRs.forEach(bdr -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoBdrService.getLastCotacaoDiario(bdr);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoBdrService.getLastDividendo(bdr);
+                list.add(AtivoInfoGeraisDTO.from(bdr,
+                                                lastCotacaoAtivoDiarioDTO,
+                                                lastDividendoAtivoDTO));
+            });
+            return list;
+        }
+
+        return null;
     }
 
     @Transactional

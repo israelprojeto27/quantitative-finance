@@ -74,16 +74,23 @@ public class CotacaoFundoDiario {
     //,Date,Open,High,Low,Close,Adj Close,Volume
     //0,2019-12-02,18.049999,18.16,17.889999,17.969999,16.340429,10259800
     public static CotacaoFundoDiario toEntity(String[] array, FundoImobiliario fundoImobiliario) {
-        return CotacaoFundoDiario.builder()
-                .data(Utils.converteStringToLocalDateTime3(array[0]))
-                .open(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[1])))
-                .high(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[2])))
-                .low(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[3])))
-                .close(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[4])))
-                .adjclose(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[5])))
-                .volume(Long.parseLong(array[6]))
-                .fundo(fundoImobiliario)
-                .dividend(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[7])))
-                .build();
+        try{
+            return CotacaoFundoDiario.builder()
+                    .data(Utils.converteStringToLocalDateTime3(array[0]))
+                    .open(Utils.converterStringToDoubleDoisDecimais(array[1]))
+                    .high(Utils.converterStringToDoubleDoisDecimais(array[2]))
+                    .low(Utils.converterStringToDoubleDoisDecimais(array[3]))
+                    .close(Utils.converterStringToDoubleDoisDecimais(array[4]))
+                    .adjclose(Utils.converterStringToDoubleDoisDecimais(array[5]))
+                    .volume(Utils.converterStringToLong(array[6]))
+                    .fundo(fundoImobiliario)
+                    .dividend(Utils.converterStringToDoubleDoisDecimais(array[7]))
+                    .build();
+        }
+        catch (Exception e){
+            System.out.println("Diario");
+            System.out.println("Fundo: " + fundoImobiliario.getSigla());
+            return null;
+        }
     }
 }

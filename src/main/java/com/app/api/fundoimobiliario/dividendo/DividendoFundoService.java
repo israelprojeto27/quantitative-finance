@@ -4,6 +4,7 @@ import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
 import com.app.api.acao.cotacao.repositories.CotacaoAcaoDiarioRepository;
 import com.app.api.acao.principal.AcaoRepository;
 import com.app.api.acao.principal.entity.Acao;
+import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.cotacao.repositories.CotacaoFundoDiarioRepository;
 import com.app.api.fundoimobiliario.dividendo.dto.FundoListDividendoDTO;
@@ -12,10 +13,7 @@ import com.app.api.fundoimobiliario.dividendo.entity.DividendoFundo;
 import com.app.api.fundoimobiliario.principal.FundoImobiliarioRepository;
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import com.app.commons.basic.dividendo.BaseDividendoService;
-import com.app.commons.dtos.FilterPeriodDTO;
-import com.app.commons.dtos.SumAtivoDividendosDTO;
-import com.app.commons.dtos.SumCalculateDetailYieldDividendosAcaoDTO;
-import com.app.commons.dtos.SumCalculateYieldDividendosAtivoDTO;
+import com.app.commons.dtos.*;
 import com.app.commons.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -30,7 +28,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class DividendoFundoService implements BaseDividendoService<DividendoFundo, DividendoFundoDTO, FundoListDividendoDTO> {
+public class DividendoFundoService implements BaseDividendoService<DividendoFundo, DividendoFundoDTO, FundoListDividendoDTO, FundoImobiliario> {
 
     @Autowired
     DividendoFundoRepository repository;
@@ -282,6 +280,19 @@ public class DividendoFundoService implements BaseDividendoService<DividendoFund
         return null;
     }
 
+    @Override
+    public LastDividendoAtivoDTO getLastDividendo(FundoImobiliario fundoImobiliario) {
+        List<DividendoFundo> listDividendos = repository.findAllByFundo(fundoImobiliario, Sort.by(Sort.Direction.DESC, "data"));
+        if ( !listDividendos.isEmpty()){
+            Optional<DividendoFundo> optDividendoFundo = listDividendos.stream()
+                                                                       .findFirst();
+            if ( optDividendoFundo.isPresent()){
+                return LastDividendoAtivoDTO.from(optDividendoFundo.get());
+            }
+        }
+        return null;
+    }
+
     public SumCalculateYieldDividendosAtivoDTO calculateYieldBySiglaByQuantCotasByPeriod(String sigla, Long quantidadeCotas, FilterPeriodDTO filterPeriodDTO) {
         Optional<FundoImobiliario> fundoOpt = fundoRepository.findBySigla(sigla);
         if (fundoOpt.isPresent()){
@@ -329,8 +340,15 @@ public class DividendoFundoService implements BaseDividendoService<DividendoFund
         //0,HGLG11,2019-12-01, 0.78
 
         String[] arr = line.split(",");
-        LocalDate dataDividendo = Utils.converteStringToLocalDateTime3(arr[2]);
-        Double dividendo = Double.parseDouble(arr[3].replaceAll("G",""));
+
+        LocalDate dataDividendo = null;
+        if ( arr[1].length() ==  7){
+            dataDividendo = Utils.converteStringToLocalDateTime3(arr[2].substring(1, arr[2].length()));
+        }
+        else
+            dataDividendo = Utils.converteStringToLocalDateTime3(arr[2]);
+
+        Double dividendo = Double.parseDouble(arr[3].trim().replaceAll("G","").replaceAll("A", "").replaceAll("I", ""));
 
         DividendoFundo dividendoFundo = DividendoFundo.toEntity(fundoImobiliario, dataDividendo, dividendo);
         repository.save(dividendoFundo);

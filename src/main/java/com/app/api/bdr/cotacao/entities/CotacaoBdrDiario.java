@@ -2,6 +2,7 @@ package com.app.api.bdr.cotacao.entities;
 
 
 import com.app.api.bdr.principal.entity.Bdr;
+import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import com.app.commons.utils.Utils;
 import lombok.Builder;
@@ -75,16 +76,23 @@ public class CotacaoBdrDiario {
     //,Date,Open,High,Low,Close,Adj Close,Volume
     //0,2019-12-02,18.049999,18.16,17.889999,17.969999,16.340429,10259800
     public static CotacaoBdrDiario toEntity(String[] array, Bdr bdr) {
-        return CotacaoBdrDiario.builder()
-                .data(Utils.converteStringToLocalDateTime3(array[0]))
-                .open(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[1])))
-                .high(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[2])))
-                .low(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[3])))
-                .close(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[4])))
-                .adjclose(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[5])))
-                .volume(Long.parseLong(array[6]))
-                .bdr(bdr)
-                .dividend(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[7])))
-                .build();
+        try{
+            return CotacaoBdrDiario.builder()
+                    .data(Utils.converteStringToLocalDateTime3(array[0]))
+                    .open(Utils.converterStringToDoubleDoisDecimais(array[1]))
+                    .high(Utils.converterStringToDoubleDoisDecimais(array[2]))
+                    .low(Utils.converterStringToDoubleDoisDecimais(array[3]))
+                    .close(Utils.converterStringToDoubleDoisDecimais(array[4]))
+                    .adjclose(Utils.converterStringToDoubleDoisDecimais(array[5]))
+                    .volume(Utils.converterStringToLong(array[6]))
+                    .bdr(bdr)
+                    .dividend(Utils.converterStringToDoubleDoisDecimais(array[7]))
+                    .build();
+        }
+        catch (Exception e){
+            System.out.println("Diario");
+            System.out.println("bdr: " + bdr.getSigla());
+            return null;
+        }
     }
 }

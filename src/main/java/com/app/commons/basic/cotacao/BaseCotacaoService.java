@@ -1,6 +1,8 @@
 package com.app.commons.basic.cotacao;
 
+import com.app.api.acao.principal.entity.Acao;
 import com.app.commons.dtos.FilterAtivoCotacaoGrowDTO;
+import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
 import com.app.commons.dtos.ResultFilterAtivoCotacaoGrowDTO;
 import org.springframework.data.domain.Sort;
 
@@ -45,6 +47,8 @@ public interface BaseCotacaoService<E, T, CD, CS, CM> {
      List<ResultFilterAtivoCotacaoGrowDTO> findAtivosCotacaoGrowWeek(FilterAtivoCotacaoGrowDTO dto);
 
      List<ResultFilterAtivoCotacaoGrowDTO> findAtivosCotacaoGrowMonth(FilterAtivoCotacaoGrowDTO dto);
+
+     LastCotacaoAtivoDiarioDTO getLastCotacaoDiario(E e);
 
 }
 

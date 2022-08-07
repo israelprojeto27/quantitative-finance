@@ -1,5 +1,6 @@
 package com.app.commons.basic.general;
 
+import com.app.commons.dtos.AtivoInfoGeraisDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -29,4 +30,6 @@ public interface BaseController <E, T> {
     ResponseEntity<T> update(T dto);
 
     ResponseEntity<?> cleanAll();
+
+    ResponseEntity<List<AtivoInfoGeraisDTO>> getInfoGerais();
 }

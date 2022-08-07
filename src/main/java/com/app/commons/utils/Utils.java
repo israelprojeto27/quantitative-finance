@@ -55,6 +55,21 @@ public class Utils {
         }
     }
 
+    public static double converterStringToDoubleDoisDecimais(String valor) {
+        if ( valor != null && !valor.equals("")){
+            return Utils.converterDoubleDoisDecimais(Double.parseDouble(valor));
+        }
+        else
+            return 0d;
+    }
+
+    public static long converterStringToLong(String valor) {
+        if ( valor != null && !valor.equals("") && !valor.replaceAll(".0", "").equals("") ){
+            return Long.parseLong(valor.replaceAll(".0", ""));
+        }
+        else
+            return 0l;
+    }
 
     public static double converterDoubleDoisDecimais(double precoDouble) {
         DecimalFormat fmt = new DecimalFormat("0.00");
@@ -104,5 +119,20 @@ public class Utils {
         }
 
         return destFile;
+    }
+
+    public static String converterDoubleDoisDecimaisString(double preco) {
+        Locale lo = new Locale("pt", "BR");
+        NumberFormat cf = NumberFormat.getCurrencyInstance(lo);
+        return  cf.format(preco);
+    }
+
+    public static double converterDoubleQuatroDecimais(double precoDouble) {
+        DecimalFormat fmt = new DecimalFormat("0.0000");
+        String string = fmt.format(precoDouble);
+        String[] part = string.split("[,]");
+        String string2 = part[0]+"."+part[1];
+        double preco = Double.parseDouble(string2);
+        return preco;
     }
 }

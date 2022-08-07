@@ -77,6 +77,11 @@ public class IncreasePercentFundoService {
         }
     }
 
+    @Transactional
+    public void cleanAll(){
+        repository.deleteAll();
+    }
+
 
 
 }

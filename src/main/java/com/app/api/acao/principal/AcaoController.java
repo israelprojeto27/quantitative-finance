@@ -1,14 +1,13 @@
 package com.app.api.acao.principal;
 
 import com.app.api.acao.principal.dto.AcaoDTO;
+import com.app.commons.dtos.AtivoInfoGeraisDTO;
 import com.app.api.acao.principal.entity.Acao;
 import com.app.commons.basic.general.BaseController;
 import com.app.commons.messages.Message;
 import com.app.commons.utils.Utils;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +31,14 @@ public class AcaoController implements BaseController<Acao, AcaoDTO> {
     @Operation(summary = "Lista todas as Ações cadastradas")
     public ResponseEntity<List<AcaoDTO>> getListAll() {
         return new ResponseEntity<>(service.getListAll(), HttpStatus.OK);
+    }
+
+
+    @Override
+    @GetMapping(path = "/info-gerais")
+    @Operation(summary = "Recuperar informações gerais das ações cadastradas")
+    public ResponseEntity<List<AtivoInfoGeraisDTO>> getInfoGerais() {
+        return new ResponseEntity<>(service.getInfoGerais(), HttpStatus.OK);
     }
 
 

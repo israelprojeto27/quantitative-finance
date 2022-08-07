@@ -1,12 +1,14 @@
 package com.app.commons.basic.dividendo;
 
+import com.app.api.acao.principal.entity.Acao;
 import com.app.commons.dtos.FilterPeriodDTO;
+import com.app.commons.dtos.LastDividendoAtivoDTO;
 import com.app.commons.dtos.SumAtivoDividendosDTO;
 import com.app.commons.dtos.SumCalculateYieldDividendosAtivoDTO;
 
 import java.util.List;
 
-public interface BaseDividendoService<E, T, L> {
+public interface BaseDividendoService<E, T, L, A> {
 
     void save(E e);
 
@@ -29,5 +31,7 @@ public interface BaseDividendoService<E, T, L> {
     SumCalculateYieldDividendosAtivoDTO calculateYieldBySiglaAtivoByQuantCotas(String sigla, Long quantidadeCotas);
 
     SumCalculateYieldDividendosAtivoDTO calculateYieldByIdAtivoByQuantCotasByPeriod(Long id, Long quantidadeCotas, FilterPeriodDTO filterPeriodDTO);
+
+    LastDividendoAtivoDTO getLastDividendo(A a);
 
 }

@@ -1,6 +1,7 @@
 package com.app.api.acao.cotacao.dto;
 
 import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
+import com.app.commons.utils.Utils;
 import lombok.Builder;
 import lombok.Data;
 
@@ -15,7 +16,7 @@ public class CotacaoAcaoSemanalDTO {
 
     private Long id;
 
-    private LocalDate data;
+    private String data;
 
     private Double high;
 
@@ -29,7 +30,7 @@ public class CotacaoAcaoSemanalDTO {
 
     private Long volume;
 
-    public CotacaoAcaoSemanalDTO(Long id, LocalDate data, Double high, Double low, Double open, Double close, Double adjclose, Long volume) {
+    public CotacaoAcaoSemanalDTO(Long id, String data, Double high, Double low, Double open, Double close, Double adjclose, Long volume) {
         this.id = id;
         this.data = data;
         this.high = high;
@@ -43,11 +44,11 @@ public class CotacaoAcaoSemanalDTO {
     public static CotacaoAcaoSemanalDTO  fromEntity(CotacaoAcaoSemanal entity) {
         return CotacaoAcaoSemanalDTO.builder()
                 .id(entity.getId())
-                .data(entity.getData())
+                .data(Utils.converteLocalDateToString(entity.getData()))
                 .high(entity.getHigh())
                 .low(entity.getLow())
                 .open(entity.getOpen())
-                .close(entity.getClose())
+                .close(Utils.converterDoubleDoisDecimais(entity.getClose()))
                 .adjclose(entity.getAdjclose())
                 .volume(entity.getVolume())
                 .build();

@@ -6,6 +6,7 @@ import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
 import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
 import com.app.api.acao.enums.PeriodoEnum;
 import com.app.api.acao.principal.entity.Acao;
+import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.fundoimobiliario.cotacao.dto.FundoCotacaoDTO;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
@@ -19,6 +20,7 @@ import com.app.api.fundoimobiliario.principal.FundoImobiliarioRepository;
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import com.app.commons.basic.cotacao.BaseCotacaoService;
 import com.app.commons.dtos.FilterAtivoCotacaoGrowDTO;
+import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
 import com.app.commons.dtos.ResultFilterAtivoCotacaoGrowDTO;
 import com.app.commons.enums.TipoOrdenacaoGrowEnum;
 import com.app.commons.utils.Utils;
@@ -60,7 +62,8 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
 
         if ( periodo.equals(PeriodoEnum.DIARIO.getLabel())){
             CotacaoFundoDiario cotacaoFundoDiario = CotacaoFundoDiario.toEntity(array, fundo);
-            this.createCotacaoDiario(cotacaoFundoDiario);
+            if ( cotacaoFundoDiario != null)
+                this.createCotacaoDiario(cotacaoFundoDiario);
 /*
             if (cotacaoFundoDiario.getDividend().doubleValue() > 0.0d){
                 DividendoFundo dividendoFundo = DividendoFundo.toEntity(cotacaoFundoDiario);
@@ -70,11 +73,13 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
         }
         else if ( periodo.equals(PeriodoEnum.SEMANAL.getLabel())){
             CotacaoFundoSemanal cotacaoFundoSemanal = CotacaoFundoSemanal.toEntity(array, fundo);
-            this.createCotacaoSemanal(cotacaoFundoSemanal);
+            if ( cotacaoFundoSemanal != null)
+                this.createCotacaoSemanal(cotacaoFundoSemanal);
         }
         else if ( periodo.equals(PeriodoEnum.MENSAL.getLabel())){
             CotacaoFundoMensal cotacaoFundoMensal = CotacaoFundoMensal.toEntity(array, fundo);
-            this.createCotacaoMensal(cotacaoFundoMensal);
+            if ( cotacaoFundoMensal != null )
+                this.createCotacaoMensal(cotacaoFundoMensal);
         }
     }
 
@@ -352,6 +357,19 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
             }
         }
         return listFinal;
+    }
+
+    @Override
+    public LastCotacaoAtivoDiarioDTO getLastCotacaoDiario(FundoImobiliario fundoImobiliario) {
+        List<CotacaoFundoDiario> listCotacaoFundoDiario = cotacaoFundoDiarioRepository.findByFundo(fundoImobiliario, Sort.by(Sort.Direction.DESC, "data"));
+        if (! listCotacaoFundoDiario.isEmpty()){
+            Optional<CotacaoFundoDiario> optCotacaoFundoDiario = listCotacaoFundoDiario.stream()
+                    .findFirst();
+            if ( optCotacaoFundoDiario.isPresent()){
+                return LastCotacaoAtivoDiarioDTO.from(optCotacaoFundoDiario.get());
+            }
+        }
+        return null;
     }
 
 

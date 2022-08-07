@@ -5,6 +5,7 @@ import com.app.api.acao.principal.entity.Acao;
 import com.app.api.fundoimobiliario.principal.dto.FundoImobiliarioDTO;
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import com.app.commons.basic.general.BaseController;
+import com.app.commons.dtos.AtivoInfoGeraisDTO;
 import com.app.commons.messages.Message;
 import com.app.commons.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +36,12 @@ public class FundoImobiliarioController implements BaseController<FundoImobiliar
         return new ResponseEntity<>(service.getListAll(), HttpStatus.OK);
     }
 
+    @Override
+    @GetMapping(path = "/info-gerais")
+    @Operation(summary = "Recuperar informações gerais dos fundos imobiliarios cadastrados")
+    public ResponseEntity<List<AtivoInfoGeraisDTO>> getInfoGerais() {
+        return new ResponseEntity<>(service.getInfoGerais(), HttpStatus.OK);
+    }
 
     @Operation(summary = "Realiza upload do arquivo de cotações em um período específico")
     @PostMapping(path = "/{periodo}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -133,4 +140,6 @@ public class FundoImobiliarioController implements BaseController<FundoImobiliar
     public ResponseEntity<?> cleanAll() {
         return new ResponseEntity<>(service.cleanAll(), HttpStatus.OK);
     }
+
+
 }

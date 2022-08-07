@@ -4,10 +4,13 @@ import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
 import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
 import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
 import com.app.api.acao.enums.PeriodoEnum;
+import com.app.api.acao.principal.entity.Acao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 public class IncreasePercentAcaoService {
@@ -76,5 +79,7 @@ public class IncreasePercentAcaoService {
     }
 
 
-
+    public List<IncreasePercentAcao> findIncreasePercentByAcaoByPeriodo(Acao acao, PeriodoEnum periodo) {
+        return repository.findByAcaoAndPeriodo(acao, periodo,  Sort.by(Sort.Direction.DESC, "dataBase"));
+    }
 }

@@ -4,6 +4,7 @@ import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
 import com.app.api.acao.cotacao.repositories.CotacaoAcaoDiarioRepository;
 import com.app.api.acao.dividendo.dto.AcaoListDividendoDTO;
 import com.app.api.acao.dividendo.dto.DividendoAcaoDTO;
+import com.app.commons.dtos.LastDividendoAtivoDTO;
 import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.acao.principal.AcaoRepository;
 import com.app.api.acao.principal.entity.Acao;
@@ -26,7 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class DividendoAcaoService implements BaseDividendoService<DividendoAcao, DividendoAcaoDTO, AcaoListDividendoDTO> {
+public class DividendoAcaoService implements BaseDividendoService<DividendoAcao, DividendoAcaoDTO, AcaoListDividendoDTO, Acao> {
 
     @Autowired
     DividendoAcaoRepository repository;
@@ -319,4 +320,19 @@ public class DividendoAcaoService implements BaseDividendoService<DividendoAcao,
     }
 
 
+    public LastDividendoAtivoDTO getLastDividendo(Acao acao) {
+        List<DividendoAcao> listDividendos = repository.findAllByAcao(acao, Sort.by(Sort.Direction.DESC, "data"));
+        if ( !listDividendos.isEmpty()){
+            Optional<DividendoAcao> optDividendoAcao = listDividendos.stream()
+                                                        .findFirst();
+            if ( optDividendoAcao.isPresent()){
+                return LastDividendoAtivoDTO.from(optDividendoAcao.get());
+            }
+        }
+        return null;
+    }
+
+    public List<DividendoAcao> findDividendoByAcao(Acao acao) {
+        return repository.findAllByAcao(acao, Sort.by(Sort.Direction.DESC, "data"));
+    }
 }

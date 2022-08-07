@@ -2,8 +2,8 @@ package com.app.api.bdr.principal;
 
 import com.app.api.bdr.principal.dto.BdrDTO;
 import com.app.api.bdr.principal.entity.Bdr;
-import com.app.api.fundoimobiliario.principal.dto.FundoImobiliarioDTO;
 import com.app.commons.basic.general.BaseController;
+import com.app.commons.dtos.AtivoInfoGeraisDTO;
 import com.app.commons.messages.Message;
 import com.app.commons.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +32,13 @@ public class BdrController implements BaseController<Bdr, BdrDTO> {
     @Operation(summary = "Lista todas os BDRs cadastrados")
     public ResponseEntity<List<BdrDTO>> getListAll() {
         return new ResponseEntity<>(service.getListAll(), HttpStatus.OK);
+    }
+
+    @Override
+    @GetMapping(path = "/info-gerais")
+    @Operation(summary = "Recuperar informações gerais dos BDRs cadastrados")
+    public ResponseEntity<List<AtivoInfoGeraisDTO>> getInfoGerais() {
+        return new ResponseEntity<>(service.getInfoGerais(), HttpStatus.OK);
     }
 
     @Override

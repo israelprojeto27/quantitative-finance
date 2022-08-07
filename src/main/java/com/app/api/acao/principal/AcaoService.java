@@ -1,15 +1,18 @@
 package com.app.api.acao.principal;
 
 import com.app.api.acao.cotacao.CotacaoAcaoService;
+import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
 import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
 import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
 import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
 import com.app.api.acao.dividendo.DividendoAcaoService;
+import com.app.commons.dtos.LastDividendoAtivoDTO;
 import com.app.api.acao.enums.PeriodoEnum;
 import com.app.api.acao.increasepercent.IncreasePercentAcaoService;
 import com.app.api.acao.logupload.LogUploadAcao;
 import com.app.api.acao.logupload.LogUploadAcaoService;
 import com.app.api.acao.principal.dto.AcaoDTO;
+import com.app.commons.dtos.AtivoInfoGeraisDTO;
 import com.app.api.acao.principal.entity.Acao;
 import com.app.api.parametro.ParametroService;
 import com.app.api.parametro.dto.ParametroDTO;
@@ -24,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -53,14 +57,31 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
     ParametroService parametroService;
 
 
-
-
     @Override
     public List<AcaoDTO> getListAll() {
          return repository.findAll()
                 .stream()
                 .map(AcaoDTO::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AtivoInfoGeraisDTO> getInfoGerais() {
+
+        List<Acao> listAcoes = repository.findAll();
+        if ( !listAcoes.isEmpty()){
+            List<AtivoInfoGeraisDTO> list =  new ArrayList<>();
+            listAcoes.forEach(acao -> {
+                        LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoAcaoService.getLastCotacaoDiario(acao);
+                        LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoAcaoService.getLastDividendo(acao);
+                        list.add(AtivoInfoGeraisDTO.from(acao,
+                                lastCotacaoAtivoDiarioDTO,
+                                lastDividendoAtivoDTO));
+                    });
+            return list;
+        }
+
+        return null;
     }
 
     @Transactional
@@ -337,8 +358,16 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
             if (! listParametros.isEmpty()){
                 listParametros.forEach(param ->{
                     Integer intervalo = Integer.valueOf(param.getValor());
-                    CotacaoAcaoSemanal cotacao = listCotacaoSemanal.get(intervalo);
-                    increasePercentAcaoService.saveCotacaoSemanal(ultimaCotacao, cotacao, intervalo);
+                    try{
+                        CotacaoAcaoSemanal cotacao = listCotacaoSemanal.get(intervalo);
+                        if ( cotacao != null)
+                            increasePercentAcaoService.saveCotacaoSemanal(ultimaCotacao, cotacao, intervalo);
+                    }
+                    catch (Exception e){
+                        System.out.println("Erro no calculateIncreasePercentSemanal");
+                        System.out.println("Ação : " + acao.getSigla());
+                        System.out.println("periodo : " + intervalo);
+                    }
                 });
             }
         }
@@ -352,11 +381,18 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
 
             if (! listParametros.isEmpty()){
                 listParametros.forEach(param ->{
-                    Integer intervalo = Integer.valueOf(param.getValor());
-                    CotacaoAcaoMensal cotacao = listCotacaoMensal.get(intervalo);
-                    increasePercentAcaoService.saveCotacaoMensal(ultimaCotacao, cotacao, intervalo);
+                    try{
+                        Integer intervalo = Integer.valueOf(param.getValor());
+                        CotacaoAcaoMensal cotacao = listCotacaoMensal.get(intervalo);
+                        increasePercentAcaoService.saveCotacaoMensal(ultimaCotacao, cotacao, intervalo);
+                    }
+                    catch (Exception e){
+                        System.out.println("Erro no calculateIncreasePercentSemanal");
+                        System.out.println("Ação : " + acao.getSigla());
+                    }
                 });
             }
         }
     }
+
 }

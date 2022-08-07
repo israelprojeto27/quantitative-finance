@@ -73,16 +73,24 @@ public class CotacaoAcaoDiario {
     //,Date,Open,High,Low,Close,Adj Close,Volume
     //0,2019-12-02,18.049999,18.16,17.889999,17.969999,16.340429,10259800
     public static CotacaoAcaoDiario toEntity(String[] array, Acao acao) {
-        return CotacaoAcaoDiario.builder()
-                .data(Utils.converteStringToLocalDateTime3(array[0]))
-                .open(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[1])))
-                .high(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[2])))
-                .low(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[3])))
-                .close(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[4])))
-                .adjclose(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[5])))
-                .volume(Long.parseLong(array[6]))
-                .acao(acao)
-                .dividend(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[7])))
-                .build();
+        try{
+            return CotacaoAcaoDiario.builder()
+                    .data(Utils.converteStringToLocalDateTime3(array[1]))
+                    .open(Utils.converterStringToDoubleDoisDecimais(array[2]))
+                    .high(Utils.converterStringToDoubleDoisDecimais(array[3]))
+                    .low(Utils.converterStringToDoubleDoisDecimais(array[4]))
+                    .close(Utils.converterStringToDoubleDoisDecimais(array[5]))
+                    .adjclose(Utils.converterStringToDoubleDoisDecimais(array[6]))
+                    .volume(Utils.converterStringToLong(array[7]))
+                    .acao(acao)
+                    .dividend(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[7])))
+                    .build();
+        }
+        catch (Exception e){
+            System.out.println("Cotação Mensal");
+            System.out.println("Ação: " + acao.getSigla());
+            System.out.println("Array: " + array);
+            return null;
+        }
     }
 }

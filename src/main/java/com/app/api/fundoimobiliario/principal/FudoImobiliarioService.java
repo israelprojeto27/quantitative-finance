@@ -1,6 +1,7 @@
 package com.app.api.fundoimobiliario.principal;
 
 import com.app.api.acao.enums.PeriodoEnum;
+import com.app.api.bdr.principal.entity.Bdr;
 import com.app.api.fundoimobiliario.cotacao.CotacaoFundoService;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
@@ -15,6 +16,9 @@ import com.app.api.parametro.ParametroService;
 import com.app.api.parametro.dto.ParametroDTO;
 import com.app.api.parametro.enums.TipoParametroEnum;
 import com.app.commons.basic.general.BaseService;
+import com.app.commons.dtos.AtivoInfoGeraisDTO;
+import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
+import com.app.commons.dtos.LastDividendoAtivoDTO;
 import com.app.commons.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -24,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -145,9 +150,17 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
                     i++;
                     System.out.println("Linha: " + line);
                     System.out.println("LinhaFmt: " + line.substring(0,12) + line.substring(13,line.length()-1));
-                    line = line.substring(0,12) + line.substring(13,line.length()-1);
+
+                    String arr[] = line.split(",");
+                    if ( arr[1].length() == 10){
+                        line = line.substring(0,12) + line.substring(12,line.length()-1);
+                    }
+                    else{
+                        line = line.substring(0,12) + line.substring(13,line.length()-1);
+                    }
+
                     line = line.replaceAll(".SA", "");
-                    dividendoFundoService.addDividendoFundoImobiliario(line, optFundo.get());
+                    dividendoFundoService.addDividendoFundoImobiliario(line.trim(), optFundo.get());
 
                     line = reader.readLine();
                 }
@@ -272,6 +285,23 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
         destDir.delete();
     }
 
+    @Override
+    public List<AtivoInfoGeraisDTO> getInfoGerais() {
+        List<FundoImobiliario> listFundos = repository.findAll();
+        if ( !listFundos.isEmpty()){
+            List<AtivoInfoGeraisDTO> list =  new ArrayList<>();
+            listFundos.forEach(fundo -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoFundoService.getLastCotacaoDiario(fundo);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoFundoService.getLastDividendo(fundo);
+                list.add(AtivoInfoGeraisDTO.from(fundo,
+                        lastCotacaoAtivoDiarioDTO,
+                        lastDividendoAtivoDTO));
+            });
+            return list;
+        }
+
+        return null;
+    }
 
 
     @Override
@@ -366,7 +396,11 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
 
     @Override
     public boolean cleanAll() {
-        return false;
+        cotacaoFundoService.cleanAll();
+        dividendoFundoService.cleanAll();
+        increasePercentFundoService.cleanAll();
+        repository.deleteAll();
+        return true;
     }
 
 

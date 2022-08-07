@@ -1,4 +1,4 @@
-package com.app.api.bdr;
+package com.app.api.bdr.principal;
 
 import com.app.api.bdr.principal.entity.Bdr;
 import org.springframework.data.jpa.repository.JpaRepository;

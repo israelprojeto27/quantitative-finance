@@ -1,5 +1,6 @@
 package com.app.commons.basic.general;
 
+import com.app.commons.dtos.AtivoInfoGeraisDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -29,5 +30,7 @@ public interface BaseService<E, T> {
      boolean cleanAll();
 
      void loadFileAtivoZipado(File file, String periodo) throws IOException;
+
+     List<AtivoInfoGeraisDTO> getInfoGerais();
 
 }

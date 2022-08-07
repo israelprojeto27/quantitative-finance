@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Builder
 @Data
 @Entity
-@Table(name = "increase_percent_acao")
+@Table(name = "increase_percent")
 public class IncreasePercentAcao {
 
     @Id

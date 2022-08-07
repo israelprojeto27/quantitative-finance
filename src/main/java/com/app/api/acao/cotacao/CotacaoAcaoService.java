@@ -1,5 +1,9 @@
 package com.app.api.acao.cotacao;
 
+import com.app.api.acao.dividendo.dto.DividendoAcaoDTO;
+import com.app.api.acao.increasepercent.IncreasePercentAcao;
+import com.app.api.acao.increasepercent.IncreasePercentAcaoService;
+import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
 import com.app.api.acao.principal.entity.Acao;
 import com.app.api.acao.cotacao.dto.AcaoCotacaoDTO;
 import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
@@ -48,6 +52,10 @@ public class CotacaoAcaoService implements BaseCotacaoService<Acao, AcaoCotacaoD
     DividendoAcaoService dividendoAcaoService;
 
 
+    @Autowired
+    IncreasePercentAcaoService increasePercentAcaoService;
+
+
     @Transactional
     @Override
     public void addCotacaoAtivo(String line, Acao acao, String periodo) {
@@ -55,20 +63,24 @@ public class CotacaoAcaoService implements BaseCotacaoService<Acao, AcaoCotacaoD
 
         if ( periodo.equals(PeriodoEnum.DIARIO.getLabel())){
             CotacaoAcaoDiario cotacaoAcaoDiario = CotacaoAcaoDiario.toEntity(array, acao);
-            this.createCotacaoDiario(cotacaoAcaoDiario);
+            if ( cotacaoAcaoDiario != null){
+                this.createCotacaoDiario(cotacaoAcaoDiario);
 
-            if (cotacaoAcaoDiario.getDividend().doubleValue() > 0.0d){
-                DividendoAcao dividendoAcao = DividendoAcao.toEntity(cotacaoAcaoDiario);
-                dividendoAcaoService.save(dividendoAcao);
+                if (cotacaoAcaoDiario.getDividend().doubleValue() > 0.0d){
+                    DividendoAcao dividendoAcao = DividendoAcao.toEntity(cotacaoAcaoDiario);
+                    dividendoAcaoService.save(dividendoAcao);
+                }
             }
         }
         else if ( periodo.equals(PeriodoEnum.SEMANAL.getLabel())){
             CotacaoAcaoSemanal cotacaoAcaoSemanal = CotacaoAcaoSemanal.toEntity(array, acao);
-            this.createCotacaoSemanal(cotacaoAcaoSemanal);
+            if ( cotacaoAcaoSemanal != null )
+                this.createCotacaoSemanal(cotacaoAcaoSemanal);
         }
         else if ( periodo.equals(PeriodoEnum.MENSAL.getLabel())){
             CotacaoAcaoMensal cotacaoAcaoMensal = CotacaoAcaoMensal.toEntity(array, acao);
-            this.createCotacaoMensal(cotacaoAcaoMensal);
+            if ( cotacaoAcaoMensal != null)
+                this.createCotacaoMensal(cotacaoAcaoMensal);
         }
     }
 
@@ -185,10 +197,14 @@ public class CotacaoAcaoService implements BaseCotacaoService<Acao, AcaoCotacaoD
     public AcaoCotacaoDTO findCotacaoBySiglaFull(String sigla) {
         Optional<Acao> acaoOpt = acaoRepository.findBySigla(sigla);
         if ( acaoOpt.isPresent()){
-            List<CotacaoAcaoDiario> listCotacaoDiario = this.findCotacaoDiarioByAtivo(acaoOpt.get());
-            List<CotacaoAcaoSemanal> listCotacaoSemanal = this.findCotacaoSemanalByAtivo(acaoOpt.get());
-            List<CotacaoAcaoMensal> listCotacaoMensal = this.findCotacaoMensalByAtivo(acaoOpt.get());
-            return AcaoCotacaoDTO.fromEntity(acaoOpt.get(), listCotacaoDiario, listCotacaoSemanal, listCotacaoMensal );
+            List<CotacaoAcaoDiario> listCotacaoDiario = this.findCotacaoDiarioByAtivo(acaoOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
+            List<CotacaoAcaoSemanal> listCotacaoSemanal = this.findCotacaoSemanalByAtivo(acaoOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
+            List<CotacaoAcaoMensal> listCotacaoMensal = this.findCotacaoMensalByAtivo(acaoOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
+            List<IncreasePercentAcao> listIncreasePercentDiario = increasePercentAcaoService.findIncreasePercentByAcaoByPeriodo(acaoOpt.get(), PeriodoEnum.DIARIO);
+            List<IncreasePercentAcao> listIncreasePercentSemanal = increasePercentAcaoService.findIncreasePercentByAcaoByPeriodo(acaoOpt.get(), PeriodoEnum.SEMANAL);
+            List<IncreasePercentAcao> listIncreasePercentMensal = increasePercentAcaoService.findIncreasePercentByAcaoByPeriodo(acaoOpt.get(), PeriodoEnum.MENSAL);
+            List<DividendoAcao> listDividendos = dividendoAcaoService.findDividendoByAcao(acaoOpt.get());
+            return AcaoCotacaoDTO.fromEntity(acaoOpt.get(), listCotacaoDiario, listCotacaoSemanal, listCotacaoMensal, listIncreasePercentDiario, listIncreasePercentSemanal, listIncreasePercentMensal, listDividendos );
         }
         return null;
     }
@@ -365,5 +381,18 @@ public class CotacaoAcaoService implements BaseCotacaoService<Acao, AcaoCotacaoD
         return listCotacaoFim.stream()
                 .filter(cotacaoFim -> cotacaoFim.getAcao().getSigla().equals(cotacao.getAcao().getSigla()))
                 .findFirst();
+    }
+
+    @Override
+    public LastCotacaoAtivoDiarioDTO getLastCotacaoDiario(Acao acao) {
+        List<CotacaoAcaoDiario> listCotacaoAcaoDiario = cotacaoAcaoDiarioRepository.findByAcao(acao, Sort.by(Sort.Direction.DESC, "data"));
+        if (! listCotacaoAcaoDiario.isEmpty()){
+            Optional<CotacaoAcaoDiario> optCotacaoAcaoDiario = listCotacaoAcaoDiario.stream()
+                                                                                    .findFirst();
+            if ( optCotacaoAcaoDiario.isPresent()){
+                return LastCotacaoAtivoDiarioDTO.from(optCotacaoAcaoDiario.get());
+            }
+        }
+        return null;
     }
 }
