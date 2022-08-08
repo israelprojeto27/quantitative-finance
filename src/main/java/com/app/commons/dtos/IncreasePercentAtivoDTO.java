@@ -1,13 +1,14 @@
-package com.app.api.acao.increasepercent.dto;
+package com.app.commons.dtos;
 
 import com.app.api.acao.increasepercent.IncreasePercentAcao;
+import com.app.api.bdr.increasepercent.IncreasePercentBdr;
 import com.app.commons.utils.Utils;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class IncreasePercentAcaoDTO {
+public class IncreasePercentAtivoDTO {
 
     private String dataBase;
 
@@ -19,10 +20,10 @@ public class IncreasePercentAcaoDTO {
 
     private Double valorFechamentoAnterior;
 
-    public IncreasePercentAcaoDTO() {
+    public IncreasePercentAtivoDTO() {
     }
 
-    public IncreasePercentAcaoDTO(String dataBase, String dataReference, Double percentual, Double valorFechamentoAtual, Double valorFechamentoAnterior) {
+    public IncreasePercentAtivoDTO(String dataBase, String dataReference, Double percentual, Double valorFechamentoAtual, Double valorFechamentoAnterior) {
         this.dataBase = dataBase;
         this.dataReference = dataReference;
         this.percentual = percentual;
@@ -30,8 +31,18 @@ public class IncreasePercentAcaoDTO {
         this.valorFechamentoAnterior = valorFechamentoAnterior;
     }
 
-    public static IncreasePercentAcaoDTO fromEntity(IncreasePercentAcao entity){
-        return IncreasePercentAcaoDTO.builder()
+    public static IncreasePercentAtivoDTO fromEntity(IncreasePercentAcao entity){
+        return IncreasePercentAtivoDTO.builder()
+                .dataBase(Utils.converteLocalDateToString(entity.getDataBase()))
+                .dataReference(Utils.converteLocalDateToString(entity.getDataReference()))
+                .percentual(Utils.converterDoubleDoisDecimais(entity.getPercentual()))
+                .valorFechamentoAtual(Utils.converterDoubleDoisDecimais(entity.getValorFechamentoAtual()))
+                .valorFechamentoAnterior(Utils.converterDoubleDoisDecimais(entity.getValorFechamentoAnterior()))
+                .build();
+    }
+
+    public static IncreasePercentAtivoDTO fromEntity(IncreasePercentBdr entity){
+        return IncreasePercentAtivoDTO.builder()
                 .dataBase(Utils.converteLocalDateToString(entity.getDataBase()))
                 .dataReference(Utils.converteLocalDateToString(entity.getDataReference()))
                 .percentual(Utils.converterDoubleDoisDecimais(entity.getPercentual()))

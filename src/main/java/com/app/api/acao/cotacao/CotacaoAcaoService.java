@@ -204,7 +204,14 @@ public class CotacaoAcaoService implements BaseCotacaoService<Acao, AcaoCotacaoD
             List<IncreasePercentAcao> listIncreasePercentSemanal = increasePercentAcaoService.findIncreasePercentByAcaoByPeriodo(acaoOpt.get(), PeriodoEnum.SEMANAL);
             List<IncreasePercentAcao> listIncreasePercentMensal = increasePercentAcaoService.findIncreasePercentByAcaoByPeriodo(acaoOpt.get(), PeriodoEnum.MENSAL);
             List<DividendoAcao> listDividendos = dividendoAcaoService.findDividendoByAcao(acaoOpt.get());
-            return AcaoCotacaoDTO.fromEntity(acaoOpt.get(), listCotacaoDiario, listCotacaoSemanal, listCotacaoMensal, listIncreasePercentDiario, listIncreasePercentSemanal, listIncreasePercentMensal, listDividendos );
+            return AcaoCotacaoDTO.fromEntity(acaoOpt.get(),
+                                             listCotacaoDiario,
+                                             listCotacaoSemanal,
+                                             listCotacaoMensal,
+                                             listIncreasePercentDiario,
+                                             listIncreasePercentSemanal,
+                                             listIncreasePercentMensal,
+                                             listDividendos );
         }
         return null;
     }

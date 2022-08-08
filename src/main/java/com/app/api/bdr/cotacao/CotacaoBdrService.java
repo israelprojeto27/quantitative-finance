@@ -1,5 +1,6 @@
 package com.app.api.bdr.cotacao;
 
+import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.acao.enums.PeriodoEnum;
 import com.app.api.bdr.cotacao.dto.BdrCotacaoDTO;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
@@ -10,6 +11,8 @@ import com.app.api.bdr.cotacao.repositories.CotacaoBdrMensalRepository;
 import com.app.api.bdr.cotacao.repositories.CotacaoBdrSemanalRepository;
 import com.app.api.bdr.dividendo.DividendoBdrService;
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
+import com.app.api.bdr.increasepercent.IncreasePercentBdr;
+import com.app.api.bdr.increasepercent.IncreasePercentBdrService;
 import com.app.api.bdr.principal.BdrRepository;
 import com.app.api.bdr.principal.entity.Bdr;
 import com.app.commons.basic.cotacao.BaseCotacaoService;
@@ -48,6 +51,9 @@ public class CotacaoBdrService implements BaseCotacaoService<Bdr, BdrCotacaoDTO,
 
     @Autowired
     DividendoBdrService dividendoBdrService;
+
+    @Autowired
+    IncreasePercentBdrService increasePercentBdrService;
 
 
     @Transactional
@@ -190,10 +196,24 @@ public class CotacaoBdrService implements BaseCotacaoService<Bdr, BdrCotacaoDTO,
     public BdrCotacaoDTO findCotacaoBySiglaFull(String sigla) {
         Optional<Bdr> bdrOpt = bdrRepository.findBySigla(sigla);
         if ( bdrOpt.isPresent()){
-            List<CotacaoBdrDiario> listCotacaoDiario = this.findCotacaoDiarioByAtivo(bdrOpt.get());
-            List<CotacaoBdrSemanal> listCotacaoSemanal = this.findCotacaoSemanalByAtivo(bdrOpt.get());
-            List<CotacaoBdrMensal> listCotacaoMensal = this.findCotacaoMensalByAtivo(bdrOpt.get());
-            return BdrCotacaoDTO.fromEntity(bdrOpt.get(), listCotacaoDiario, listCotacaoSemanal, listCotacaoMensal );
+            List<CotacaoBdrDiario> listCotacaoDiario = this.findCotacaoDiarioByAtivo(bdrOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
+            List<CotacaoBdrSemanal> listCotacaoSemanal = this.findCotacaoSemanalByAtivo(bdrOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
+            List<CotacaoBdrMensal> listCotacaoMensal = this.findCotacaoMensalByAtivo(bdrOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
+
+            List<IncreasePercentBdr> listIncreasePercentDiario = increasePercentBdrService.findIncreasePercentByBdrByPeriodo(bdrOpt.get(), PeriodoEnum.DIARIO);
+            List<IncreasePercentBdr> listIncreasePercentSemanal = increasePercentBdrService.findIncreasePercentByBdrByPeriodo(bdrOpt.get(), PeriodoEnum.SEMANAL);
+            List<IncreasePercentBdr> listIncreasePercentMensal = increasePercentBdrService.findIncreasePercentByBdrByPeriodo(bdrOpt.get(), PeriodoEnum.MENSAL);
+
+            List<DividendoBdr> listDividendos = dividendoBdrService.findDividendoByBdr(bdrOpt.get());
+
+            return BdrCotacaoDTO.fromEntity(bdrOpt.get(),
+                                            listCotacaoDiario,
+                                            listCotacaoSemanal,
+                                            listCotacaoMensal,
+                                            listIncreasePercentDiario,
+                                            listIncreasePercentSemanal,
+                                            listIncreasePercentMensal,
+                                            listDividendos);
         }
         return null;
     }

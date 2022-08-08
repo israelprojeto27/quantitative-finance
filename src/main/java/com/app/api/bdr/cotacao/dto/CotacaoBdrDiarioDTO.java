@@ -2,6 +2,7 @@ package com.app.api.bdr.cotacao.dto;
 
 import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
+import com.app.commons.utils.Utils;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,7 +17,7 @@ public class CotacaoBdrDiarioDTO {
 
     private Long id;
 
-    private LocalDate data;
+    private String data;
 
     private Double high;
 
@@ -30,7 +31,7 @@ public class CotacaoBdrDiarioDTO {
 
     private Long volume;
 
-    public CotacaoBdrDiarioDTO(Long id, LocalDate data, Double high, Double low, Double open, Double close, Double adjclose, Long volume) {
+    public CotacaoBdrDiarioDTO(Long id, String data, Double high, Double low, Double open, Double close, Double adjclose, Long volume) {
         this.id = id;
         this.data = data;
         this.high = high;
@@ -45,7 +46,7 @@ public class CotacaoBdrDiarioDTO {
     public static CotacaoBdrDiarioDTO fromEntity(CotacaoBdrDiario entity) {
         return CotacaoBdrDiarioDTO.builder()
                 .id(entity.getId())
-                .data(entity.getData())
+                .data(Utils.converteLocalDateToString(entity.getData()))
                 .high(entity.getHigh())
                 .low(entity.getLow())
                 .open(entity.getOpen())

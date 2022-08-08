@@ -349,4 +349,8 @@ public class DividendoBdrService implements BaseDividendoService<DividendoBdr, D
         }
         return null;
     }
+
+    public List<DividendoBdr> findDividendoByBdr(Bdr bdr) {
+        return repository.findAllByBdr(bdr, Sort.by(Sort.Direction.DESC, "data"));
+    }
 }

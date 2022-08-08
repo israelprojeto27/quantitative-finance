@@ -2,6 +2,7 @@ package com.app.api.acao.dividendo.dto;
 
 import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.acao.principal.entity.Acao;
+import com.app.commons.dtos.DividendoDTO;
 import lombok.Builder;
 import lombok.Data;
 

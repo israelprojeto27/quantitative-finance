@@ -3,6 +3,7 @@ package com.app.api.bdr.dividendo.dto;
 
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.api.bdr.principal.entity.Bdr;
+import com.app.commons.dtos.DividendoDTO;
 import lombok.Builder;
 import lombok.Data;
 

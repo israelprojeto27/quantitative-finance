@@ -1,5 +1,6 @@
-package com.app.api.bdr.dividendo.dto;
+package com.app.commons.dtos;
 
+import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.commons.utils.Utils;
 import lombok.Builder;
@@ -21,10 +22,19 @@ public class DividendoDTO {
         this.dividend = dividend;
     }
 
+    public static DividendoDTO from(DividendoAcao dividendoAcao) {
+        return DividendoDTO.builder()
+                .data(Utils.converteLocalDateToString(dividendoAcao.getData()))
+                .dividend(dividendoAcao.getDividend())
+                .build();
+    }
+
     public static DividendoDTO from(DividendoBdr dividendoBdr) {
         return DividendoDTO.builder()
                 .data(Utils.converteLocalDateToString(dividendoBdr.getData()))
                 .dividend(dividendoBdr.getDividend())
                 .build();
     }
+
+
 }

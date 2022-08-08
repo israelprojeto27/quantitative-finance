@@ -4,10 +4,13 @@ import com.app.api.acao.enums.PeriodoEnum;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrMensal;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrSemanal;
+import com.app.api.bdr.principal.entity.Bdr;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 public class IncreasePercentBdrService {
@@ -79,5 +82,9 @@ public class IncreasePercentBdrService {
     @Transactional
     public void cleanAll() {
         repository.deleteAll();
+    }
+
+    public List<IncreasePercentBdr> findIncreasePercentByBdrByPeriodo(Bdr bdr, PeriodoEnum periodo) {
+        return repository.findByBdrAndPeriodo(bdr, periodo,  Sort.by(Sort.Direction.DESC, "dataBase"));
     }
 }
