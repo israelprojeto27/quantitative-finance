@@ -32,4 +32,6 @@ public interface BaseController <E, T> {
     ResponseEntity<?> cleanAll();
 
     ResponseEntity<List<AtivoInfoGeraisDTO>> getInfoGerais();
+
+    ResponseEntity<List<AtivoInfoGeraisDTO>> getInfoGeraisBySigla(String sigla);
 }

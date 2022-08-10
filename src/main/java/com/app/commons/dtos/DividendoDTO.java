@@ -2,6 +2,7 @@ package com.app.commons.dtos;
 
 import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
+import com.app.api.fundoimobiliario.dividendo.entity.DividendoFundo;
 import com.app.commons.utils.Utils;
 import lombok.Builder;
 import lombok.Data;
@@ -12,12 +13,12 @@ public class DividendoDTO {
 
     private String data;
 
-    private Double dividend;
+    private String dividend;
 
     public DividendoDTO() {
     }
 
-    public DividendoDTO(String data, Double dividend) {
+    public DividendoDTO(String data, String dividend) {
         this.data = data;
         this.dividend = dividend;
     }
@@ -25,16 +26,22 @@ public class DividendoDTO {
     public static DividendoDTO from(DividendoAcao dividendoAcao) {
         return DividendoDTO.builder()
                 .data(Utils.converteLocalDateToString(dividendoAcao.getData()))
-                .dividend(dividendoAcao.getDividend())
+                .dividend(Utils.converterDoubleDoisDecimaisString(dividendoAcao.getDividend()))
                 .build();
     }
 
     public static DividendoDTO from(DividendoBdr dividendoBdr) {
         return DividendoDTO.builder()
                 .data(Utils.converteLocalDateToString(dividendoBdr.getData()))
-                .dividend(dividendoBdr.getDividend())
+                .dividend(Utils.converterDoubleDoisDecimaisString(dividendoBdr.getDividend()))
                 .build();
     }
 
+    public static DividendoDTO from(DividendoFundo dividendo) {
+        return DividendoDTO.builder()
+                .data(Utils.converteLocalDateToString(dividendo.getData()))
+                .dividend(Utils.converterDoubleDoisDecimaisString(dividendo.getDividend()))
+                .build();
+    }
 
 }

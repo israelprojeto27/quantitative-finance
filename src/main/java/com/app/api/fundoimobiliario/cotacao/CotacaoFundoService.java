@@ -4,7 +4,9 @@ import com.app.api.acao.cotacao.dto.AcaoCotacaoDTO;
 import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
 import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
 import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
+import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.acao.enums.PeriodoEnum;
+import com.app.api.acao.increasepercent.IncreasePercentAcao;
 import com.app.api.acao.principal.entity.Acao;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.fundoimobiliario.cotacao.dto.FundoCotacaoDTO;
@@ -16,6 +18,8 @@ import com.app.api.fundoimobiliario.cotacao.repositories.CotacaoFundoMensalRepos
 import com.app.api.fundoimobiliario.cotacao.repositories.CotacaoFundoSemanalRepository;
 import com.app.api.fundoimobiliario.dividendo.DividendoFundoService;
 import com.app.api.fundoimobiliario.dividendo.entity.DividendoFundo;
+import com.app.api.fundoimobiliario.increasepercent.IncreasePercentFundoImobiliario;
+import com.app.api.fundoimobiliario.increasepercent.IncreasePercentFundoService;
 import com.app.api.fundoimobiliario.principal.FundoImobiliarioRepository;
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import com.app.commons.basic.cotacao.BaseCotacaoService;
@@ -53,6 +57,9 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
 
     @Autowired
     DividendoFundoService dividendoFundoService;
+
+    @Autowired
+    IncreasePercentFundoService increasePercentFundoService;
 
 
     @Transactional
@@ -199,7 +206,20 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
             List<CotacaoFundoDiario> listCotacaoDiario = this.findCotacaoDiarioByAtivo(fundoOpt.get());
             List<CotacaoFundoSemanal> listCotacaoSemanal = this.findCotacaoSemanalByAtivo(fundoOpt.get());
             List<CotacaoFundoMensal> listCotacaoMensal = this.findCotacaoMensalByAtivo(fundoOpt.get());
-            return FundoCotacaoDTO.fromEntity(fundoOpt.get(), listCotacaoDiario, listCotacaoSemanal, listCotacaoMensal );
+
+            List<IncreasePercentFundoImobiliario> listIncreasePercentDiario = increasePercentFundoService.findIncreasePercentByFundoByPeriodo(fundoOpt.get(), PeriodoEnum.DIARIO);
+            List<IncreasePercentFundoImobiliario> listIncreasePercentSemanal = increasePercentFundoService.findIncreasePercentByFundoByPeriodo(fundoOpt.get(), PeriodoEnum.SEMANAL);
+            List<IncreasePercentFundoImobiliario> listIncreasePercentMensal = increasePercentFundoService.findIncreasePercentByFundoByPeriodo(fundoOpt.get(), PeriodoEnum.MENSAL);
+            List<DividendoFundo> listDividendos = dividendoFundoService.findDividendoByFundo(fundoOpt.get());
+
+            return FundoCotacaoDTO.fromEntity(fundoOpt.get(),
+                                              listCotacaoDiario,
+                                              listCotacaoSemanal,
+                                              listCotacaoMensal,
+                                              listIncreasePercentDiario,
+                                              listIncreasePercentSemanal,
+                                              listIncreasePercentMensal,
+                                              listDividendos);
         }
         return null;
     }

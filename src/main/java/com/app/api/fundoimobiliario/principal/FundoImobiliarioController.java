@@ -43,6 +43,13 @@ public class FundoImobiliarioController implements BaseController<FundoImobiliar
         return new ResponseEntity<>(service.getInfoGerais(), HttpStatus.OK);
     }
 
+    @Override
+    @GetMapping(path = "/info-gerais-by-sigla/{sigla}")
+    @Operation(summary = "Recuperar informações gerais de um fundo imobiliario")
+    public ResponseEntity<List<AtivoInfoGeraisDTO>> getInfoGeraisBySigla(@PathVariable String sigla) {
+        return new ResponseEntity<>(service.getInfoGeraisBySigla(sigla), HttpStatus.OK);
+    }
+
     @Operation(summary = "Realiza upload do arquivo de cotações em um período específico")
     @PostMapping(path = "/{periodo}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> uploadFile(@RequestPart MultipartFile document, @PathVariable String periodo) throws IOException {

@@ -80,8 +80,24 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
                     });
             return list;
         }
-
         return null;
+    }
+
+    @Override
+    public List<AtivoInfoGeraisDTO> getInfoGeraisBySigla(String sigla) {
+
+        List<Acao> listAcoes = repository.findBySiglaContaining(sigla);
+        List<AtivoInfoGeraisDTO> list =  new ArrayList<>();
+        if ( !listAcoes.isEmpty()){
+            listAcoes.forEach(acao -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoAcaoService.getLastCotacaoDiario(acao);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoAcaoService.getLastDividendo(acao);
+                list.add(AtivoInfoGeraisDTO.from(acao,
+                        lastCotacaoAtivoDiarioDTO,
+                        lastDividendoAtivoDTO));
+            });
+        }
+        return list;
     }
 
     @Transactional

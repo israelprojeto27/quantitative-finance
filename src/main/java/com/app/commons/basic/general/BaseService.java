@@ -33,4 +33,6 @@ public interface BaseService<E, T> {
 
      List<AtivoInfoGeraisDTO> getInfoGerais();
 
+     List<AtivoInfoGeraisDTO> getInfoGeraisBySigla(String sigla);
+
 }

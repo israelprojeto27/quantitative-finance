@@ -1,5 +1,6 @@
 package com.app.api.fundoimobiliario.principal;
 
+import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
 import com.app.api.acao.enums.PeriodoEnum;
 import com.app.api.bdr.principal.entity.Bdr;
 import com.app.api.fundoimobiliario.cotacao.CotacaoFundoService;
@@ -299,8 +300,23 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
             });
             return list;
         }
-
         return null;
+    }
+
+    @Override
+    public List<AtivoInfoGeraisDTO> getInfoGeraisBySigla(String sigla) {
+        List<FundoImobiliario> listFundos = repository.findBySiglaContaining(sigla);
+        List<AtivoInfoGeraisDTO> list =  new ArrayList<>();
+        if ( !listFundos.isEmpty()){
+            listFundos.forEach(fundo -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoFundoService.getLastCotacaoDiario(fundo);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoFundoService.getLastDividendo(fundo);
+                list.add(AtivoInfoGeraisDTO.from(fundo,
+                        lastCotacaoAtivoDiarioDTO,
+                        lastDividendoAtivoDTO));
+            });
+        }
+        return list;
     }
 
 
@@ -361,8 +377,16 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
             if (! listParametros.isEmpty()){
                 listParametros.forEach(param ->{
                     Integer intervalo = Integer.valueOf(param.getValor());
-                    CotacaoFundoSemanal cotacao = listCotacaoSemanal.get(intervalo);
-                   increasePercentFundoService.saveCotacaoSemanal(ultimaCotacao, cotacao, intervalo);
+                    try{
+                        CotacaoFundoSemanal cotacao = listCotacaoSemanal.get(intervalo);
+                        if ( cotacao != null)
+                            increasePercentFundoService.saveCotacaoSemanal(ultimaCotacao, cotacao, intervalo);
+                    }
+                    catch (Exception e){
+                        System.out.println("Erro no calculateIncreasePercentSemanal");
+                        System.out.println("FUndo Imobiliario : " + fundoImobiliarioDTO.getSigla());
+                        System.out.println("periodo : " + intervalo);
+                    }
                 });
             }
         }
@@ -377,8 +401,16 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
             if (! listParametros.isEmpty()){
                 listParametros.forEach(param ->{
                     Integer intervalo = Integer.valueOf(param.getValor());
-                    CotacaoFundoMensal cotacao = listCotacaoMensal.get(intervalo);
-                   increasePercentFundoService.saveCotacaoMensal(ultimaCotacao, cotacao, intervalo);
+                    try{
+                        CotacaoFundoMensal cotacao = listCotacaoMensal.get(intervalo);
+                        if ( cotacao != null)
+                            increasePercentFundoService.saveCotacaoMensal(ultimaCotacao, cotacao, intervalo);
+                    }
+                    catch (Exception e){
+                        System.out.println("Erro no calculateIncreasePercentMensal");
+                        System.out.println("FUndo Imobiliario : " + fundoImobiliarioDTO.getSigla());
+                        System.out.println("periodo : " + intervalo);
+                    }
                 });
             }
         }

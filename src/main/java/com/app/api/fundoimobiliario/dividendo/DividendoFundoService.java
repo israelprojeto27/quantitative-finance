@@ -354,4 +354,8 @@ public class DividendoFundoService implements BaseDividendoService<DividendoFund
         repository.save(dividendoFundo);
         return true;
     }
+
+    public List<DividendoFundo> findDividendoByFundo(FundoImobiliario fundoImobiliario) {
+        return repository.findAllByFundo(fundoImobiliario, Sort.by(Sort.Direction.DESC, "data"));
+    }
 }

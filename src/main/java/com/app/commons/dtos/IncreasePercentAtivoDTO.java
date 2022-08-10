@@ -2,6 +2,7 @@ package com.app.commons.dtos;
 
 import com.app.api.acao.increasepercent.IncreasePercentAcao;
 import com.app.api.bdr.increasepercent.IncreasePercentBdr;
+import com.app.api.fundoimobiliario.increasepercent.IncreasePercentFundoImobiliario;
 import com.app.commons.utils.Utils;
 import lombok.Builder;
 import lombok.Data;
@@ -16,14 +17,14 @@ public class IncreasePercentAtivoDTO {
 
     private Double percentual;
 
-    private Double valorFechamentoAtual;
+    private String valorFechamentoAtual;
 
-    private Double valorFechamentoAnterior;
+    private String valorFechamentoAnterior;
 
     public IncreasePercentAtivoDTO() {
     }
 
-    public IncreasePercentAtivoDTO(String dataBase, String dataReference, Double percentual, Double valorFechamentoAtual, Double valorFechamentoAnterior) {
+    public IncreasePercentAtivoDTO(String dataBase, String dataReference, Double percentual, String valorFechamentoAtual, String valorFechamentoAnterior) {
         this.dataBase = dataBase;
         this.dataReference = dataReference;
         this.percentual = percentual;
@@ -36,8 +37,8 @@ public class IncreasePercentAtivoDTO {
                 .dataBase(Utils.converteLocalDateToString(entity.getDataBase()))
                 .dataReference(Utils.converteLocalDateToString(entity.getDataReference()))
                 .percentual(Utils.converterDoubleDoisDecimais(entity.getPercentual()))
-                .valorFechamentoAtual(Utils.converterDoubleDoisDecimais(entity.getValorFechamentoAtual()))
-                .valorFechamentoAnterior(Utils.converterDoubleDoisDecimais(entity.getValorFechamentoAnterior()))
+                .valorFechamentoAtual(Utils.converterDoubleDoisDecimaisString(entity.getValorFechamentoAtual()))
+                .valorFechamentoAnterior(Utils.converterDoubleDoisDecimaisString(entity.getValorFechamentoAnterior()))
                 .build();
     }
 
@@ -46,8 +47,18 @@ public class IncreasePercentAtivoDTO {
                 .dataBase(Utils.converteLocalDateToString(entity.getDataBase()))
                 .dataReference(Utils.converteLocalDateToString(entity.getDataReference()))
                 .percentual(Utils.converterDoubleDoisDecimais(entity.getPercentual()))
-                .valorFechamentoAtual(Utils.converterDoubleDoisDecimais(entity.getValorFechamentoAtual()))
-                .valorFechamentoAnterior(Utils.converterDoubleDoisDecimais(entity.getValorFechamentoAnterior()))
+                .valorFechamentoAtual(Utils.converterDoubleDoisDecimaisString(entity.getValorFechamentoAtual()))
+                .valorFechamentoAnterior(Utils.converterDoubleDoisDecimaisString(entity.getValorFechamentoAnterior()))
+                .build();
+    }
+
+    public static IncreasePercentAtivoDTO fromEntity(IncreasePercentFundoImobiliario entity){
+        return IncreasePercentAtivoDTO.builder()
+                .dataBase(Utils.converteLocalDateToString(entity.getDataBase()))
+                .dataReference(Utils.converteLocalDateToString(entity.getDataReference()))
+                .percentual(Utils.converterDoubleDoisDecimais(entity.getPercentual()))
+                .valorFechamentoAtual(Utils.converterDoubleDoisDecimaisString(entity.getValorFechamentoAtual()))
+                .valorFechamentoAnterior(Utils.converterDoubleDoisDecimaisString(entity.getValorFechamentoAnterior()))
                 .build();
     }
 }

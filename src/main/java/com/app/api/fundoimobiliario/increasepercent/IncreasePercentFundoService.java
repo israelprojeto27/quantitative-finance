@@ -3,13 +3,17 @@ package com.app.api.fundoimobiliario.increasepercent;
 import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
 import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
 import com.app.api.acao.enums.PeriodoEnum;
+import com.app.api.acao.increasepercent.IncreasePercentAcao;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoSemanal;
+import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 public class IncreasePercentFundoService {
@@ -83,5 +87,7 @@ public class IncreasePercentFundoService {
     }
 
 
-
+    public List<IncreasePercentFundoImobiliario> findIncreasePercentByFundoByPeriodo(FundoImobiliario fundoImobiliario, PeriodoEnum periodo) {
+        return repository.findByFundoImobiliarioAndPeriodo(fundoImobiliario, periodo,  Sort.by(Sort.Direction.DESC, "dataBase"));
+    }
 }

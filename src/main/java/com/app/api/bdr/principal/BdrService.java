@@ -12,6 +12,7 @@ import com.app.api.bdr.logupload.LogUploadBdr;
 import com.app.api.bdr.logupload.LogUploadBdrService;
 import com.app.api.bdr.principal.dto.BdrDTO;
 import com.app.api.bdr.principal.entity.Bdr;
+import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoSemanal;
 import com.app.api.parametro.ParametroService;
 import com.app.api.parametro.dto.ParametroDTO;
 import com.app.api.parametro.enums.TipoParametroEnum;
@@ -83,6 +84,23 @@ public class BdrService  implements BaseService<Bdr, BdrDTO>  {
         }
 
         return null;
+    }
+
+    @Override
+    public List<AtivoInfoGeraisDTO> getInfoGeraisBySigla(String sigla) {
+
+        List<Bdr> listBDRs = repository.findBySiglaContaining(sigla);
+        List<AtivoInfoGeraisDTO> list =  new ArrayList<>();
+        if ( !listBDRs.isEmpty()){
+            listBDRs.forEach(bdr -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoBdrService.getLastCotacaoDiario(bdr);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoBdrService.getLastDividendo(bdr);
+                list.add(AtivoInfoGeraisDTO.from(bdr,
+                        lastCotacaoAtivoDiarioDTO,
+                        lastDividendoAtivoDTO));
+            });
+        }
+        return list;
     }
 
     @Transactional
@@ -300,8 +318,16 @@ public class BdrService  implements BaseService<Bdr, BdrDTO>  {
             if (! listParametros.isEmpty()){
                 listParametros.forEach(param ->{
                     Integer intervalo = Integer.valueOf(param.getValor());
-                    CotacaoBdrSemanal cotacao = listCotacaoSemanal.get(intervalo);
-                    increasePercentBdrService.saveCotacaoSemanal(ultimaCotacao, cotacao, intervalo);
+                    try{
+                        CotacaoBdrSemanal cotacao = listCotacaoSemanal.get(intervalo);
+                        if ( cotacao != null)
+                            increasePercentBdrService.saveCotacaoSemanal(ultimaCotacao, cotacao, intervalo);
+                    }
+                    catch (Exception e){
+                        System.out.println("Erro no calculateIncreasePercentSemanal");
+                        System.out.println("BDR : " + bdrDTO.getSigla());
+                        System.out.println("periodo : " + intervalo);
+                    }
                 });
             }
         }
@@ -316,8 +342,16 @@ public class BdrService  implements BaseService<Bdr, BdrDTO>  {
             if (! listParametros.isEmpty()){
                 listParametros.forEach(param ->{
                     Integer intervalo = Integer.valueOf(param.getValor());
-                    CotacaoBdrMensal cotacao = listCotacaoMensal.get(intervalo);
-                    increasePercentBdrService.saveCotacaoMensal(ultimaCotacao, cotacao, intervalo);
+                    try{
+                        CotacaoBdrMensal cotacao = listCotacaoMensal.get(intervalo);
+                        if ( cotacao != null)
+                            increasePercentBdrService.saveCotacaoMensal(ultimaCotacao, cotacao, intervalo);
+                    }
+                    catch (Exception e){
+                        System.out.println("Erro no calculateIncreasePercentMensal");
+                        System.out.println("BDR : " + bdrDTO.getSigla());
+                        System.out.println("periodo : " + intervalo);
+                    }
                 });
             }
         }

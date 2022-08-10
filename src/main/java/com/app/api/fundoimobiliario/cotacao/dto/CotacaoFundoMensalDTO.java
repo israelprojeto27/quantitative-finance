@@ -2,6 +2,7 @@ package com.app.api.fundoimobiliario.cotacao.dto;
 
 import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
+import com.app.commons.utils.Utils;
 import lombok.Builder;
 import lombok.Data;
 
@@ -15,21 +16,21 @@ public class CotacaoFundoMensalDTO {
 
     private Long id;
 
-    private LocalDate data;
+    private String data;
 
-    private Double high;
+    private String high;
 
-    private Double low;
+    private String low;
 
-    private Double open;
+    private String open;
 
-    private Double close;
+    private String close;
 
-    private Double adjclose;
+    private String adjclose;
 
     private Long volume;
 
-    public CotacaoFundoMensalDTO(Long id, LocalDate data, Double high, Double low, Double open, Double close, Double adjclose, Long volume) {
+    public CotacaoFundoMensalDTO(Long id, String data, String high, String low, String open, String close, String adjclose, Long volume) {
         this.id = id;
         this.data = data;
         this.high = high;
@@ -43,12 +44,12 @@ public class CotacaoFundoMensalDTO {
     public static CotacaoFundoMensalDTO fromEntity(CotacaoFundoMensal entity) {
         return CotacaoFundoMensalDTO.builder()
                 .id(entity.getId())
-                .data(entity.getData())
-                .high(entity.getHigh())
-                .low(entity.getLow())
-                .open(entity.getOpen())
-                .close(entity.getClose())
-                .adjclose(entity.getAdjclose())
+                .data(Utils.converteLocalDateToString(entity.getData()))
+                .high(Utils.converterDoubleDoisDecimaisString(entity.getHigh()))
+                .low(Utils.converterDoubleDoisDecimaisString(entity.getLow()))
+                .open(Utils.converterDoubleDoisDecimaisString(entity.getOpen()))
+                .close(Utils.converterDoubleDoisDecimaisString(entity.getClose()))
+                .adjclose(Utils.converterDoubleDoisDecimaisString(entity.getAdjclose()))
                 .volume(entity.getVolume())
                 .build();
     }
