@@ -335,4 +335,9 @@ public class DividendoAcaoService implements BaseDividendoService<DividendoAcao,
     public List<DividendoAcao> findDividendoByAcao(Acao acao) {
         return repository.findAllByAcao(acao, Sort.by(Sort.Direction.DESC, "data"));
     }
+
+    //
+    public List<DividendoAcao> findDividendoBetweenDates(LocalDate dtInicio, LocalDate dtFim) {
+       return repository.findByDataBetween(dtInicio, dtFim, Sort.by(Sort.Direction.DESC, "data"));
+    }
 }

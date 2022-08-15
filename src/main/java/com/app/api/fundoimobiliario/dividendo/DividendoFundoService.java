@@ -2,6 +2,7 @@ package com.app.api.fundoimobiliario.dividendo;
 
 import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
 import com.app.api.acao.cotacao.repositories.CotacaoAcaoDiarioRepository;
+import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.acao.principal.AcaoRepository;
 import com.app.api.acao.principal.entity.Acao;
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
@@ -357,5 +358,9 @@ public class DividendoFundoService implements BaseDividendoService<DividendoFund
 
     public List<DividendoFundo> findDividendoByFundo(FundoImobiliario fundoImobiliario) {
         return repository.findAllByFundo(fundoImobiliario, Sort.by(Sort.Direction.DESC, "data"));
+    }
+
+    public List<DividendoFundo> findDividendoBetweenDates(LocalDate dtInicio, LocalDate dtFim) {
+        return repository.findByDataBetween(dtInicio, dtFim, Sort.by(Sort.Direction.DESC, "data"));
     }
 }

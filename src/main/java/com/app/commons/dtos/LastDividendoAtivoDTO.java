@@ -7,6 +7,8 @@ import com.app.commons.utils.Utils;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 public class LastDividendoAtivoDTO {
@@ -15,18 +17,22 @@ public class LastDividendoAtivoDTO {
 
     private String dataUltimoDividendo;
 
+    private LocalDate dataUltimoDividendoFmt;
+
     public LastDividendoAtivoDTO() {
     }
 
-    public LastDividendoAtivoDTO(Double valorUltimoDividendo, String dataUltimoDividendo) {
+    public LastDividendoAtivoDTO(Double valorUltimoDividendo, String dataUltimoDividendo, LocalDate dataUltimoDividendoFmt) {
         this.valorUltimoDividendo = valorUltimoDividendo;
         this.dataUltimoDividendo = dataUltimoDividendo;
+        this.dataUltimoDividendoFmt = dataUltimoDividendoFmt;
     }
 
     public static LastDividendoAtivoDTO from(DividendoAcao dividendo) {
         return LastDividendoAtivoDTO.builder()
                                    .valorUltimoDividendo(dividendo.getDividend())
                                    .dataUltimoDividendo(Utils.converteLocalDateToString(dividendo.getData()))
+                                   .dataUltimoDividendoFmt(dividendo.getData())
                                    .build();
     }
 
@@ -34,6 +40,7 @@ public class LastDividendoAtivoDTO {
         return LastDividendoAtivoDTO.builder()
                 .valorUltimoDividendo(dividendo.getDividend())
                 .dataUltimoDividendo(Utils.converteLocalDateToString(dividendo.getData()))
+                .dataUltimoDividendoFmt(dividendo.getData())
                 .build();
     }
 
@@ -41,6 +48,7 @@ public class LastDividendoAtivoDTO {
         return LastDividendoAtivoDTO.builder()
                 .valorUltimoDividendo(dividendo.getDividend())
                 .dataUltimoDividendo(Utils.converteLocalDateToString(dividendo.getData()))
+                .dataUltimoDividendoFmt(dividendo.getData())
                 .build();
     }
 }

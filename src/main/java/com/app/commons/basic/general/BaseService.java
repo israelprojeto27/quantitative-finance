@@ -1,6 +1,7 @@
 package com.app.commons.basic.general;
 
 import com.app.commons.dtos.AtivoInfoGeraisDTO;
+import com.app.commons.dtos.mapadividendo.ResultMapaDividendoDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -34,5 +35,9 @@ public interface BaseService<E, T> {
      List<AtivoInfoGeraisDTO> getInfoGerais();
 
      List<AtivoInfoGeraisDTO> getInfoGeraisBySigla(String sigla);
+
+     List<AtivoInfoGeraisDTO> filterInfoGerais(String orderFilter, String typeOrderFilter);
+
+     ResultMapaDividendoDTO mapaDividendos(String anoMesInicio, String anoMesFim);
 
 }

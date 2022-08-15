@@ -8,6 +8,7 @@ import com.app.api.bdr.dividendo.dto.BdrListDividendoDTO;
 import com.app.api.bdr.dividendo.dto.DividendoBdrDTO;
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.api.bdr.principal.entity.Bdr;
+import com.app.api.fundoimobiliario.dividendo.entity.DividendoFundo;
 import com.app.commons.basic.dividendo.BaseDividendoService;
 import com.app.commons.dtos.*;
 import com.app.commons.utils.Utils;
@@ -352,5 +353,9 @@ public class DividendoBdrService implements BaseDividendoService<DividendoBdr, D
 
     public List<DividendoBdr> findDividendoByBdr(Bdr bdr) {
         return repository.findAllByBdr(bdr, Sort.by(Sort.Direction.DESC, "data"));
+    }
+
+    public List<DividendoBdr> findDividendoBetweenDates(LocalDate dtInicio, LocalDate dtFim) {
+        return repository.findByDataBetween(dtInicio, dtFim, Sort.by(Sort.Direction.DESC, "data"));
     }
 }

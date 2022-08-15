@@ -1,13 +1,12 @@
 package com.app.api.fundoimobiliario.principal;
 
-import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
 import com.app.api.acao.enums.PeriodoEnum;
-import com.app.api.bdr.principal.entity.Bdr;
 import com.app.api.fundoimobiliario.cotacao.CotacaoFundoService;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoSemanal;
 import com.app.api.fundoimobiliario.dividendo.DividendoFundoService;
+import com.app.api.fundoimobiliario.dividendo.entity.DividendoFundo;
 import com.app.api.fundoimobiliario.increasepercent.IncreasePercentFundoService;
 import com.app.api.fundoimobiliario.logupload.LogUploadFundoImobiliario;
 import com.app.api.fundoimobiliario.logupload.LogUploadFundoImobiliarioService;
@@ -20,6 +19,9 @@ import com.app.commons.basic.general.BaseService;
 import com.app.commons.dtos.AtivoInfoGeraisDTO;
 import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
 import com.app.commons.dtos.LastDividendoAtivoDTO;
+import com.app.commons.dtos.mapadividendo.*;
+import com.app.commons.enums.OrderFilterEnum;
+import com.app.commons.enums.TypeOrderFilterEnum;
 import com.app.commons.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -29,9 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -321,6 +322,60 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
 
 
     @Override
+    public List<AtivoInfoGeraisDTO> filterInfoGerais(String orderFilter, String typeOrderFilter) {
+        List<FundoImobiliario> listFundos = repository.findAll();
+        List<AtivoInfoGeraisDTO> list =  new ArrayList<>();
+        if ( !listFundos.isEmpty()){
+            listFundos.forEach(fundo -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoFundoService.getLastCotacaoDiario(fundo);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoFundoService.getLastDividendo(fundo);
+                list.add(AtivoInfoGeraisDTO.from(fundo,
+                        lastCotacaoAtivoDiarioDTO,
+                        lastDividendoAtivoDTO));
+            });
+
+            if ( !list.isEmpty()){
+                List<AtivoInfoGeraisDTO> listFinal = new ArrayList<>();
+                if ( orderFilter.equals(OrderFilterEnum.VALOR_ULT_COTACAO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getValorUltimaCotacaoFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getValorUltimaCotacaoFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.DATA_ULT_COTACAO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getDataUltimaCotacaoFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getDataUltimaCotacaoFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.VALOR_ULT_DIVIDENDO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getValorUltimoDividendoFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getValorUltimoDividendoFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.DATA_ULT_COTACAO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getDataUltimaCotacaoFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getDataUltimaCotacaoFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+
+                return listFinal;
+            }
+        }
+        return list;
+    }
+
+    @Override
     public FundoImobiliarioDTO findById(Long id) {
         return null;
     }
@@ -436,5 +491,100 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
     }
 
 
+    @Override
+    public ResultMapaDividendoDTO mapaDividendos(String anoMesInicio, String anoMesFim) {
+
+        LocalDate dtInicio = Utils.converteStringToLocalDateTime3(anoMesInicio + "-01");
+        LocalDate dtFim = Utils.converteStringToLocalDateTime3(anoMesFim + "-01");
+        dtFim = dtFim.plusMonths(1);
+
+        List<DividendoFundo> listDividendos = dividendoFundoService.findDividendoBetweenDates(dtInicio, dtFim);
+        List<MapaDividendosDTO> listResult = new ArrayList<>();
+        List<MapaDividendosDTO> listFinal = new ArrayList<>();
+
+        List<MapaDividendoCountDTO> listCount = new ArrayList<>();
+        List<MapaDividendoCountDTO> listCountFinal = new ArrayList<>();
+
+        List<MapaDividendoSumDTO> listSum = new ArrayList<>();
+        List<MapaDividendoSumDTO> listSumFinal = new ArrayList<>();
+        if ( !listDividendos.isEmpty()){
+            HashMap<String, List<MapaDividendoDetailDTO>> map = new HashMap<>();
+            listDividendos.forEach(dividendo ->{
+                String anoMes = Utils.getAnosMesLocalDate(dividendo.getData());
+                if ( map.containsKey(anoMes)){
+                    List<MapaDividendoDetailDTO> list = map.get(anoMes);
+                    if (list == null ){
+                        list = new ArrayList<>();
+                    }
+                    list.add(MapaDividendoDetailDTO.from(dividendo));
+                    map.put(anoMes, list);
+                }
+                else {
+                    List<MapaDividendoDetailDTO> list = new ArrayList<>();
+                    list.add(MapaDividendoDetailDTO.from(dividendo));
+                    map.put(anoMes, list);
+                }
+            });
+
+            if (! map.isEmpty()){
+                HashMap<String, Integer> mapSiglaCountDividendos = new HashMap<>();
+                HashMap<String, Double> mapSiglaSumDividendos = new HashMap<>();
+                map.keySet().forEach(anoMes -> {
+                    List<MapaDividendoDetailDTO> list = map.get(anoMes);
+                    list.forEach(mapaDividendoDetail ->{
+                        if ( mapSiglaCountDividendos.containsKey(mapaDividendoDetail.getSigla())){
+                            Integer count = mapSiglaCountDividendos.get(mapaDividendoDetail.getSigla());
+                            count += 1;
+                            mapSiglaCountDividendos.put(mapaDividendoDetail.getSigla(), count);
+                        }
+                        else {
+                            mapSiglaCountDividendos.put(mapaDividendoDetail.getSigla(), 1);
+                        }
+
+                        if ( mapSiglaSumDividendos.containsKey(mapaDividendoDetail.getSigla())){
+                            Double sumDividendo = mapSiglaSumDividendos.get(mapaDividendoDetail.getSigla());
+                            sumDividendo = sumDividendo + mapaDividendoDetail.getDividendo();
+                            mapSiglaSumDividendos.put(mapaDividendoDetail.getSigla(), sumDividendo);
+                        }
+                        else {
+                            mapSiglaSumDividendos.put(mapaDividendoDetail.getSigla(),  mapaDividendoDetail.getDividendo());
+                        }
+                    });
+                    List<MapaDividendoDetailDTO> listMap = list.stream().sorted(Comparator.comparingDouble(MapaDividendoDetailDTO::getDividendo).reversed()).collect(Collectors.toList());
+                    listResult.add(MapaDividendosDTO.from(anoMes, listMap));
+                });
+
+                if (! mapSiglaCountDividendos.isEmpty()){
+                    mapSiglaCountDividendos.keySet().forEach(sigla ->{
+                        Integer count = mapSiglaCountDividendos.get(sigla);
+                        listCount.add(MapaDividendoCountDTO.from(sigla, count));
+                    });
+                }
+
+                if (! mapSiglaSumDividendos.isEmpty()){
+                    mapSiglaSumDividendos.keySet().forEach(sigla ->{
+                        Double sumDividendo = mapSiglaSumDividendos.get(sigla);
+                        listSum.add(MapaDividendoSumDTO.from(sigla, sumDividendo));
+                    });
+                }
+            }
+        }
+
+        if ( !listResult.isEmpty()){
+            listFinal = listResult.stream().sorted(Comparator.comparing(MapaDividendosDTO::getAnoMes).reversed()).collect(Collectors.toList());
+        }
+
+        if (! listCount.isEmpty()){
+            listCountFinal = listCount.stream().sorted(Comparator.comparing(MapaDividendoCountDTO::getCountDividendos).reversed()).collect(Collectors.toList());
+        }
+
+        if (! listSum.isEmpty()){
+            listSumFinal = listSum.stream().sorted(Comparator.comparing(MapaDividendoSumDTO::getSumDividendos).reversed()).collect(Collectors.toList());
+        }
+
+        ResultMapaDividendoDTO resultMapaDividendoDTO = ResultMapaDividendoDTO.from(listFinal, listCountFinal, listSumFinal );
+
+        return resultMapaDividendoDTO;
+    }
 
 }

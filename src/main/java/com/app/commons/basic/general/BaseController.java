@@ -3,6 +3,7 @@ package com.app.commons.basic.general;
 import com.app.commons.dtos.AtivoInfoGeraisDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,4 +35,8 @@ public interface BaseController <E, T> {
     ResponseEntity<List<AtivoInfoGeraisDTO>> getInfoGerais();
 
     ResponseEntity<List<AtivoInfoGeraisDTO>> getInfoGeraisBySigla(String sigla);
+
+    ResponseEntity<List<AtivoInfoGeraisDTO>> filterInfoGerais(String orderFilter, String typeOrderFilter);
+
+    ResponseEntity<?> mapaDividendos(String anoMesInicio, String anoMesFim);
 }

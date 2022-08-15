@@ -49,6 +49,30 @@ public class AcaoController implements BaseController<Acao, AcaoDTO> {
     }
 
 
+    @Override
+    @GetMapping(path = "/filter-info-gerais")
+    @Operation(summary = "Filtrar e ordenar informações gerais das ações cadastradas")
+    public ResponseEntity<List<AtivoInfoGeraisDTO>> filterInfoGerais(@RequestParam String orderFilter, @RequestParam String typeOrderFilter) {
+        return new ResponseEntity<>(service.filterInfoGerais(orderFilter, typeOrderFilter), HttpStatus.OK);
+    }
+
+    @Override
+    @GetMapping(path = "/mapa-dividendos/{anoMesInicio}/{anoMesFim}")
+    @Operation(summary = "Gerar mapa de dividendos entre datas específicas das ações cadastradas")
+    public ResponseEntity<?> mapaDividendos(@PathVariable String anoMesInicio, @PathVariable String anoMesFim) {
+
+        if (!Utils.isAnoMesValid(anoMesInicio)){
+            return new ResponseEntity<>(Message.ERROR_MESSAGE_ANO_MES_INVALID, HttpStatus.BAD_REQUEST);
+        }
+
+        if (!Utils.isAnoMesValid(anoMesFim)){
+            return new ResponseEntity<>(Message.ERROR_MESSAGE_ANO_MES_INVALID, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(service.mapaDividendos(anoMesInicio, anoMesFim), HttpStatus.OK);
+    }
+
+
     @Operation(summary = "Realiza upload do arquivo de cotações em um período específico")
     @PostMapping(path = "/{periodo}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Override

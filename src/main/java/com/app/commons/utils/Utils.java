@@ -20,6 +20,8 @@ public class Utils {
 
     private static final String FORMAT_DATA_V2 = "yyyy-MM-dd";
 
+    private static final String FORMAT_DATA_V3 = "yyyy-MMdd";
+
     private static List<String> listPeriodo = Arrays.asList("diario", "semanal", "mensal");
 
     private static final String IGNORED_LINE = ",Date,Open,High,Low,Close,Adj Close,Volume";
@@ -42,7 +44,6 @@ public class Utils {
         }
         return null;
     }
-
 
     public static String converteLocalDateToString(LocalDate dataHora) {
 
@@ -134,5 +135,34 @@ public class Utils {
         String string2 = part[0]+"."+part[1];
         double preco = Double.parseDouble(string2);
         return preco;
+    }
+
+    public static boolean isAnoMesValid(String anoMes) {
+        try {
+             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+             formatter.parse(anoMes);
+             return true;
+        }
+        catch(Exception e) {
+            return false;
+        }
+    }
+
+    public static String getAnosMesLocalDate(LocalDate data) {
+        return String.valueOf(data.getYear()) + "/" +  padLeftZeros(String.valueOf(data.getMonthValue()),2);
+    }
+
+
+    public static String padLeftZeros(String inputString, int length) {
+        if (inputString.length() >= length) {
+            return inputString;
+        }
+        StringBuilder sb = new StringBuilder();
+        while (sb.length() < length - inputString.length()) {
+            sb.append('0');
+        }
+        sb.append(inputString);
+
+        return sb.toString();
     }
 }

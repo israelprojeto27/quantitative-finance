@@ -7,6 +7,8 @@ import com.app.commons.utils.Utils;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 public class LastCotacaoAtivoDiarioDTO {
@@ -15,18 +17,22 @@ public class LastCotacaoAtivoDiarioDTO {
 
     private String dataUltimaCotacao;
 
+    private LocalDate dataUltimaCotacaoFmt;
+
     public LastCotacaoAtivoDiarioDTO() {
     }
 
-    public LastCotacaoAtivoDiarioDTO(Double valorUltimaCotacao, String dataUltimaCotacao) {
+    public LastCotacaoAtivoDiarioDTO(Double valorUltimaCotacao, String dataUltimaCotacao, LocalDate dataUltimaCotacaoFmt) {
         this.valorUltimaCotacao = valorUltimaCotacao;
         this.dataUltimaCotacao = dataUltimaCotacao;
+        this.dataUltimaCotacaoFmt = dataUltimaCotacaoFmt;
     }
 
     public static LastCotacaoAtivoDiarioDTO from(CotacaoAcaoDiario cotacaoDiario) {
         return LastCotacaoAtivoDiarioDTO.builder()
                                    .valorUltimaCotacao(cotacaoDiario.getClose())
                                    .dataUltimaCotacao(Utils.converteLocalDateToString(cotacaoDiario.getData()))
+                                   .dataUltimaCotacaoFmt(cotacaoDiario.getData())
                                    .build();
     }
 
@@ -34,6 +40,7 @@ public class LastCotacaoAtivoDiarioDTO {
         return LastCotacaoAtivoDiarioDTO.builder()
                 .valorUltimaCotacao(cotacaoDiario.getClose())
                 .dataUltimaCotacao(Utils.converteLocalDateToString(cotacaoDiario.getData()))
+                .dataUltimaCotacaoFmt(cotacaoDiario.getData())
                 .build();
     }
 
@@ -41,6 +48,7 @@ public class LastCotacaoAtivoDiarioDTO {
         return LastCotacaoAtivoDiarioDTO.builder()
                 .valorUltimaCotacao(cotacaoDiario.getClose())
                 .dataUltimaCotacao(Utils.converteLocalDateToString(cotacaoDiario.getData()))
+                .dataUltimaCotacaoFmt(cotacaoDiario.getData())
                 .build();
     }
 }
