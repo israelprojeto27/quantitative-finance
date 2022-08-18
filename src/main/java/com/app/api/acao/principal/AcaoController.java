@@ -72,6 +72,49 @@ public class AcaoController implements BaseController<Acao, AcaoDTO> {
         return new ResponseEntity<>(service.mapaDividendos(anoMesInicio, anoMesFim), HttpStatus.OK);
     }
 
+    @Override
+    @GetMapping(path = "/simula-valor-investido/{rendimentoMensalEstimado}/")
+    @Operation(summary = "Simula e informa o valor a ser investido para se alcançar um rendimento mensal estimado de dividendos")
+    public ResponseEntity<?> simulaValorInvestido(@PathVariable String rendimentoMensalEstimado) {
+        return new ResponseEntity<>(service.simulaValorInvestido(rendimentoMensalEstimado), HttpStatus.OK);
+    }
+
+
+    @Override
+    @GetMapping(path = "/simula-valor-investido-by-sigla/{rendimentoMensalEstimado}/{sigla}")
+    @Operation(summary = "Simula e informa o valor a ser investido para se alcançar um rendimento mensal estimado de dividendos")
+    public ResponseEntity<?> simulaValorInvestidoBySigla(@PathVariable String rendimentoMensalEstimado, @PathVariable String sigla) {
+        return new ResponseEntity<>(service.simulaValorInvestidoBySigla(rendimentoMensalEstimado, sigla), HttpStatus.OK);
+    }
+
+    @Override
+    @GetMapping(path = "/filter-simula-valor-investido/{rendimentoMensalEstimado}/")
+    @Operation(summary = "Filtra a simulação do valor a ser investido para se alcançar um rendimento mensal estimado de dividendos")
+    public ResponseEntity<?> filterSimulaValorInvestido(@PathVariable String rendimentoMensalEstimado, @RequestParam String orderFilter, @RequestParam String typeOrderFilter) {
+        return new ResponseEntity<>(service.filterSimulaValorInvestido(rendimentoMensalEstimado, orderFilter, typeOrderFilter), HttpStatus.OK);
+    }
+
+    @Override
+    @GetMapping(path = "/simula-rendimento-por-cotas/{valorInvestimento}/")
+    @Operation(summary = "Simula o rendimento ganho de dividendos a partir da quantidade de cotas a partir do valor investimento")
+    public ResponseEntity<?> simulaRendimentoByQuantidadeCotas(@PathVariable String valorInvestimento) {
+        return new ResponseEntity<>(service.simulaRendimentoByQuantidadeCotas(valorInvestimento), HttpStatus.OK);
+    }
+
+    @Override
+    @GetMapping(path = "/simula-rendimento-por-cotas-by-sigla/{valorInvestimento}/{sigla}")
+    @Operation(summary = "Simula o rendimento ganho de dividendos a partir da quantidade de cotas a partir do valor investimento")
+    public ResponseEntity<?> simulaRendimentoByQuantidadeCotasBySigla(@PathVariable String valorInvestimento, @PathVariable String sigla) {
+        return new ResponseEntity<>(service.simulaRendimentoByQuantidadeCotasBySigla(valorInvestimento, sigla), HttpStatus.OK);
+    }
+
+    @Override
+    @GetMapping(path = "/filter-simula-rendimento-por-cotas/{valorInvestimento}")
+    @Operation(summary = "Filtra a simulacao do rendimento ganho de dividendos a partir da quantidade de cotas a partir do valor investimento")
+    public ResponseEntity<?> filterSimulaRendimentoByQuantidadeCotasBySigla(@PathVariable String valorInvestimento, @RequestParam String orderFilter, @RequestParam String typeOrderFilter) {
+        return new ResponseEntity<>(service.filterSimulaRendimentoByQuantidadeCotasBySigla(valorInvestimento, orderFilter, typeOrderFilter), HttpStatus.OK);
+    }
+
 
     @Operation(summary = "Realiza upload do arquivo de cotações em um período específico")
     @PostMapping(path = "/{periodo}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})

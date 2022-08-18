@@ -5,7 +5,9 @@ public enum OrderFilterEnum {
     VALOR_ULT_COTACAO(1, "valorUltCotacao"),
     DATA_ULT_COTACAO(2, "dataUltCotacao"),
     VALOR_ULT_DIVIDENDO(3, "valorUltDividendo"),
-    DATA_ULT_DIVIDENDO(4, "dataUltiDividendo");
+    DATA_ULT_DIVIDENDO(4, "dataUltiDividendo"),
+    VALOR_INVESTIMENTO(5, "valorInvestimento"),
+    VALOR_RENDIMENTO(6, "valorRendimento");
 
     private int instrumentId;
     private String label;

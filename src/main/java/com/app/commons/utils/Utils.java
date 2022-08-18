@@ -123,9 +123,24 @@ public class Utils {
     }
 
     public static String converterDoubleDoisDecimaisString(double preco) {
-        Locale lo = new Locale("pt", "BR");
-        NumberFormat cf = NumberFormat.getCurrencyInstance(lo);
-        return  cf.format(preco);
+        try{
+            Locale lo = new Locale("pt", "BR");
+            NumberFormat cf = NumberFormat.getCurrencyInstance(lo);
+            return  cf.format(preco);
+        }
+        catch (Exception e){
+            return "";
+        }
+    }
+
+    public static String converteDoubleToStringValorAbsoluto(double valor){
+        try{
+            Integer IntValue = (int) valor;
+            return IntValue.toString();
+        }
+        catch (Exception e){
+            return "";
+        }
     }
 
     public static double converterDoubleQuatroDecimais(double precoDouble) {

@@ -1,6 +1,7 @@
 package com.app.api.fundoimobiliario.principal;
 
 import com.app.api.acao.enums.PeriodoEnum;
+import com.app.api.acao.principal.entity.Acao;
 import com.app.api.fundoimobiliario.cotacao.CotacaoFundoService;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
@@ -19,7 +20,9 @@ import com.app.commons.basic.general.BaseService;
 import com.app.commons.dtos.AtivoInfoGeraisDTO;
 import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
 import com.app.commons.dtos.LastDividendoAtivoDTO;
+import com.app.commons.dtos.simulacoes.ResultValorInvestidoDTO;
 import com.app.commons.dtos.mapadividendo.*;
+import com.app.commons.dtos.simulacoes.ResultValorRendimentoPorCotasDTO;
 import com.app.commons.enums.OrderFilterEnum;
 import com.app.commons.enums.TypeOrderFilterEnum;
 import com.app.commons.utils.Utils;
@@ -585,6 +588,211 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
         ResultMapaDividendoDTO resultMapaDividendoDTO = ResultMapaDividendoDTO.from(listFinal, listCountFinal, listSumFinal );
 
         return resultMapaDividendoDTO;
+    }
+
+    @Override
+    public List<ResultValorInvestidoDTO> simulaValorInvestido(String rendimentoMensalEstimado){
+        List<FundoImobiliario> listFundos = repository.findAll();
+        if ( !listFundos.isEmpty()){
+            List<ResultValorInvestidoDTO> list =  new ArrayList<>();
+            listFundos.forEach(fundo -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoFundoService.getLastCotacaoDiario(fundo);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoFundoService.getLastDividendo(fundo);
+                list.add(ResultValorInvestidoDTO.from(fundo,
+                        Double.valueOf(rendimentoMensalEstimado),
+                        lastCotacaoAtivoDiarioDTO,
+                        lastDividendoAtivoDTO));
+
+            });
+            return list;
+        }
+        return null;
+    }
+
+    @Override
+    public List<ResultValorInvestidoDTO> simulaValorInvestidoBySigla(String rendimentoMensalEstimado, String sigla){
+        Optional<FundoImobiliario> optFundo = repository.findBySigla(sigla);
+        if ( optFundo.isPresent() ){
+            List<ResultValorInvestidoDTO> list =  new ArrayList<>();
+            LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoFundoService.getLastCotacaoDiario(optFundo.get());
+            LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoFundoService.getLastDividendo(optFundo.get());
+            list.add(ResultValorInvestidoDTO.from(optFundo.get(),
+                    Double.valueOf(rendimentoMensalEstimado),
+                    lastCotacaoAtivoDiarioDTO,
+                    lastDividendoAtivoDTO));
+
+            return list;
+        }
+        return null;
+    }
+
+    @Override
+    public List<ResultValorInvestidoDTO> filterSimulaValorInvestido(String rendimentoMensalEstimado, String orderFilter, String typeOrderFilter){
+        List<FundoImobiliario> listFundos = repository.findAll();
+        if ( !listFundos.isEmpty()){
+            List<ResultValorInvestidoDTO> list =  new ArrayList<>();
+            List<ResultValorInvestidoDTO> list2 =  new ArrayList<>();
+            List<ResultValorInvestidoDTO> listFinal =  new ArrayList<>();
+            listFundos.forEach(fundo -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoFundoService.getLastCotacaoDiario(fundo);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoFundoService.getLastDividendo(fundo);
+                list.add(ResultValorInvestidoDTO.from(fundo,
+                        Double.valueOf(rendimentoMensalEstimado),
+                        lastCotacaoAtivoDiarioDTO,
+                        lastDividendoAtivoDTO));
+            });
+
+            if ( !list.isEmpty()){
+                list2 = list.stream().filter(result -> result.getValorInvestimento() > 0d).collect(Collectors.toList());
+
+                if ( orderFilter.equals(OrderFilterEnum.VALOR_INVESTIMENTO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorInvestidoDTO::getValorInvestimento)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorInvestidoDTO::getValorInvestimento).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.VALOR_ULT_COTACAO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorInvestidoDTO::getValorUltimaCotacao)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorInvestidoDTO::getValorUltimaCotacao).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.DATA_ULT_COTACAO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorInvestidoDTO::getDataUltimaCotacao)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorInvestidoDTO::getDataUltimaCotacao).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.VALOR_ULT_DIVIDENDO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorInvestidoDTO::getValorUltimoDividendo)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorInvestidoDTO::getValorUltimoDividendo).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.VALOR_ULT_DIVIDENDO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorInvestidoDTO::getDataUltimoDividendo)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorInvestidoDTO::getDataUltimoDividendo).reversed()).collect(Collectors.toList());
+                    }
+                }
+                return listFinal;
+            }
+
+            return list;
+        }
+        return null;
+    }
+
+    @Override
+    public List<ResultValorRendimentoPorCotasDTO> simulaRendimentoByQuantidadeCotas(String valorInvestimento){
+        List<FundoImobiliario> listFundos = repository.findAll();
+        if ( !listFundos.isEmpty()){
+            List<ResultValorRendimentoPorCotasDTO> list = new ArrayList<>();
+            listFundos.forEach(fundo -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoFundoService.getLastCotacaoDiario(fundo);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoFundoService.getLastDividendo(fundo);
+                list.add(ResultValorRendimentoPorCotasDTO.from(fundo,
+                        Double.valueOf(valorInvestimento),
+                        lastCotacaoAtivoDiarioDTO,
+                        lastDividendoAtivoDTO));
+            });
+            return list;
+        }
+        return null;
+    }
+
+    @Override
+    public List<ResultValorRendimentoPorCotasDTO> simulaRendimentoByQuantidadeCotasBySigla(String valorInvestimento, String sigla){
+        Optional<FundoImobiliario> optFundo = repository.findBySigla(sigla);
+        if ( optFundo.isPresent()){
+            List<ResultValorRendimentoPorCotasDTO> list = new ArrayList<>();
+            LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoFundoService.getLastCotacaoDiario(optFundo.get());
+            LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoFundoService.getLastDividendo(optFundo.get());
+            list.add(ResultValorRendimentoPorCotasDTO.from(optFundo.get(),
+                    Double.valueOf(valorInvestimento),
+                    lastCotacaoAtivoDiarioDTO,
+                    lastDividendoAtivoDTO));
+            return list;
+        }
+        return null;
+    }
+
+    @Override
+    public List<ResultValorRendimentoPorCotasDTO> filterSimulaRendimentoByQuantidadeCotasBySigla(String valorInvestimento, String orderFilter, String typeOrderFilter){
+        List<FundoImobiliario> listFundos = repository.findAll();
+        if ( !listFundos.isEmpty()){
+            List<ResultValorRendimentoPorCotasDTO> list = new ArrayList<>();
+            List<ResultValorRendimentoPorCotasDTO> list2 =  new ArrayList<>();
+            List<ResultValorRendimentoPorCotasDTO> listFinal =  new ArrayList<>();
+
+            listFundos.forEach(fundo -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoFundoService.getLastCotacaoDiario(fundo);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoFundoService.getLastDividendo(fundo);
+                list.add(ResultValorRendimentoPorCotasDTO.from(fundo,
+                        Double.valueOf(valorInvestimento),
+                        lastCotacaoAtivoDiarioDTO,
+                        lastDividendoAtivoDTO));
+            });
+
+            if ( !list.isEmpty()){
+                list2 = list.stream().filter(result -> result.getValorRendimento() > 0d).collect(Collectors.toList());
+
+                if ( orderFilter.equals(OrderFilterEnum.VALOR_RENDIMENTO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorRendimentoPorCotasDTO::getValorRendimento)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorRendimentoPorCotasDTO::getValorRendimento).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.VALOR_ULT_COTACAO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorRendimentoPorCotasDTO::getValorUltimaCotacao)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorRendimentoPorCotasDTO::getValorUltimaCotacao).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.DATA_ULT_COTACAO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorRendimentoPorCotasDTO::getDataUltimaCotacao)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorRendimentoPorCotasDTO::getDataUltimaCotacao).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.VALOR_ULT_DIVIDENDO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorRendimentoPorCotasDTO::getValorUltimoDividendo)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorRendimentoPorCotasDTO::getValorUltimoDividendo).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.VALOR_ULT_DIVIDENDO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorRendimentoPorCotasDTO::getDataUltimoDividendo)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list2.stream().sorted(Comparator.comparing(ResultValorRendimentoPorCotasDTO::getDataUltimoDividendo).reversed()).collect(Collectors.toList());
+                    }
+                }
+                return listFinal;
+            }
+
+            return list;
+        }
+        return null;
     }
 
 }
