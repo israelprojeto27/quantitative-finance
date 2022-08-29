@@ -56,6 +56,17 @@ public class Utils {
         }
     }
 
+    public static String converteLocalDateToString2(LocalDate dataHora) {
+
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM");
+            return dataHora.format(formatter);
+        }
+        catch(Exception e) {
+            return "";
+        }
+    }
+
     public static double converterStringToDoubleDoisDecimais(String valor) {
         if ( valor != null && !valor.equals("")){
             return Utils.converterDoubleDoisDecimais(Double.parseDouble(valor));

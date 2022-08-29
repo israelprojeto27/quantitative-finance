@@ -1,11 +1,13 @@
 package com.app.commons.basic.dividendo;
 
 import com.app.commons.dtos.FilterPeriodDTO;
-import com.app.commons.dtos.SumAtivoDividendosDTO;
-import com.app.commons.dtos.SumCalculateYieldDividendosAtivoDTO;
+import com.app.commons.dtos.dividendo.SumAtivoDividendosDTO;
+import com.app.commons.dtos.dividendo.SumCalculateYieldDividendosAtivoDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -32,4 +34,9 @@ public interface BaseDividendoController<T, L> {
     ResponseEntity<SumCalculateYieldDividendosAtivoDTO> calculateYieldByIdAtivoByQuantCotasByPeriod(Long idAcao, Long quantidadeCotas, FilterPeriodDTO filterPeriodDTO);
 
     ResponseEntity<SumCalculateYieldDividendosAtivoDTO> calculateYieldBySiglaByQuantCotasByPeriod(String sigla, Long quantidadeCotas, FilterPeriodDTO filterPeriodDTO);
+
+    ResponseEntity<?> simulaRendimentoDividendoBySigla(String sigla, String valorInvestimento);
+
+    ResponseEntity<?> simulaRendimentoDividendoBySiglaByQuantCotas( String sigla, String quantCotas);
+
 }

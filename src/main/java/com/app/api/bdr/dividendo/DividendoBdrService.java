@@ -1,6 +1,8 @@
 package com.app.api.bdr.dividendo;
 
+import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
 import com.app.api.acao.dividendo.entity.DividendoAcao;
+import com.app.api.acao.principal.entity.Acao;
 import com.app.api.bdr.principal.BdrRepository;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.bdr.cotacao.repositories.CotacaoBdrDiarioRepository;
@@ -8,9 +10,9 @@ import com.app.api.bdr.dividendo.dto.BdrListDividendoDTO;
 import com.app.api.bdr.dividendo.dto.DividendoBdrDTO;
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.api.bdr.principal.entity.Bdr;
-import com.app.api.fundoimobiliario.dividendo.entity.DividendoFundo;
 import com.app.commons.basic.dividendo.BaseDividendoService;
 import com.app.commons.dtos.*;
+import com.app.commons.dtos.dividendo.*;
 import com.app.commons.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -357,5 +359,72 @@ public class DividendoBdrService implements BaseDividendoService<DividendoBdr, D
 
     public List<DividendoBdr> findDividendoBetweenDates(LocalDate dtInicio, LocalDate dtFim) {
         return repository.findByDataBetween(dtInicio, dtFim, Sort.by(Sort.Direction.DESC, "data"));
+    }
+
+    public ResultSimulaDividendoSiglaDTO simulaRendimentoDividendoBySigla(String sigla, String valorInvestimento) {
+
+        Optional<Bdr> bdrOpt = bdrRepository.findBySigla(sigla);
+        if (bdrOpt.isPresent()){
+            List<CotacaoBdrDiario> listCotacaoBdrDiario = cotacaoBdrDiarioRepository.findByBdr(bdrOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
+            Optional<CotacaoBdrDiario> optCotacaoBdrDiario = listCotacaoBdrDiario.stream().findFirst();
+            List<DividendoBdr> listDividendos = repository.findAllByBdr(bdrOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
+            if (! listDividendos.isEmpty() && optCotacaoBdrDiario.isPresent()){
+                Double valorInvest = Double.parseDouble(valorInvestimento);
+                ResultSimulaDividendoSiglaDTO dto = new ResultSimulaDividendoSiglaDTO();
+                List<ResultSimulaDividendoSiglaDetailDTO> list = new ArrayList<>();
+                List<ResultSimulaDividendoSiglaDetailDTO> listFinal = new ArrayList<>();
+                listDividendos.forEach(dividendoBdr -> {
+                    if (dividendoBdr != null && dividendoBdr.getDividend() != null ){
+                        dto.setTotalGanhoDividendos(dto.getTotalGanhoDividendos() + dividendoBdr.getDividend());
+                        list.add(ResultSimulaDividendoSiglaDetailDTO.from(valorInvest, dividendoBdr, optCotacaoBdrDiario.get()));
+                    }
+                });
+
+                if ( !list.isEmpty()){
+                    dto.setGanhoMedioDividendos(dto.getTotalGanhoDividendos() / list.size());
+                }
+
+                dto.setTotalGanhoDividendosFmt(Utils.converterDoubleDoisDecimaisString(dto.getTotalGanhoDividendos()));
+                dto.setGanhoMedioDividendosFmt(Utils.converterDoubleDoisDecimaisString(dto.getGanhoMedioDividendos()));
+                dto.setQuantidadeCotas(listDividendos.size());
+                dto.setList(list);
+                return dto;
+            }
+        }
+        return null;
+    }
+
+
+    public ResultSimulaDividendoSiglaDTO simulaRendimentoDividendoBySiglaByQuantCotas(String sigla, String quantCotas) {
+
+        Optional<Bdr> bdrOpt = bdrRepository.findBySigla(sigla);
+        if (bdrOpt.isPresent()){
+            List<CotacaoBdrDiario> listCotacaoBdrDiario = cotacaoBdrDiarioRepository.findByBdr(bdrOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
+            Optional<CotacaoBdrDiario> optCotacaoBdrDiario = listCotacaoBdrDiario.stream().findFirst();
+            List<DividendoBdr> listDividendos = repository.findAllByBdr(bdrOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
+            if (! listDividendos.isEmpty() && optCotacaoBdrDiario.isPresent()){
+                Integer quantidadeCotas = Integer.parseInt(quantCotas);
+                ResultSimulaDividendoSiglaDTO dto = new ResultSimulaDividendoSiglaDTO();
+                List<ResultSimulaDividendoSiglaDetailDTO> list = new ArrayList<>();
+                List<ResultSimulaDividendoSiglaDetailDTO> listFinal = new ArrayList<>();
+                listDividendos.forEach(dividendoBdr -> {
+                    if (dividendoBdr != null && dividendoBdr.getDividend() != null ){
+                        dto.setTotalGanhoDividendos(dto.getTotalGanhoDividendos() + dividendoBdr.getDividend());
+                        list.add(ResultSimulaDividendoSiglaDetailDTO.from(quantidadeCotas, dividendoBdr, optCotacaoBdrDiario.get()));
+                    }
+                });
+
+                if ( !list.isEmpty()){
+                    dto.setGanhoMedioDividendos(dto.getTotalGanhoDividendos() / list.size());
+                }
+
+                dto.setTotalGanhoDividendosFmt(Utils.converterDoubleDoisDecimaisString(dto.getTotalGanhoDividendos()));
+                dto.setGanhoMedioDividendosFmt(Utils.converterDoubleDoisDecimaisString(dto.getGanhoMedioDividendos()));
+                dto.setQuantidadeCotas(listDividendos.size());
+                dto.setList(list);
+                return dto;
+            }
+        }
+        return null;
     }
 }

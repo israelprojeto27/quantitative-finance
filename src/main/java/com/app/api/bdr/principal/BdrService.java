@@ -552,15 +552,17 @@ public class BdrService  implements BaseService<Bdr, BdrDTO>  {
 
     @Override
     public List<ResultValorInvestidoDTO> simulaValorInvestidoBySigla(String rendimentoMensalEstimado, String sigla){
-        Optional<Bdr> optBdr = repository.findBySigla(sigla);
-        if ( optBdr.isPresent() ){
+        List<Bdr> listBdr = repository.findBySiglaContaining(sigla);
+        if ( !listBdr.isEmpty() ){
             List<ResultValorInvestidoDTO> list =  new ArrayList<>();
-            LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoBdrService.getLastCotacaoDiario(optBdr.get());
-            LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoBdrService.getLastDividendo(optBdr.get());
-            list.add(ResultValorInvestidoDTO.from(optBdr.get(),
-                    Double.valueOf(rendimentoMensalEstimado),
-                    lastCotacaoAtivoDiarioDTO,
-                    lastDividendoAtivoDTO));
+            listBdr.forEach(bdr -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoBdrService.getLastCotacaoDiario(bdr);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoBdrService.getLastDividendo(bdr);
+                list.add(ResultValorInvestidoDTO.from(bdr,
+                        Double.valueOf(rendimentoMensalEstimado),
+                        lastCotacaoAtivoDiarioDTO,
+                        lastDividendoAtivoDTO));
+            });
 
             return list;
         }

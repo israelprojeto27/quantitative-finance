@@ -586,15 +586,17 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
 
     @Override
     public List<ResultValorInvestidoDTO> simulaValorInvestidoBySigla(String rendimentoMensalEstimado, String sigla){
-        Optional<Acao> optAcao = repository.findBySigla(sigla);
-        if ( optAcao.isPresent() ){
+        List<Acao> listAcao = repository.findBySiglaContaining(sigla);
+        if ( !listAcao.isEmpty() ){
             List<ResultValorInvestidoDTO> list =  new ArrayList<>();
-            LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoAcaoService.getLastCotacaoDiario(optAcao.get());
-            LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoAcaoService.getLastDividendo(optAcao.get());
-            list.add(ResultValorInvestidoDTO.from(optAcao.get(),
-                    Double.valueOf(rendimentoMensalEstimado),
-                    lastCotacaoAtivoDiarioDTO,
-                    lastDividendoAtivoDTO));
+            listAcao.forEach(acao -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoAcaoService.getLastCotacaoDiario(acao);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoAcaoService.getLastDividendo(acao);
+                list.add(ResultValorInvestidoDTO.from(acao,
+                        Double.valueOf(rendimentoMensalEstimado),
+                        lastCotacaoAtivoDiarioDTO,
+                        lastDividendoAtivoDTO));
+            });
 
             return list;
         }

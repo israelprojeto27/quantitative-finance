@@ -1,4 +1,4 @@
-package com.app.commons.dtos;
+package com.app.commons.dtos.dividendo;
 
 import com.app.commons.utils.Utils;
 import lombok.Builder;

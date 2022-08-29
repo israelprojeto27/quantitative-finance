@@ -611,15 +611,17 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
 
     @Override
     public List<ResultValorInvestidoDTO> simulaValorInvestidoBySigla(String rendimentoMensalEstimado, String sigla){
-        Optional<FundoImobiliario> optFundo = repository.findBySigla(sigla);
-        if ( optFundo.isPresent() ){
+        List<FundoImobiliario> listFundos = repository.findBySiglaContaining(sigla);
+        if (! listFundos.isEmpty() ){
             List<ResultValorInvestidoDTO> list =  new ArrayList<>();
-            LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoFundoService.getLastCotacaoDiario(optFundo.get());
-            LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoFundoService.getLastDividendo(optFundo.get());
-            list.add(ResultValorInvestidoDTO.from(optFundo.get(),
-                    Double.valueOf(rendimentoMensalEstimado),
-                    lastCotacaoAtivoDiarioDTO,
-                    lastDividendoAtivoDTO));
+            listFundos.forEach(fundo ->{
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoFundoService.getLastCotacaoDiario(fundo);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoFundoService.getLastDividendo(fundo);
+                list.add(ResultValorInvestidoDTO.from(fundo,
+                        Double.valueOf(rendimentoMensalEstimado),
+                        lastCotacaoAtivoDiarioDTO,
+                        lastDividendoAtivoDTO));
+            });
 
             return list;
         }

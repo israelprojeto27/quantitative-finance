@@ -4,8 +4,8 @@ import com.app.api.acao.dividendo.dto.AcaoListDividendoDTO;
 import com.app.api.acao.dividendo.dto.DividendoAcaoDTO;
 import com.app.commons.basic.dividendo.BaseDividendoController;
 import com.app.commons.dtos.FilterPeriodDTO;
-import com.app.commons.dtos.SumAtivoDividendosDTO;
-import com.app.commons.dtos.SumCalculateYieldDividendosAtivoDTO;
+import com.app.commons.dtos.dividendo.SumAtivoDividendosDTO;
+import com.app.commons.dtos.dividendo.SumCalculateYieldDividendosAtivoDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,5 +107,21 @@ public class DividendoAcaoController implements BaseDividendoController<Dividend
             description = "Deverá ser exibido a Sigla da Ação, Data, o Valor Rendimento em dividendos, Cotação da Ação, Valor Dividendo" )
     public ResponseEntity<SumCalculateYieldDividendosAtivoDTO> calculateYieldBySiglaByQuantCotasByPeriod(@PathVariable String sigla, @PathVariable Long quantidadeCotas, @RequestBody FilterPeriodDTO filterPeriodDTO) {
         return new ResponseEntity<>(service.calculateYieldBySiglaByQuantCotasByPeriod(sigla, quantidadeCotas, filterPeriodDTO), HttpStatus.OK);
+    }
+
+    @Override
+    @GetMapping("/simula-rendimento-dividendo-by-sigla/{sigla}/{valorInvestimento}")
+    @Operation(summary = "Simula o rendimento em dividendos a partir de uma sigla e um valor investimento",
+            description = "Deverá ser exibido a Sigla da Ação, Data, o Valor Rendimento em dividendos, Cotação da Ação, Valor Dividendo" )
+    public ResponseEntity<?> simulaRendimentoDividendoBySigla(@PathVariable String sigla, @PathVariable String valorInvestimento) {
+        return new ResponseEntity<>(service.simulaRendimentoDividendoBySigla(sigla, valorInvestimento), HttpStatus.OK);
+    }
+
+    @Override
+    @GetMapping("/simula-rendimento-dividendo-by-sigla-by-cotas/{sigla}/{quantCotas}")
+    @Operation(summary = "Simula o rendimento em dividendos a partir de uma sigla e um valor investimento",
+            description = "Deverá ser exibido a Sigla da Ação, Data, o Valor Rendimento em dividendos, Cotação da Ação, Valor Dividendo" )
+    public ResponseEntity<?> simulaRendimentoDividendoBySiglaByQuantCotas(@PathVariable String sigla, @PathVariable String quantCotas) {
+        return new ResponseEntity<>(service.simulaRendimentoDividendoBySiglaByQuantCotas(sigla, quantCotas), HttpStatus.OK);
     }
 }

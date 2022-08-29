@@ -1,4 +1,4 @@
-package com.app.commons.dtos;
+package com.app.commons.dtos.dividendo;
 
 import com.app.api.acao.principal.entity.Acao;
 import com.app.api.bdr.principal.entity.Bdr;

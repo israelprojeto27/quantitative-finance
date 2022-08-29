@@ -1,11 +1,8 @@
 package com.app.api.fundoimobiliario.dividendo;
 
 import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
-import com.app.api.acao.cotacao.repositories.CotacaoAcaoDiarioRepository;
 import com.app.api.acao.dividendo.entity.DividendoAcao;
-import com.app.api.acao.principal.AcaoRepository;
 import com.app.api.acao.principal.entity.Acao;
-import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.cotacao.repositories.CotacaoFundoDiarioRepository;
 import com.app.api.fundoimobiliario.dividendo.dto.FundoListDividendoDTO;
@@ -15,6 +12,7 @@ import com.app.api.fundoimobiliario.principal.FundoImobiliarioRepository;
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import com.app.commons.basic.dividendo.BaseDividendoService;
 import com.app.commons.dtos.*;
+import com.app.commons.dtos.dividendo.*;
 import com.app.commons.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -362,5 +360,73 @@ public class DividendoFundoService implements BaseDividendoService<DividendoFund
 
     public List<DividendoFundo> findDividendoBetweenDates(LocalDate dtInicio, LocalDate dtFim) {
         return repository.findByDataBetween(dtInicio, dtFim, Sort.by(Sort.Direction.DESC, "data"));
+    }
+
+
+    public ResultSimulaDividendoSiglaDTO simulaRendimentoDividendoBySigla(String sigla, String valorInvestimento) {
+
+        Optional<FundoImobiliario> fundoOpt = fundoRepository.findBySigla(sigla);
+        if (fundoOpt.isPresent()){
+            List<CotacaoFundoDiario> listCotacaoFundoDiario = cotacaoFundoDiarioRepository.findByFundo(fundoOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
+            Optional<CotacaoFundoDiario> optCotacaoFundoDiario = listCotacaoFundoDiario.stream().findFirst();
+            List<DividendoFundo> listDividendos = repository.findAllByFundo(fundoOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
+            if (! listDividendos.isEmpty() && optCotacaoFundoDiario.isPresent()){
+                Double valorInvest = Double.parseDouble(valorInvestimento);
+                ResultSimulaDividendoSiglaDTO dto = new ResultSimulaDividendoSiglaDTO();
+                List<ResultSimulaDividendoSiglaDetailDTO> list = new ArrayList<>();
+                List<ResultSimulaDividendoSiglaDetailDTO> listFinal = new ArrayList<>();
+                listDividendos.forEach(dividendoFundo -> {
+                    if (dividendoFundo != null && dividendoFundo.getDividend() != null ){
+                        dto.setTotalGanhoDividendos(dto.getTotalGanhoDividendos() + dividendoFundo.getDividend());
+                        list.add(ResultSimulaDividendoSiglaDetailDTO.from(valorInvest, dividendoFundo, optCotacaoFundoDiario.get()));
+                    }
+                });
+
+                if ( !list.isEmpty()){
+                    dto.setGanhoMedioDividendos(dto.getTotalGanhoDividendos() / list.size());
+                }
+
+                dto.setTotalGanhoDividendosFmt(Utils.converterDoubleDoisDecimaisString(dto.getTotalGanhoDividendos()));
+                dto.setGanhoMedioDividendosFmt(Utils.converterDoubleDoisDecimaisString(dto.getGanhoMedioDividendos()));
+                dto.setQuantidadeCotas(listDividendos.size());
+                dto.setList(list);
+                return dto;
+            }
+        }
+        return null;
+    }
+
+
+    public ResultSimulaDividendoSiglaDTO simulaRendimentoDividendoBySiglaByQuantCotas(String sigla, String quantCotas) {
+
+        Optional<FundoImobiliario> fundoOpt = fundoRepository.findBySigla(sigla);
+        if (fundoOpt.isPresent()){
+            List<CotacaoFundoDiario> listCotacaoFundoDiario = cotacaoFundoDiarioRepository.findByFundo(fundoOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
+            Optional<CotacaoFundoDiario> optCotacaoFundoDiario = listCotacaoFundoDiario.stream().findFirst();
+            List<DividendoFundo> listDividendos = repository.findAllByFundo(fundoOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
+            if (! listDividendos.isEmpty() && optCotacaoFundoDiario.isPresent()){
+                Integer quantidadeCotas = Integer.parseInt(quantCotas);
+                ResultSimulaDividendoSiglaDTO dto = new ResultSimulaDividendoSiglaDTO();
+                List<ResultSimulaDividendoSiglaDetailDTO> list = new ArrayList<>();
+                List<ResultSimulaDividendoSiglaDetailDTO> listFinal = new ArrayList<>();
+                listDividendos.forEach(dividendoFundo -> {
+                    if (dividendoFundo != null && dividendoFundo.getDividend() != null ){
+                        dto.setTotalGanhoDividendos(dto.getTotalGanhoDividendos() + dividendoFundo.getDividend());
+                        list.add(ResultSimulaDividendoSiglaDetailDTO.from(quantidadeCotas, dividendoFundo, optCotacaoFundoDiario.get()));
+                    }
+                });
+
+                if ( !list.isEmpty()){
+                    dto.setGanhoMedioDividendos(dto.getTotalGanhoDividendos() / list.size());
+                }
+
+                dto.setTotalGanhoDividendosFmt(Utils.converterDoubleDoisDecimaisString(dto.getTotalGanhoDividendos()));
+                dto.setGanhoMedioDividendosFmt(Utils.converterDoubleDoisDecimaisString(dto.getGanhoMedioDividendos()));
+                dto.setQuantidadeCotas(listDividendos.size());
+                dto.setList(list);
+                return dto;
+            }
+        }
+        return null;
     }
 }

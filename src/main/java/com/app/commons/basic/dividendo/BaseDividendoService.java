@@ -1,11 +1,10 @@
 package com.app.commons.basic.dividendo;
 
-import com.app.api.acao.principal.entity.Acao;
-import com.app.api.fundoimobiliario.dividendo.entity.DividendoFundo;
 import com.app.commons.dtos.FilterPeriodDTO;
 import com.app.commons.dtos.LastDividendoAtivoDTO;
-import com.app.commons.dtos.SumAtivoDividendosDTO;
-import com.app.commons.dtos.SumCalculateYieldDividendosAtivoDTO;
+import com.app.commons.dtos.dividendo.ResultSimulaDividendoSiglaDTO;
+import com.app.commons.dtos.dividendo.SumAtivoDividendosDTO;
+import com.app.commons.dtos.dividendo.SumCalculateYieldDividendosAtivoDTO;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,4 +36,8 @@ public interface BaseDividendoService<E, T, L, A> {
     LastDividendoAtivoDTO getLastDividendo(A a);
 
     List<E> findDividendoBetweenDates(LocalDate dtInicio, LocalDate dtFim);
+
+    ResultSimulaDividendoSiglaDTO simulaRendimentoDividendoBySigla(String sigla, String valorInvestimento);
+
+    ResultSimulaDividendoSiglaDTO simulaRendimentoDividendoBySiglaByQuantCotas(String sigla, String quantCotas);
 }
