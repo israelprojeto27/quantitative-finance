@@ -1,4 +1,4 @@
-package com.app.api.acao.simulacao.entities;
+package com.app.api.bdr.simulacao.entities;
 
 import com.app.commons.basic.simulacao.dto.SaveSimulacaoInvestimentoAtivoDTO;
 import lombok.Builder;
@@ -12,8 +12,8 @@ import java.sql.Timestamp;
 @Builder
 @Data
 @Entity
-@Table(name = "simula_investimento_acao")
-public class SimulaInvestimentoAcao {
+@Table(name = "simula_investimento_bdr")
+public class SimulaInvestimentoBdr {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,18 +30,18 @@ public class SimulaInvestimentoAcao {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
-    public SimulaInvestimentoAcao() {
+    public SimulaInvestimentoBdr() {
     }
 
-    public SimulaInvestimentoAcao(Long id, Double valorInvestimento, Timestamp createdAt, Timestamp updatedAt) {
+    public SimulaInvestimentoBdr(Long id, Double valorInvestimento, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.valorInvestimento = valorInvestimento;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    public static SimulaInvestimentoAcao toEntity(SaveSimulacaoInvestimentoAtivoDTO dto) {
-        return SimulaInvestimentoAcao.builder()
+    public static SimulaInvestimentoBdr toEntity(SaveSimulacaoInvestimentoAtivoDTO dto) {
+        return SimulaInvestimentoBdr.builder()
                                     .valorInvestimento(dto.getValorInvestimento())
                                     .build();
     }

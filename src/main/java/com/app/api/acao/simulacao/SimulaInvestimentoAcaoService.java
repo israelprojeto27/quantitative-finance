@@ -5,11 +5,12 @@ import com.app.api.acao.dividendo.DividendoAcaoRepository;
 import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.acao.principal.AcaoRepository;
 import com.app.api.acao.principal.entity.Acao;
-import com.app.api.acao.simulacao.dtos.*;
 import com.app.api.acao.simulacao.entities.SimulaDetailInvestimentoAcao;
 import com.app.api.acao.simulacao.entities.SimulaInvestimentoAcao;
 import com.app.api.acao.simulacao.repositories.SimulaDetailInvestimentoAcaoRepository;
 import com.app.api.acao.simulacao.repositories.SimulaInvestimentoAcaoRepository;
+import com.app.commons.basic.simulacao.BaseSimulaInvestimentoService;
+import com.app.commons.basic.simulacao.dto.*;
 import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
 import com.app.commons.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class SimulaInvestimentoAcaoService {
+public class SimulaInvestimentoAcaoService implements BaseSimulaInvestimentoService {
 
     @Autowired
     SimulaInvestimentoAcaoRepository repository;
@@ -44,18 +45,20 @@ public class SimulaInvestimentoAcaoService {
     DividendoAcaoRepository dividendoAcaoRepository;
 
 
-    public InfoGeraisSimulacaoInvestimentoAcaoDTO getInfoGerais() {
+    @Override
+    public InfoGeraisSimulacaoInvestimentoAtivoDTO getInfoGerais() {
         Optional<SimulaInvestimentoAcao> optSimulaInvestimentoAcao = repository.findAll().stream().findFirst();
-        InfoGeraisSimulacaoInvestimentoAcaoDTO dto = new InfoGeraisSimulacaoInvestimentoAcaoDTO();
+        InfoGeraisSimulacaoInvestimentoAtivoDTO dto = new InfoGeraisSimulacaoInvestimentoAtivoDTO();
         if (optSimulaInvestimentoAcao.isPresent()){
             List<SimulaDetailInvestimentoAcao> list = simulaDetailInvestimentoAcaoRepository.findAll();
-            dto = InfoGeraisSimulacaoInvestimentoAcaoDTO.from(optSimulaInvestimentoAcao.get(), list);
+            dto = InfoGeraisSimulacaoInvestimentoAtivoDTO.from(optSimulaInvestimentoAcao.get(), list);
         }
         return dto;
     }
 
+    @Override
     @Transactional
-    public boolean save(SaveSimulacaoInvestimentoAcaoDTO dto) {
+    public boolean save(SaveSimulacaoInvestimentoAtivoDTO dto) {
 
         Optional<SimulaInvestimentoAcao> optSimulaInvestimentoAcao = repository.findAll().stream().findFirst();
         SimulaInvestimentoAcao simulaInvestimentoAcao = null;
@@ -79,9 +82,11 @@ public class SimulaInvestimentoAcaoService {
         return true;
     }
 
+    @Override
     @Transactional
     public boolean saveSimulacaoDetailInvestimento(CreateSimulacaoDetailInvestimentoDTO dto) {
         Optional<Acao> optAcao = acaoRepository.findBySigla(dto.getSigla());
+
         if ( optAcao.isPresent()){
             Optional<SimulaInvestimentoAcao> optSimulaInvestimentoAcao = repository.findAll().stream().findFirst();
             if (optSimulaInvestimentoAcao.isPresent()){
@@ -112,11 +117,10 @@ public class SimulaInvestimentoAcaoService {
         }
         else
             return false;
-
-
     }
 
-    public ResultSimulacaoInvestimentoDTO getSimulacaoInvestimentoVariasAcoes(String periodoInicio, String periodoFim) {
+    @Override
+    public ResultSimulacaoInvestimentoDTO getSimulacaoInvestimentoVariosAtivos(String periodoInicio, String periodoFim) {
 
         List<SimulaDetailInvestimentoAcao> list = simulaDetailInvestimentoAcaoRepository.findAll();
         List<SimulacaoInvestimentoDTO> listResult = new ArrayList<>();
@@ -155,8 +159,9 @@ public class SimulaInvestimentoAcaoService {
         return resultDTO;
     }
 
+    @Override
     @Transactional
-    public boolean deleteSimulacaoInvestimentoVariasAcoes(String siglaSelecionada) {
+    public boolean deleteSimulacaoInvestimentoVariosAtivos(String siglaSelecionada) {
         Optional<Acao> optAcao = acaoRepository.findBySigla(siglaSelecionada);
         if ( optAcao.isPresent()){
             Optional<SimulaDetailInvestimentoAcao> optSimulaDetailInvestimentoAcao = simulaDetailInvestimentoAcaoRepository.findBySigla(siglaSelecionada);

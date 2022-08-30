@@ -1,4 +1,4 @@
-package com.app.api.acao.simulacao.dtos;
+package com.app.commons.basic.simulacao.dto;
 
 import lombok.Builder;
 import lombok.Data;

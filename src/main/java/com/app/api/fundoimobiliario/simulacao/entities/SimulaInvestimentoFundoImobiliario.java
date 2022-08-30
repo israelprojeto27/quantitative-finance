@@ -1,5 +1,6 @@
-package com.app.api.acao.simulacao.entities;
+package com.app.api.fundoimobiliario.simulacao.entities;
 
+import com.app.api.bdr.simulacao.entities.SimulaInvestimentoBdr;
 import com.app.commons.basic.simulacao.dto.SaveSimulacaoInvestimentoAtivoDTO;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +13,8 @@ import java.sql.Timestamp;
 @Builder
 @Data
 @Entity
-@Table(name = "simula_investimento_acao")
-public class SimulaInvestimentoAcao {
+@Table(name = "simula_investimento_fundo_imobiliario")
+public class SimulaInvestimentoFundoImobiliario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,19 +31,19 @@ public class SimulaInvestimentoAcao {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
-    public SimulaInvestimentoAcao() {
+    public SimulaInvestimentoFundoImobiliario() {
     }
 
-    public SimulaInvestimentoAcao(Long id, Double valorInvestimento, Timestamp createdAt, Timestamp updatedAt) {
+    public SimulaInvestimentoFundoImobiliario(Long id, Double valorInvestimento, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.valorInvestimento = valorInvestimento;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    public static SimulaInvestimentoAcao toEntity(SaveSimulacaoInvestimentoAtivoDTO dto) {
-        return SimulaInvestimentoAcao.builder()
-                                    .valorInvestimento(dto.getValorInvestimento())
-                                    .build();
+    public static SimulaInvestimentoFundoImobiliario toEntity(SaveSimulacaoInvestimentoAtivoDTO dto) {
+        return SimulaInvestimentoFundoImobiliario.builder()
+                .valorInvestimento(dto.getValorInvestimento())
+                .build();
     }
 }
