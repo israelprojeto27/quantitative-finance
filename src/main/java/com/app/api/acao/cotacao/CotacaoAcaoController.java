@@ -4,6 +4,8 @@ import com.app.api.acao.cotacao.dto.AcaoCotacaoDTO;
 import com.app.commons.basic.cotacao.BaseCotacaoController;
 import com.app.commons.dtos.FilterAtivoCotacaoGrowDTO;
 import com.app.commons.dtos.ResultFilterAtivoCotacaoGrowDTO;
+import com.app.commons.dtos.ResultSumIncreasePercentCotacaoDTO;
+import com.app.commons.dtos.SumIncreasePercentCotacaoDTO;
 import com.app.commons.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -84,4 +86,12 @@ public class CotacaoAcaoController implements BaseCotacaoController<AcaoCotacaoD
 
         return new ResponseEntity<>(service.findAtivosCotacaoGrowMonth(dto), HttpStatus.OK);
     }
+
+    @Override
+    @GetMapping("/sum-increase-percent-cotacao")
+    @Operation(summary = "Soma os percentuais de cotações dos Ativos")
+    public ResponseEntity<ResultSumIncreasePercentCotacaoDTO> sumIncreasePercentCotacao() {
+        return new ResponseEntity<>(service.sumIncreasePercentCotacao(), HttpStatus.OK);
+    }
+
 }

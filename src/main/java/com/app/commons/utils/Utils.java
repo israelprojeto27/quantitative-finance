@@ -155,12 +155,30 @@ public class Utils {
     }
 
     public static double converterDoubleQuatroDecimais(double precoDouble) {
-        DecimalFormat fmt = new DecimalFormat("0.0000");
-        String string = fmt.format(precoDouble);
-        String[] part = string.split("[,]");
-        String string2 = part[0]+"."+part[1];
-        double preco = Double.parseDouble(string2);
-        return preco;
+        try{
+            DecimalFormat fmt = new DecimalFormat("0.0000");
+            String string = fmt.format(precoDouble);
+            String[] part = string.split("[,]");
+            String string2 = part[0]+"."+part[1];
+            double preco = Double.parseDouble(string2);
+            return preco;
+        }
+        catch (Exception e){
+            System.out.println("Valor error: " +precoDouble);
+            System.out.println("Mensagem erro: " + e.getMessage());
+            return 0d;
+        }
+    }
+
+    public static String converterDoubleQuatroDecimaisString(double precoDouble) {
+        try{
+            DecimalFormat fmt = new DecimalFormat("0.0000");
+            String string = fmt.format(precoDouble);
+            return string;
+        }
+        catch (Exception e){
+            return "";
+        }
     }
 
     public static boolean isAnoMesValid(String anoMes) {

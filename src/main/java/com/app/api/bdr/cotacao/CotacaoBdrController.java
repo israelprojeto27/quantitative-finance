@@ -4,6 +4,7 @@ import com.app.api.bdr.cotacao.dto.BdrCotacaoDTO;
 import com.app.commons.basic.cotacao.BaseCotacaoController;
 import com.app.commons.dtos.FilterAtivoCotacaoGrowDTO;
 import com.app.commons.dtos.ResultFilterAtivoCotacaoGrowDTO;
+import com.app.commons.dtos.ResultSumIncreasePercentCotacaoDTO;
 import com.app.commons.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -78,5 +79,12 @@ public class CotacaoBdrController implements BaseCotacaoController<BdrCotacaoDTO
     @Operation(summary = "Recupera os BDRs cujas as cotações mensais mais cresceram ou menos cresceram em um determinado periodo")
     public ResponseEntity<List<ResultFilterAtivoCotacaoGrowDTO>> findAtivosCotacaoGrowMonth(@RequestBody FilterAtivoCotacaoGrowDTO dto) {
         return new ResponseEntity<>(service.findAtivosCotacaoGrowMonth(dto), HttpStatus.OK);
+    }
+
+    @Override
+    @GetMapping("/sum-increase-percent-cotacao")
+    @Operation(summary = "Soma os percentuais de cotações dos Ativos")
+    public ResponseEntity<ResultSumIncreasePercentCotacaoDTO> sumIncreasePercentCotacao() {
+        return new ResponseEntity<>(service.sumIncreasePercentCotacao(), HttpStatus.OK);
     }
 }

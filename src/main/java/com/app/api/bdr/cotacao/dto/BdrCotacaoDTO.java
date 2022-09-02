@@ -9,6 +9,7 @@ import com.app.api.bdr.cotacao.entities.CotacaoBdrSemanal;
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.api.bdr.increasepercent.IncreasePercentBdr;
 import com.app.api.bdr.principal.entity.Bdr;
+import com.app.commons.dtos.dividendo.RoiDividendoCotacaoDTO;
 import lombok.Builder;
 import lombok.Data;
 
@@ -37,10 +38,12 @@ public class BdrCotacaoDTO {
 
     private List<DividendoDTO> listDividendos;
 
+    private List<RoiDividendoCotacaoDTO> listRoiDividendoCotacao;
+
     public BdrCotacaoDTO() {
     }
 
-    public BdrCotacaoDTO(Long id, String sigla, Integer quantCotacoesDiarias, Integer quantCotacoesSemanais, Integer quantCotacoesMensais, List<CotacaoBdrDiarioDTO> listCotacaoDiario, List<CotacaoBdrSemanalDTO> listCotacaoSemanal, List<CotacaoBdrMensalDTO> listCotacaoMensal, List<IncreasePercentAtivoDTO> listIncreasePercentDiario, List<IncreasePercentAtivoDTO> listIncreasePercentSemanal, List<IncreasePercentAtivoDTO> listIncreasePercentMensal, List<DividendoDTO> listDividendos) {
+    public BdrCotacaoDTO(Long id, String sigla, Integer quantCotacoesDiarias, Integer quantCotacoesSemanais, Integer quantCotacoesMensais, List<CotacaoBdrDiarioDTO> listCotacaoDiario, List<CotacaoBdrSemanalDTO> listCotacaoSemanal, List<CotacaoBdrMensalDTO> listCotacaoMensal, List<IncreasePercentAtivoDTO> listIncreasePercentDiario, List<IncreasePercentAtivoDTO> listIncreasePercentSemanal, List<IncreasePercentAtivoDTO> listIncreasePercentMensal, List<DividendoDTO> listDividendos, List<RoiDividendoCotacaoDTO> listRoiDividendoCotacao) {
         this.id = id;
         this.sigla = sigla;
         this.quantCotacoesDiarias = quantCotacoesDiarias;
@@ -53,6 +56,7 @@ public class BdrCotacaoDTO {
         this.listIncreasePercentSemanal = listIncreasePercentSemanal;
         this.listIncreasePercentMensal = listIncreasePercentMensal;
         this.listDividendos = listDividendos;
+        this.listRoiDividendoCotacao = listRoiDividendoCotacao;
     }
 
     public static BdrCotacaoDTO fromEntity(Bdr entity, List<CotacaoBdrDiario> listCotacaoDiario, List<CotacaoBdrSemanal> listCotacaoSemanal, List<CotacaoBdrMensal> listCotacaoMensal) {
@@ -84,4 +88,23 @@ public class BdrCotacaoDTO {
                 .quantCotacoesMensais(listCotacaoMensal != null ? listCotacaoMensal.size() : 0)
                 .build();
     }
+
+    public static BdrCotacaoDTO fromEntity(Bdr entity, List<CotacaoBdrDiario> listCotacaoDiario, List<CotacaoBdrSemanal> listCotacaoSemanal, List<CotacaoBdrMensal> listCotacaoMensal, List<IncreasePercentBdr> listIncreasePercentDiario, List<IncreasePercentBdr> listIncreasePercentSemanal, List<IncreasePercentBdr> listIncreasePercentMensal, List<DividendoBdr> listaDividendos, List<RoiDividendoCotacaoDTO> listRoiDividendoCotacao ) {
+        return BdrCotacaoDTO.builder()
+                .id(entity.getId())
+                .sigla(entity.getSigla())
+                .listCotacaoDiario(listCotacaoDiario != null && !listCotacaoDiario.isEmpty() ? listCotacaoDiario.stream().map(CotacaoBdrDiarioDTO::fromEntity).collect(Collectors.toList()) : null)
+                .listCotacaoSemanal(listCotacaoSemanal != null && !listCotacaoSemanal.isEmpty() ? listCotacaoSemanal.stream().map(CotacaoBdrSemanalDTO::fromEntity).collect(Collectors.toList()) : null)
+                .listCotacaoMensal(listCotacaoMensal != null && !listCotacaoMensal.isEmpty() ? listCotacaoMensal.stream().map(CotacaoBdrMensalDTO::fromEntity).collect(Collectors.toList()) : null)
+                .listIncreasePercentDiario(listIncreasePercentDiario != null && !listIncreasePercentDiario.isEmpty() ? listIncreasePercentDiario.stream().map(IncreasePercentAtivoDTO::fromEntity).collect(Collectors.toList()) : null)
+                .listIncreasePercentSemanal(listIncreasePercentSemanal != null && !listIncreasePercentSemanal.isEmpty() ? listIncreasePercentDiario.stream().map(IncreasePercentAtivoDTO::fromEntity).collect(Collectors.toList()) : null)
+                .listIncreasePercentMensal(listIncreasePercentMensal != null && !listIncreasePercentMensal.isEmpty() ? listIncreasePercentMensal.stream().map(IncreasePercentAtivoDTO::fromEntity).collect(Collectors.toList()) : null)
+                .listDividendos(listaDividendos != null && !listaDividendos.isEmpty() ? listaDividendos.stream().map(DividendoDTO::from).collect(Collectors.toList()) : null)
+                .quantCotacoesDiarias(listCotacaoDiario!= null ? listCotacaoDiario.size() : 0)
+                .quantCotacoesSemanais(listCotacaoSemanal!= null ? listCotacaoSemanal.size() : 0)
+                .quantCotacoesMensais(listCotacaoMensal != null ? listCotacaoMensal.size() : 0)
+                .listRoiDividendoCotacao(listRoiDividendoCotacao)
+                .build();
+    }
+
 }

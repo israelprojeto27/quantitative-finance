@@ -23,6 +23,8 @@ public interface BaseService<E, T> {
 
      boolean uploadFileFull(MultipartFile file) throws IOException;
 
+     boolean uploadFilePartial(MultipartFile file) throws IOException;
+
      T findById(Long id);
 
      T findBySigla(String sigla);

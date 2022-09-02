@@ -2,6 +2,8 @@ package com.app.api.fundoimobiliario.principal;
 
 import com.app.api.acao.enums.PeriodoEnum;
 import com.app.api.acao.principal.entity.Acao;
+import com.app.api.bdr.cotacao.entities.CotacaoBdrMensal;
+import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.api.fundoimobiliario.cotacao.CotacaoFundoService;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
@@ -124,6 +126,63 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
         return true;
     }
 
+
+    @Transactional
+    public boolean uploadFileDividendosPartial(MultipartFile file) throws IOException{
+        ZipInputStream zis = new ZipInputStream(file.getInputStream());
+        ZipEntry zipEntry = zis.getNextEntry();
+        byte[] buffer = new byte[1024];
+        File destDir = Files.createTempDirectory("tmpDirPrefix").toFile();
+
+        while (zipEntry != null) {
+            File newFile = Utils.newFile(destDir, zipEntry);
+
+            // write file content
+            FileOutputStream fos = new FileOutputStream(newFile);
+            int len;
+            while ((len = zis.read(buffer)) > 0) {
+                fos.write(buffer, 0, len);
+            }
+            fos.close();
+
+            Optional<FundoImobiliario> optFundo = repository.findBySigla(zipEntry.getName().replace(".csv", ""));
+
+            if ( optFundo.isPresent()){
+                BufferedReader reader = new BufferedReader(new FileReader(newFile));
+                String line = reader.readLine();
+                int i = 0;
+                line = reader.readLine();
+                while (line != null) {
+                    i++;
+                    System.out.println("Linha: " + line);
+                    System.out.println("LinhaFmt: " + line.substring(0,12) + line.substring(13,line.length()-1));
+
+                    String arr[] = line.split(",");
+                    if ( arr[1].length() == 10){
+                        line = line.substring(0,12) + line.substring(12,line.length()-1);
+                    }
+                    else{
+                        line = line.substring(0,12) + line.substring(13,line.length()-1);
+                    }
+
+                    line = line.replaceAll(".SA", "");
+                    dividendoFundoService.addDividendoFundoImobiliarioPartial(line.trim(), optFundo.get());
+
+                    line = reader.readLine();
+                }
+                reader.close();
+            }
+            zipEntry = zis.getNextEntry();
+        }
+
+        zis.closeEntry();
+        zis.close();
+
+        destDir.delete();
+
+        return true;
+    }
+
     @Transactional
     public boolean uploadFileDividendos(MultipartFile file) throws IOException{
 
@@ -194,6 +253,96 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
             FundoImobiliario fundoImobiliario = new FundoImobiliario(sigla);
             return repository.save(fundoImobiliario);
         }
+    }
+
+    @Override
+    @Transactional
+    public boolean uploadFilePartial(MultipartFile file) throws IOException {
+        ZipInputStream zis = new ZipInputStream(file.getInputStream());
+        ZipEntry zipEntry = zis.getNextEntry();
+        byte[] buffer = new byte[1024];
+        File destDir = Files.createTempDirectory("tmpDirPrefix").toFile();
+
+        String periodo = null;
+
+        while (zipEntry != null) {
+            File newFile = Utils.newFile(destDir, zipEntry);
+
+            // write file content
+            FileOutputStream fos = new FileOutputStream(newFile);
+            int len;
+            while ((len = zis.read(buffer)) > 0) {
+                fos.write(buffer, 0, len);
+            }
+            fos.close();
+
+            if ( newFile.getAbsolutePath().contains(PeriodoEnum.DIARIO.getLabel())){
+                periodo = PeriodoEnum.DIARIO.getLabel();
+            }
+            else if ( newFile.getAbsolutePath().contains(PeriodoEnum.SEMANAL.getLabel())){
+                periodo = PeriodoEnum.SEMANAL.getLabel();
+            }
+            else if ( newFile.getAbsolutePath().contains(PeriodoEnum.MENSAL.getLabel())){
+                periodo = PeriodoEnum.MENSAL.getLabel();
+            }
+
+            loadFileAtivoZipadoPartial(newFile, periodo);
+
+            zipEntry = zis.getNextEntry();
+        }
+
+        zis.closeEntry();
+        zis.close();
+
+        destDir.delete();
+
+        return true;
+    }
+
+    public void loadFileAtivoZipadoPartial(File file, String periodo) throws IOException{
+
+        ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
+        ZipEntry zipEntry = zis.getNextEntry();
+        byte[] buffer = new byte[1024];
+        File destDir = Files.createTempDirectory("tmpDirPrefix2").toFile();
+
+        while (zipEntry != null) {
+            File newFile = Utils.newFile(destDir, zipEntry);
+
+            LogUploadFundoImobiliario log = logUploadFundoImobiliarioService.startUpload(zipEntry.getName());
+
+            FundoImobiliario fundo = this.saveFundo(zipEntry.getName());
+
+            System.out.println("Arquivo analisado: " + newFile);
+
+            // write file content
+            FileOutputStream fos = new FileOutputStream(newFile);
+            int len;
+            while ((len = zis.read(buffer)) > 0) {
+                fos.write(buffer, 0, len);
+            }
+            fos.close();
+
+            BufferedReader reader = new BufferedReader(new FileReader(newFile));
+            String line = reader.readLine();
+            int i = 0;
+            while (line != null) {
+                i++;
+                System.out.println("Linha: " + line);
+                // read next line
+                if (Utils.isLineIgnored(line)){
+                    cotacaoFundoService.addCotacaoAtivoPartial(line, fundo, periodo);
+                }
+
+                line = reader.readLine();
+            }
+            reader.close();
+            zipEntry = zis.getNextEntry();
+        }
+
+        zis.closeEntry();
+        zis.close();
+        destDir.delete();
     }
 
 
@@ -585,10 +734,51 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
             listSumFinal = listSum.stream().sorted(Comparator.comparing(MapaDividendoSumDTO::getSumDividendos).reversed()).collect(Collectors.toList());
         }
 
-        ResultMapaDividendoDTO resultMapaDividendoDTO = ResultMapaDividendoDTO.from(listFinal, listCountFinal, listSumFinal );
+        List<MapaRoiInvestimentoDividendoDTO> listRoiInvestimentoDividendoDTO = this.getRoiInvestimentoDividendoCotacao(listDividendos);
+
+        ResultMapaDividendoDTO resultMapaDividendoDTO = ResultMapaDividendoDTO.from(listFinal, listCountFinal, listSumFinal, listRoiInvestimentoDividendoDTO );
 
         return resultMapaDividendoDTO;
     }
+
+    private List<MapaRoiInvestimentoDividendoDTO> getRoiInvestimentoDividendoCotacao(List<DividendoFundo> listDividendos) {
+
+        HashMap<String, Double> mapRoi = new HashMap<>();
+        if (! listDividendos.isEmpty()){
+            listDividendos.forEach(dividendo -> {
+                CotacaoFundoMensal cotacaoMensal = cotacaoFundoService.findCotacaoMensalByAtivo(dividendo.getFundo(), dividendo.getData());
+                if ( cotacaoMensal != null && cotacaoMensal.getClose() != null ){
+                    Double coeficiente = dividendo.getDividend() / cotacaoMensal.getClose();
+                    if (mapRoi.containsKey(dividendo.getFundo().getSigla())){
+                        Double coeficienteTotal = mapRoi.get(dividendo.getFundo().getSigla());
+                        coeficienteTotal = coeficienteTotal + coeficiente;
+                        mapRoi.put(dividendo.getFundo().getSigla(),coeficienteTotal );
+                    }
+                    else {
+                        mapRoi.put(dividendo.getFundo().getSigla(),  coeficiente);
+                    }
+                }
+            });
+        }
+
+        if ( !mapRoi.isEmpty()){
+            List<MapaRoiInvestimentoDividendoDTO> list = new ArrayList<>();
+            mapRoi.keySet().forEach(sigla ->{
+                Double coeficienteTotal = mapRoi.get(sigla);
+                MapaRoiInvestimentoDividendoDTO dto = MapaRoiInvestimentoDividendoDTO.from(sigla, coeficienteTotal);
+                list.add(dto);
+            });
+
+            if (! list.isEmpty()){
+                List<MapaRoiInvestimentoDividendoDTO> listFinal = list.stream()
+                        .sorted(Comparator.comparing(MapaRoiInvestimentoDividendoDTO::getCoeficienteRoi).reversed())
+                        .collect(Collectors.toList());
+                return listFinal;
+            }
+        }
+        return null;
+    }
+
 
     @Override
     public List<ResultValorInvestidoDTO> simulaValorInvestido(String rendimentoMensalEstimado){

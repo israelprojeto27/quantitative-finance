@@ -2,6 +2,7 @@ package com.app.commons.basic.cotacao;
 
 import com.app.commons.dtos.FilterAtivoCotacaoGrowDTO;
 import com.app.commons.dtos.ResultFilterAtivoCotacaoGrowDTO;
+import com.app.commons.dtos.ResultSumIncreasePercentCotacaoDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -21,4 +22,6 @@ public interface  BaseCotacaoController<T>{
     ResponseEntity<List<ResultFilterAtivoCotacaoGrowDTO>> findAtivosCotacaoGrowWeek(FilterAtivoCotacaoGrowDTO dto);
 
     ResponseEntity<List<ResultFilterAtivoCotacaoGrowDTO>> findAtivosCotacaoGrowMonth(FilterAtivoCotacaoGrowDTO dto);
+
+    ResponseEntity<ResultSumIncreasePercentCotacaoDTO> sumIncreasePercentCotacao();
 }

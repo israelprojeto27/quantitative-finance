@@ -19,4 +19,6 @@ public interface DividendoFundoRepository extends JpaRepository<DividendoFundo, 
     List<DividendoFundo> findByDataBetween(LocalDate start, LocalDate end, Sort sort);
 
     List<DividendoFundo> findByFundoAndDataBetween(FundoImobiliario fundoImobiliario, LocalDate start, LocalDate end, Sort sort);
+
+    List<DividendoFundo> findByFundoAndData(FundoImobiliario fundoImobiliario, LocalDate data);
 }

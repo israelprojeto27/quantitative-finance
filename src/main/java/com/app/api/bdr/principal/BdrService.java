@@ -1,5 +1,7 @@
 package com.app.api.bdr.principal;
 
+import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
+import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.acao.enums.PeriodoEnum;
 import com.app.api.acao.principal.entity.Acao;
 import com.app.api.bdr.cotacao.CotacaoBdrService;
@@ -227,6 +229,96 @@ public class BdrService  implements BaseService<Bdr, BdrDTO>  {
             Bdr bdr = new Bdr(sigla);
             return repository.save(bdr);
         }
+    }
+
+    @Override
+    @Transactional
+    public boolean uploadFilePartial(MultipartFile file) throws IOException{
+        ZipInputStream zis = new ZipInputStream(file.getInputStream());
+        ZipEntry zipEntry = zis.getNextEntry();
+        byte[] buffer = new byte[1024];
+        File destDir = Files.createTempDirectory("tmpDirPrefix").toFile();
+
+        String periodo = null;
+
+        while (zipEntry != null) {
+            File newFile = Utils.newFile(destDir, zipEntry);
+
+            // write file content
+            FileOutputStream fos = new FileOutputStream(newFile);
+            int len;
+            while ((len = zis.read(buffer)) > 0) {
+                fos.write(buffer, 0, len);
+            }
+            fos.close();
+
+            if ( newFile.getAbsolutePath().contains(PeriodoEnum.DIARIO.getLabel())){
+                periodo = PeriodoEnum.DIARIO.getLabel();
+            }
+            else if ( newFile.getAbsolutePath().contains(PeriodoEnum.SEMANAL.getLabel())){
+                periodo = PeriodoEnum.SEMANAL.getLabel();
+            }
+            else if ( newFile.getAbsolutePath().contains(PeriodoEnum.MENSAL.getLabel())){
+                periodo = PeriodoEnum.MENSAL.getLabel();
+            }
+            loadFileAtivoZipadoPartial(newFile, periodo);
+
+            zipEntry = zis.getNextEntry();
+        }
+
+        zis.closeEntry();
+        zis.close();
+
+        destDir.delete();
+
+        return true;
+    }
+
+
+    public void loadFileAtivoZipadoPartial(File file, String periodo) throws IOException {
+        ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
+        ZipEntry zipEntry = zis.getNextEntry();
+        byte[] buffer = new byte[1024];
+        File destDir = Files.createTempDirectory("tmpDirPrefix2").toFile();
+
+        while (zipEntry != null) {
+            File newFile = Utils.newFile(destDir, zipEntry);
+
+            LogUploadBdr log = logUploadBdrService.startUpload(zipEntry.getName());
+
+            Bdr bdr = this.saveBdr(zipEntry.getName());
+
+            System.out.println("Arquivo analisado: " + newFile);
+
+            // write file content
+            FileOutputStream fos = new FileOutputStream(newFile);
+            int len;
+            while ((len = zis.read(buffer)) > 0) {
+                fos.write(buffer, 0, len);
+            }
+            fos.close();
+
+            BufferedReader reader = new BufferedReader(new FileReader(newFile));
+            String line = reader.readLine();
+            int i = 0;
+            while (line != null) {
+                i++;
+                System.out.println("Linha: " + line);
+                // read next line
+                if (Utils.isLineIgnored(line)){
+                    cotacaoBdrService.addCotacaoAtivo(line, bdr, periodo);
+                }
+
+                line = reader.readLine();
+            }
+            reader.close();
+            zipEntry = zis.getNextEntry();
+        }
+
+        zis.closeEntry();
+        zis.close();
+        destDir.delete();
+
     }
 
     @Override
@@ -526,9 +618,47 @@ public class BdrService  implements BaseService<Bdr, BdrDTO>  {
             listSumFinal = listSum.stream().sorted(Comparator.comparing(MapaDividendoSumDTO::getSumDividendos).reversed()).collect(Collectors.toList());
         }
 
-        ResultMapaDividendoDTO resultMapaDividendoDTO = ResultMapaDividendoDTO.from(listFinal, listCountFinal, listSumFinal );
+        List<MapaRoiInvestimentoDividendoDTO> listRoiInvestimentoDividendoDTO = this.getRoiInvestimentoDividendoCotacao(listDividendos);
+
+        ResultMapaDividendoDTO resultMapaDividendoDTO = ResultMapaDividendoDTO.from(listFinal, listCountFinal, listSumFinal, listRoiInvestimentoDividendoDTO );
 
         return resultMapaDividendoDTO;
+    }
+
+    private List<MapaRoiInvestimentoDividendoDTO> getRoiInvestimentoDividendoCotacao(List<DividendoBdr> listDividendos) {
+
+        HashMap<String, Double> mapRoi = new HashMap<>();
+        if (! listDividendos.isEmpty()){
+            listDividendos.forEach(dividendo -> {
+                CotacaoBdrMensal cotacaoMensal = cotacaoBdrService.findCotacaoMensalByAtivo(dividendo.getBdr(), dividendo.getData());
+                Double coeficiente = dividendo.getDividend() / cotacaoMensal.getClose();
+                if (mapRoi.containsKey(dividendo.getBdr().getSigla())){
+                    Double coeficienteTotal = mapRoi.get(dividendo.getBdr().getSigla());
+                    coeficienteTotal = coeficienteTotal + coeficiente;
+                    mapRoi.put(dividendo.getBdr().getSigla(),coeficienteTotal );
+                }
+                else {
+                    mapRoi.put(dividendo.getBdr().getSigla(),  coeficiente);
+                }
+            });
+        }
+
+        if ( !mapRoi.isEmpty()){
+            List<MapaRoiInvestimentoDividendoDTO> list = new ArrayList<>();
+            mapRoi.keySet().forEach(sigla ->{
+                Double coeficienteTotal = mapRoi.get(sigla);
+                MapaRoiInvestimentoDividendoDTO dto = MapaRoiInvestimentoDividendoDTO.from(sigla, coeficienteTotal);
+                list.add(dto);
+            });
+
+            if (! list.isEmpty()){
+                List<MapaRoiInvestimentoDividendoDTO> listFinal = list.stream()
+                        .sorted(Comparator.comparing(MapaRoiInvestimentoDividendoDTO::getCoeficienteRoi).reversed())
+                        .collect(Collectors.toList());
+                return listFinal;
+            }
+        }
+        return null;
     }
 
     @Override

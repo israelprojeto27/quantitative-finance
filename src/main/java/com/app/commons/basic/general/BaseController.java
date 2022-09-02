@@ -21,6 +21,8 @@ public interface BaseController <E, T> {
 
     ResponseEntity<?> uploadFileFull(MultipartFile document) throws IOException;
 
+    ResponseEntity<?> uploadFilePartial(@RequestPart MultipartFile document) throws IOException;
+
     ResponseEntity<T> findById(Long id);
 
     ResponseEntity<T> findBySigla(String sigla);

@@ -145,6 +145,16 @@ public class AcaoController implements BaseController<Acao, AcaoDTO> {
             return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_EMPTY, HttpStatus.BAD_REQUEST);
     }
 
+    @Override
+    @Operation(summary = "Realiza upload parcial do arquivo de cotações em todos os periodos (diario, semanal, mensal)")
+    @PostMapping(path = "/uploadPartial", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> uploadFilePartial(@RequestPart MultipartFile document) throws IOException {
+        if ( ! document.isEmpty())
+            return new ResponseEntity<>(service.uploadFilePartial(document), HttpStatus.OK);
+        else
+            return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_EMPTY, HttpStatus.BAD_REQUEST);
+    }
+
 
     @Operation(summary = "Recupera informações de uma Ação por id")
     @GetMapping("/{id}")

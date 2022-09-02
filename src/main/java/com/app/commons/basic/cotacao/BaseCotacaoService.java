@@ -1,9 +1,10 @@
 package com.app.commons.basic.cotacao;
 
+import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
+import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
+import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
 import com.app.api.acao.principal.entity.Acao;
-import com.app.commons.dtos.FilterAtivoCotacaoGrowDTO;
-import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
-import com.app.commons.dtos.ResultFilterAtivoCotacaoGrowDTO;
+import com.app.commons.dtos.*;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.List;
 public interface BaseCotacaoService<E, T, CD, CS, CM> {
 
      void addCotacaoAtivo(String line, E entityAtivo, String periodo);
+
+     void addCotacaoAtivoPartial(String line, E entityAtivo, String periodo);
 
      boolean createCotacaoDiario(CD cd);
 
@@ -49,6 +52,14 @@ public interface BaseCotacaoService<E, T, CD, CS, CM> {
      List<ResultFilterAtivoCotacaoGrowDTO> findAtivosCotacaoGrowMonth(FilterAtivoCotacaoGrowDTO dto);
 
      LastCotacaoAtivoDiarioDTO getLastCotacaoDiario(E e);
+
+     ResultSumIncreasePercentCotacaoDTO sumIncreasePercentCotacao();
+
+     List<SumIncreasePercentCotacaoDTO> sumListIncreasePercentCotacaoDiario(List<CD> listCotacaoDiario, E e);
+
+     List<SumIncreasePercentCotacaoDTO> sumListIncreasePercentCotacaoSemanal(List<CS> listCotacaoSemanal, E e);
+
+     List<SumIncreasePercentCotacaoDTO> sumListIncreasePercentCotacaoMensal(List<CM> listCotacaoMensal, E e);
 
 }
 

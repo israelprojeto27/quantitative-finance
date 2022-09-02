@@ -354,6 +354,31 @@ public class DividendoFundoService implements BaseDividendoService<DividendoFund
         return true;
     }
 
+    @Transactional
+    public boolean addDividendoFundoImobiliarioPartial(String line, FundoImobiliario fundoImobiliario) {
+        //0,HGLG11,2019-12-01, 0.78
+
+        String[] arr = line.split(",");
+
+        LocalDate dataDividendo = null;
+        if ( arr[1].length() ==  7){
+            dataDividendo = Utils.converteStringToLocalDateTime3(arr[2].substring(1, arr[2].length()));
+        }
+        else
+            dataDividendo = Utils.converteStringToLocalDateTime3(arr[2]);
+
+        Double dividendo = Double.parseDouble(arr[3].trim().replaceAll("G","").replaceAll("A", "").replaceAll("I", ""));
+
+        DividendoFundo dividendoFundo = DividendoFundo.toEntity(fundoImobiliario, dataDividendo, dividendo);
+        List<DividendoFundo> listDividendo = repository.findByFundoAndData(fundoImobiliario, dividendoFundo.getData());
+        if ( listDividendo.isEmpty() && dividendoFundo != null){
+            repository.save(dividendoFundo);
+            return true;
+        }
+            return false;
+    }
+
+
     public List<DividendoFundo> findDividendoByFundo(FundoImobiliario fundoImobiliario) {
         return repository.findAllByFundo(fundoImobiliario, Sort.by(Sort.Direction.DESC, "data"));
     }

@@ -1,6 +1,7 @@
 package com.app.api.fundoimobiliario.cotacao.repositories;
 
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
+import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoSemanal;
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,6 @@ public interface CotacaoFundoMensalRepository extends JpaRepository<CotacaoFundo
     List<CotacaoFundoMensal> findByFundo(FundoImobiliario fundoImobiliario, Sort sort);
 
     List<CotacaoFundoMensal> findByData(LocalDate dt);
+
+    List<CotacaoFundoMensal> findByFundoAndData(FundoImobiliario fundoImobiliario, LocalDate dataCotacao);
 }

@@ -75,13 +75,13 @@ public class CotacaoAcaoDiario {
     public static CotacaoAcaoDiario toEntity(String[] array, Acao acao) {
         try{
             return CotacaoAcaoDiario.builder()
-                    .data(Utils.converteStringToLocalDateTime3(array[1]))
-                    .open(Utils.converterStringToDoubleDoisDecimais(array[2]))
-                    .high(Utils.converterStringToDoubleDoisDecimais(array[3]))
-                    .low(Utils.converterStringToDoubleDoisDecimais(array[4]))
-                    .close(Utils.converterStringToDoubleDoisDecimais(array[5]))
-                    .adjclose(Utils.converterStringToDoubleDoisDecimais(array[6]))
-                    .volume(Utils.converterStringToLong(array[7]))
+                    .data(Utils.converteStringToLocalDateTime3(array[0]))
+                    .open(Utils.converterStringToDoubleDoisDecimais(array[1]))
+                    .high(Utils.converterStringToDoubleDoisDecimais(array[2]))
+                    .low(Utils.converterStringToDoubleDoisDecimais(array[3]))
+                    .close(Utils.converterStringToDoubleDoisDecimais(array[4]))
+                    .adjclose(Utils.converterStringToDoubleDoisDecimais(array[5]))
+                    .volume(Utils.converterStringToLong(array[6]))
                     .acao(acao)
                     .dividend(Utils.converterDoubleDoisDecimais(Double.parseDouble(array[7])))
                     .build();

@@ -17,4 +17,6 @@ public interface CotacaoAcaoSemanalRepository extends JpaRepository<CotacaoAcaoS
     List<CotacaoAcaoSemanal> findByAcao(Acao acao, Sort sort);
 
     List<CotacaoAcaoSemanal> findByData(LocalDate dt);
+
+    List<CotacaoAcaoSemanal> findByAcaoAndData(Acao acao, LocalDate dataCotacao);
 }

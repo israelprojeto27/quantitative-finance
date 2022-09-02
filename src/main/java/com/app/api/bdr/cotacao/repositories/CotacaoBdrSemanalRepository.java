@@ -1,5 +1,6 @@
 package com.app.api.bdr.cotacao.repositories;
 
+import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrSemanal;
 import com.app.api.bdr.principal.entity.Bdr;
 import org.springframework.data.domain.Sort;
@@ -17,4 +18,6 @@ public interface CotacaoBdrSemanalRepository extends JpaRepository<CotacaoBdrSem
     List<CotacaoBdrSemanal> findByBdr(Bdr bdr, Sort sort);
 
     List<CotacaoBdrSemanal> findByData(LocalDate dt);
+
+    List<CotacaoBdrSemanal> findByBdrAndData(Bdr bdr, LocalDate dataCotacao);
 }

@@ -143,12 +143,31 @@ public class FundoImobiliarioController implements BaseController<FundoImobiliar
             return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_EMPTY, HttpStatus.BAD_REQUEST);
     }
 
+    @Override
+    @Operation(summary = "Realiza upload parcial do arquivo de cotações em todos os periodos (diario, semanal, mensal)")
+    @PostMapping(path = "/uploadPartial", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> uploadFilePartial(@RequestPart MultipartFile document) throws IOException {
+        if ( ! document.isEmpty())
+            return new ResponseEntity<>(service.uploadFilePartial(document), HttpStatus.OK);
+        else
+            return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_EMPTY, HttpStatus.BAD_REQUEST);
+    }
+
 
     @Operation(summary = "Realiza upload do arquivo de dividendos de Fundos Imobiliarios")
     @PostMapping(path = "/uploadDividendos", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> uploadFileDividendos(@RequestPart MultipartFile document) throws IOException {
         if ( ! document.isEmpty())
             return new ResponseEntity<>(service.uploadFileDividendos(document), HttpStatus.OK);
+        else
+            return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_EMPTY, HttpStatus.BAD_REQUEST);
+    }
+
+    @Operation(summary = "Realiza upload do arquivo de dividendos de Fundos Imobiliarios")
+    @PostMapping(path = "/uploadDividendosPartial", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> uploadFileDividendosPartial(@RequestPart MultipartFile document) throws IOException {
+        if ( ! document.isEmpty())
+            return new ResponseEntity<>(service.uploadFileDividendosPartial(document), HttpStatus.OK);
         else
             return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_EMPTY, HttpStatus.BAD_REQUEST);
     }

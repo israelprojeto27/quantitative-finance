@@ -9,6 +9,9 @@ import com.app.api.acao.enums.PeriodoEnum;
 import com.app.api.acao.increasepercent.IncreasePercentAcao;
 import com.app.api.acao.principal.entity.Acao;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
+import com.app.api.bdr.cotacao.entities.CotacaoBdrMensal;
+import com.app.api.bdr.dividendo.entity.DividendoBdr;
+import com.app.api.bdr.principal.entity.Bdr;
 import com.app.api.fundoimobiliario.cotacao.dto.FundoCotacaoDTO;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
@@ -23,9 +26,8 @@ import com.app.api.fundoimobiliario.increasepercent.IncreasePercentFundoService;
 import com.app.api.fundoimobiliario.principal.FundoImobiliarioRepository;
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import com.app.commons.basic.cotacao.BaseCotacaoService;
-import com.app.commons.dtos.FilterAtivoCotacaoGrowDTO;
-import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
-import com.app.commons.dtos.ResultFilterAtivoCotacaoGrowDTO;
+import com.app.commons.dtos.*;
+import com.app.commons.dtos.dividendo.RoiDividendoCotacaoDTO;
 import com.app.commons.enums.TipoOrdenacaoGrowEnum;
 import com.app.commons.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,12 +73,6 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
             CotacaoFundoDiario cotacaoFundoDiario = CotacaoFundoDiario.toEntity(array, fundo);
             if ( cotacaoFundoDiario != null)
                 this.createCotacaoDiario(cotacaoFundoDiario);
-/*
-            if (cotacaoFundoDiario.getDividend().doubleValue() > 0.0d){
-                DividendoFundo dividendoFundo = DividendoFundo.toEntity(cotacaoFundoDiario);
-                dividendoFundoService.save(dividendoFundo);
-            }
- */
         }
         else if ( periodo.equals(PeriodoEnum.SEMANAL.getLabel())){
             CotacaoFundoSemanal cotacaoFundoSemanal = CotacaoFundoSemanal.toEntity(array, fundo);
@@ -87,6 +83,35 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
             CotacaoFundoMensal cotacaoFundoMensal = CotacaoFundoMensal.toEntity(array, fundo);
             if ( cotacaoFundoMensal != null )
                 this.createCotacaoMensal(cotacaoFundoMensal);
+        }
+    }
+
+
+    @Transactional
+    @Override
+    public void addCotacaoAtivoPartial(String line, FundoImobiliario fundo, String periodo) {
+        String[] array =  line.split(",");
+
+        if ( periodo.equals(PeriodoEnum.DIARIO.getLabel())){
+            CotacaoFundoDiario cotacaoFundoDiario = CotacaoFundoDiario.toEntity(array, fundo);
+            List<CotacaoFundoDiario> listCotacao = cotacaoFundoDiarioRepository.findByFundoAndData(fundo, cotacaoFundoDiario.getData());
+            if ( listCotacao.isEmpty() && cotacaoFundoDiario != null){
+                this.createCotacaoDiario(cotacaoFundoDiario);
+            }
+        }
+        else if ( periodo.equals(PeriodoEnum.SEMANAL.getLabel())){
+            CotacaoFundoSemanal cotacaoFundoSemanal = CotacaoFundoSemanal.toEntity(array, fundo);
+            List<CotacaoFundoSemanal> listCotacao = cotacaoFundoSemanalRepository.findByFundoAndData(fundo, cotacaoFundoSemanal.getData());
+            if (listCotacao.isEmpty() && cotacaoFundoSemanal != null){
+                this.createCotacaoSemanal(cotacaoFundoSemanal);
+            }
+        }
+        else if ( periodo.equals(PeriodoEnum.MENSAL.getLabel())){
+            CotacaoFundoMensal cotacaoFundoMensal = CotacaoFundoMensal.toEntity(array, fundo);
+            List<CotacaoFundoMensal> listCotacao = cotacaoFundoMensalRepository.findByFundoAndData(fundo, cotacaoFundoMensal.getData());
+            if (listCotacao.isEmpty() && cotacaoFundoMensal != null ){
+                this.createCotacaoMensal(cotacaoFundoMensal);
+            }
         }
     }
 
@@ -140,6 +165,20 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
     @Override
     public List<CotacaoFundoMensal> findCotacaoMensalByAtivo(FundoImobiliario fundoImobiliario, Sort sort) {
         return cotacaoFundoMensalRepository.findByFundo(fundoImobiliario, sort);
+    }
+
+    public CotacaoFundoMensal findCotacaoMensalByAtivo(FundoImobiliario fundoImobiliario, LocalDate periodo) { // Este campo periodo deve considerar apenas Ano e Mes
+
+        List<CotacaoFundoMensal> list = this.findCotacaoMensalByAtivo(fundoImobiliario);
+        if ( !list.isEmpty()){
+            Optional<CotacaoFundoMensal> optCotacaoMensal = list.stream()
+                    .filter(cotacao -> cotacao.getData().getYear() == periodo.getYear() && cotacao.getData().getMonthValue() == periodo.getMonthValue())
+                    .findFirst();
+            if ( optCotacaoMensal.isPresent()){
+                return optCotacaoMensal.get();
+            }
+        }
+        return null;
     }
 
     @Override
@@ -211,7 +250,7 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
             List<IncreasePercentFundoImobiliario> listIncreasePercentSemanal = increasePercentFundoService.findIncreasePercentByFundoByPeriodo(fundoOpt.get(), PeriodoEnum.SEMANAL);
             List<IncreasePercentFundoImobiliario> listIncreasePercentMensal = increasePercentFundoService.findIncreasePercentByFundoByPeriodo(fundoOpt.get(), PeriodoEnum.MENSAL);
             List<DividendoFundo> listDividendos = dividendoFundoService.findDividendoByFundo(fundoOpt.get());
-
+            List<RoiDividendoCotacaoDTO> listRoiDividendoCotacao = this.getRoiDividendoCotacao(listDividendos, listCotacaoMensal);
             return FundoCotacaoDTO.fromEntity(fundoOpt.get(),
                                               listCotacaoDiario,
                                               listCotacaoSemanal,
@@ -219,8 +258,38 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
                                               listIncreasePercentDiario,
                                               listIncreasePercentSemanal,
                                               listIncreasePercentMensal,
-                                              listDividendos);
+                                              listDividendos,
+                                              listRoiDividendoCotacao);
         }
+        return null;
+    }
+
+    private List<RoiDividendoCotacaoDTO> getRoiDividendoCotacao(List<DividendoFundo> listDividendos, List<CotacaoFundoMensal> listCotacaoMensal) {
+        List<RoiDividendoCotacaoDTO> list = new ArrayList<>();
+
+        if ( !listDividendos.isEmpty() && !listCotacaoMensal.isEmpty()){
+            listDividendos.forEach(dividendo -> {
+                CotacaoFundoMensal cotacaoBdrMensal = this.getCotacaoMensalRoiDividendo(dividendo, listCotacaoMensal);
+                if ( cotacaoBdrMensal != null){
+                    Double roiDividendoCotacao = dividendo.getDividend() / cotacaoBdrMensal.getClose();
+                    RoiDividendoCotacaoDTO dto = RoiDividendoCotacaoDTO.from(roiDividendoCotacao, dividendo, cotacaoBdrMensal);
+                    list.add(dto);
+                }
+            });
+        }
+        return list;
+    }
+
+    private CotacaoFundoMensal getCotacaoMensalRoiDividendo(DividendoFundo dividendo, List<CotacaoFundoMensal> listCotacaoMensal) {
+
+        Optional<CotacaoFundoMensal> optCotacaoFundoMensal = listCotacaoMensal.stream()
+                .filter(cotacaoFundoMensal -> cotacaoFundoMensal.getData().getYear() == dividendo.getData().getYear() && cotacaoFundoMensal.getData().getMonthValue() == dividendo.getData().getMonthValue())
+                .findFirst();
+
+        if ( optCotacaoFundoMensal.isPresent()){
+            return optCotacaoFundoMensal.get();
+        }
+
         return null;
     }
 
@@ -390,6 +459,151 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
             }
         }
         return null;
+    }
+
+    @Override
+    public ResultSumIncreasePercentCotacaoDTO sumIncreasePercentCotacao() {
+        List<FundoImobiliario> listFundo = fundoRepository.findAll();
+        if ( !listFundo.isEmpty()){
+            ResultSumIncreasePercentCotacaoDTO dto = new ResultSumIncreasePercentCotacaoDTO();
+            listFundo.forEach(fundo ->{
+                List<CotacaoFundoDiario>  listCotacaoDiario  = cotacaoFundoDiarioRepository.findByFundo(fundo);
+                List<CotacaoFundoSemanal> listCotacaoSemanal = cotacaoFundoSemanalRepository.findByFundo(fundo);
+                List<CotacaoFundoMensal> listCotacaoMensal   = cotacaoFundoMensalRepository.findByFundo(fundo);
+
+                List<SumIncreasePercentCotacaoDTO> listDiario = sumListIncreasePercentCotacaoDiario(listCotacaoDiario, fundo);
+                List<SumIncreasePercentCotacaoDTO> listSemanal = sumListIncreasePercentCotacaoSemanal(listCotacaoSemanal, fundo);
+                List<SumIncreasePercentCotacaoDTO> listMensal = sumListIncreasePercentCotacaoMensal(listCotacaoMensal, fundo);
+
+                dto.getListDiario().addAll(listDiario);
+                dto.getListSemanal().addAll(listSemanal);
+                dto.getListMensal().addAll(listMensal);
+            });
+
+            List<SumIncreasePercentCotacaoDTO> listDiarioFinal  = dto.getListDiario().stream().sorted(Comparator.comparingDouble(SumIncreasePercentCotacaoDTO::getSumIncreasePercent).reversed()).collect(Collectors.toList());
+            List<SumIncreasePercentCotacaoDTO> listSemanalFinal = dto.getListSemanal().stream().sorted(Comparator.comparingDouble(SumIncreasePercentCotacaoDTO::getSumIncreasePercent).reversed()).collect(Collectors.toList());
+            List<SumIncreasePercentCotacaoDTO> listMensalFinal  = dto.getListMensal().stream().sorted(Comparator.comparingDouble(SumIncreasePercentCotacaoDTO::getSumIncreasePercent).reversed()).collect(Collectors.toList());
+
+            dto.setListDiario(listDiarioFinal);
+            dto.setListSemanal(listSemanalFinal);
+            dto.setListMensal(listMensalFinal);
+            return dto;
+        }
+        return null;
+    }
+
+    @Override
+    public List<SumIncreasePercentCotacaoDTO> sumListIncreasePercentCotacaoDiario(List<CotacaoFundoDiario> listCotacaoDiario, FundoImobiliario fundoImobiliario) {
+        List<SumIncreasePercentCotacaoDTO> listSumIncrease = new ArrayList<>();
+        if (! listCotacaoDiario.isEmpty()){
+            List<CotacaoFundoDiario>  list = listCotacaoDiario.stream()
+                    .sorted(Comparator.comparingDouble(CotacaoFundoDiario::getClose).reversed())
+                    .collect(Collectors.toList());
+            if ( !list.isEmpty() ){
+                if ( list.size() == 2){
+                    CotacaoFundoDiario cotacaoAtual = list.get(0);
+                    CotacaoFundoDiario cotacaoAnterior = list.get(1);
+                    Double valorPercentGrow = (cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose();
+                    SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(fundoImobiliario.getSigla(), valorPercentGrow);
+                    listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                }
+                else if ( list.size() >= 3){
+                    Double valorPercentGrow = 0d;
+                    try{
+                        for(int i = 0; i <= list.size(); i++){
+                            CotacaoFundoDiario cotacaoAtual = list.get(i);
+                            CotacaoFundoDiario cotacaoAnterior = list.get(i+1);
+                            valorPercentGrow = valorPercentGrow + ((cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose());
+                        }
+                    }
+                    catch (Exception e){
+
+                    }
+                    finally{
+                        SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(fundoImobiliario.getSigla(), valorPercentGrow);
+                        listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                    }
+                }
+            }
+        }
+
+        return listSumIncrease;
+    }
+
+    @Override
+    public List<SumIncreasePercentCotacaoDTO> sumListIncreasePercentCotacaoSemanal(List<CotacaoFundoSemanal> listCotacaoSemanal, FundoImobiliario fundoImobiliario) {
+        List<SumIncreasePercentCotacaoDTO> listSumIncrease = new ArrayList<>();
+        if (! listCotacaoSemanal.isEmpty()){
+            List<CotacaoFundoSemanal>  list = listCotacaoSemanal.stream()
+                    .sorted(Comparator.comparingDouble(CotacaoFundoSemanal::getClose).reversed())
+                    .collect(Collectors.toList());
+            if ( !list.isEmpty() ){
+                if ( list.size() == 2){
+                    CotacaoFundoSemanal cotacaoAtual = list.get(0);
+                    CotacaoFundoSemanal cotacaoAnterior = list.get(1);
+                    Double valorPercentGrow = (cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose();
+                    SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(fundoImobiliario.getSigla(), valorPercentGrow);
+                    listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                }
+                else if ( list.size() >= 3){
+                    Double valorPercentGrow = 0d;
+                    try{
+                        for(int i = 0; i <= list.size(); i++){
+                            CotacaoFundoSemanal cotacaoAtual = list.get(i);
+                            CotacaoFundoSemanal cotacaoAnterior = list.get(i+1);
+                            valorPercentGrow = valorPercentGrow + ((cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose());
+                        }
+                    }
+                    catch (Exception e){
+
+                    }
+                    finally{
+                        SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(fundoImobiliario.getSigla(), valorPercentGrow);
+                        listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                    }
+                }
+            }
+        }
+
+        return listSumIncrease;
+    }
+
+    @Override
+    public List<SumIncreasePercentCotacaoDTO> sumListIncreasePercentCotacaoMensal(List<CotacaoFundoMensal> listCotacaoMensal, FundoImobiliario fundoImobiliario) {
+        List<SumIncreasePercentCotacaoDTO> listSumIncrease = new ArrayList<>();
+        if (! listCotacaoMensal.isEmpty()){
+            List<CotacaoFundoMensal>  list = listCotacaoMensal.stream()
+                    .sorted(Comparator.comparingDouble(CotacaoFundoMensal::getClose).reversed())
+                    .collect(Collectors.toList());
+            if ( !list.isEmpty() ){
+                if ( list.size() == 2){
+                    CotacaoFundoMensal cotacaoAtual = list.get(0);
+                    CotacaoFundoMensal cotacaoAnterior = list.get(1);
+                    Double valorPercentGrow = (cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose();
+                    SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(fundoImobiliario.getSigla(), valorPercentGrow);
+                    listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                }
+                else if ( list.size() >= 3){
+                    Double valorPercentGrow = 0d;
+                    try{
+                        for(int i = 0; i <= list.size(); i++){
+                            CotacaoFundoMensal cotacaoAtual = list.get(i);
+                            CotacaoFundoMensal cotacaoAnterior = list.get(i+1);
+                            valorPercentGrow = valorPercentGrow + ((cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose());
+                        }
+                    }
+                    catch (Exception e){
+
+                    }
+                    finally{
+                        SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(fundoImobiliario.getSigla(), valorPercentGrow);
+                        listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                    }
+                }
+            }
+        }
+
+        return listSumIncrease;
     }
 
 

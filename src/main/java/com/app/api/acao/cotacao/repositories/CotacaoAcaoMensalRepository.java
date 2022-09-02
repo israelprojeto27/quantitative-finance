@@ -1,6 +1,7 @@
 package com.app.api.acao.cotacao.repositories;
 
 import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
+import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
 import com.app.api.acao.principal.entity.Acao;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,6 @@ public interface CotacaoAcaoMensalRepository extends JpaRepository<CotacaoAcaoMe
     List<CotacaoAcaoMensal> findByAcao(Acao acao, Sort sort);
 
     List<CotacaoAcaoMensal> findByData(LocalDate dt);
+
+    List<CotacaoAcaoMensal> findByAcaoAndData(Acao acao, LocalDate dataCotacao);
 }
