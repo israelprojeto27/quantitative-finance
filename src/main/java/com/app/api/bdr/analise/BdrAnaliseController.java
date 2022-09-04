@@ -26,6 +26,7 @@ public class BdrAnaliseController implements BaseAtivoAnaliseController {
         return new ResponseEntity<List<AtivoAnaliseDTO>>(service.findAll(), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @Override
     @PostMapping("/add-bdr/{sigla}")
     @Operation(summary = "Adiçiona bdr para a lista de analises")
@@ -34,6 +35,7 @@ public class BdrAnaliseController implements BaseAtivoAnaliseController {
         return new ResponseEntity<>(service.addAtivoAnalise(sigla), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @Override
     @DeleteMapping("/{sigla}")
     @Operation(summary = "Remove bdr da lista de analises")

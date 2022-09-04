@@ -26,6 +26,7 @@ public class AcaoAnaliseController implements BaseAtivoAnaliseController {
         return new ResponseEntity<List<AtivoAnaliseDTO>>(service.findAll(), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @Override
     @PostMapping("/add-acao/{sigla}")
     @Operation(summary = "Adiçiona ação para a lista de analises")
@@ -34,6 +35,7 @@ public class AcaoAnaliseController implements BaseAtivoAnaliseController {
         return new ResponseEntity<>(service.addAtivoAnalise(sigla), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @Override
     @DeleteMapping("/{sigla}")
     @Operation(summary = "Remove ação da lista de analises")

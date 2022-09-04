@@ -28,6 +28,7 @@ public class FundoImobiliarioAnaliseController implements BaseAtivoAnaliseContro
         return new ResponseEntity<List<AtivoAnaliseDTO>>(service.findAll(), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @Override
     @PostMapping("/add-fundo/{sigla}")
     @Operation(summary = "Adiçiona Fundo Imobiliario para a lista de analises")
@@ -36,6 +37,7 @@ public class FundoImobiliarioAnaliseController implements BaseAtivoAnaliseContro
         return new ResponseEntity<>(service.addAtivoAnalise(sigla), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @Override
     @DeleteMapping("/{sigla}")
     @Operation(summary = "Remove Fundo Imobiliario da lista de analises")
