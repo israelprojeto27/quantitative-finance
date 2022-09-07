@@ -7,7 +7,9 @@ public enum OrderFilterEnum {
     VALOR_ULT_DIVIDENDO(3, "valorUltDividendo"),
     DATA_ULT_DIVIDENDO(4, "dataUltiDividendo"),
     VALOR_INVESTIMENTO(5, "valorInvestimento"),
-    VALOR_RENDIMENTO(6, "valorRendimento");
+    VALOR_RENDIMENTO(6, "valorRendimento"),
+    COEFICIENTE_ROI_DIVIDENDO(7, "coeficienteRoiDividendo"),
+    QUANTIDADE_OCORRENCIA_DIVIDENDOS(8, "quantidadeOcorrenciaDividendos");
 
     private int instrumentId;
     private String label;
