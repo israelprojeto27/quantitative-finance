@@ -20,4 +20,6 @@ public interface DividendoAcaoRepository extends JpaRepository<DividendoAcao, Lo
     List<DividendoAcao> findByDataBetween(LocalDate start, LocalDate end, Sort sort);
 
     List<DividendoAcao> findByAcaoAndDataBetween(Acao acao, LocalDate start, LocalDate end, Sort sort);
+
+    List<DividendoAcao> findByAcaoAndDataBetween(Acao acao, LocalDate start, LocalDate end);
 }
