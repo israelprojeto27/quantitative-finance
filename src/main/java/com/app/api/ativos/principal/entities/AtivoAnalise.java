@@ -1,4 +1,4 @@
-package com.app.api.ativos.entities;
+package com.app.api.ativos.principal.entities;
 
 import com.app.api.acao.principal.entity.Acao;
 import com.app.api.bdr.principal.entity.Bdr;

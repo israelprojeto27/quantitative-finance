@@ -1,4 +1,4 @@
-package com.app.api.ativos.enums;
+package com.app.api.ativos.principal.enums;
 
 public enum TipoAtivoEnum {
 

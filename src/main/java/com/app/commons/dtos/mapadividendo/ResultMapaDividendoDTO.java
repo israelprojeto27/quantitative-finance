@@ -3,19 +3,20 @@ package com.app.commons.dtos.mapadividendo;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @Builder
 public class ResultMapaDividendoDTO {
 
-    private List<MapaDividendosDTO> listMapas;
+    private List<MapaDividendosDTO> listMapas = new ArrayList<>();
 
-    private List<MapaDividendoCountDTO> listCount;
+    private List<MapaDividendoCountDTO> listCount = new ArrayList<>();;
 
-    private List<MapaDividendoSumDTO> listSum;
+    private List<MapaDividendoSumDTO> listSum = new ArrayList<>();;
 
-    private List<MapaRoiInvestimentoDividendoDTO> listRoiInvestimento;
+    private List<MapaRoiInvestimentoDividendoDTO> listRoiInvestimento = new ArrayList<>();;
 
     public ResultMapaDividendoDTO() {
     }

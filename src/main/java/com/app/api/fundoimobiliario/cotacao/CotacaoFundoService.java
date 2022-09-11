@@ -1,17 +1,6 @@
 package com.app.api.fundoimobiliario.cotacao;
 
-import com.app.api.acao.cotacao.dto.AcaoCotacaoDTO;
-import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
-import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
-import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
-import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.acao.enums.PeriodoEnum;
-import com.app.api.acao.increasepercent.IncreasePercentAcao;
-import com.app.api.acao.principal.entity.Acao;
-import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
-import com.app.api.bdr.cotacao.entities.CotacaoBdrMensal;
-import com.app.api.bdr.dividendo.entity.DividendoBdr;
-import com.app.api.bdr.principal.entity.Bdr;
 import com.app.api.fundoimobiliario.cotacao.dto.FundoCotacaoDTO;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;

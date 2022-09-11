@@ -1,11 +1,6 @@
 package com.app.api.bdr.cotacao;
 
-import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
-import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
-import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
-import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.acao.enums.PeriodoEnum;
-import com.app.api.acao.principal.entity.Acao;
 import com.app.api.bdr.cotacao.dto.BdrCotacaoDTO;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrMensal;
