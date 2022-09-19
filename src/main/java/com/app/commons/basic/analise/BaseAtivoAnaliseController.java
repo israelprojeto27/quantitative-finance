@@ -35,4 +35,6 @@ public interface BaseAtivoAnaliseController {
 
     ResponseEntity<?> filterSimulaRendimentoByQuantidadeCotasBySigla(String valorInvestimento, String orderFilter, String typeOrderFilter);
 
+    ResponseEntity<?> deleteAllAnalises();
+
 }

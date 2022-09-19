@@ -1,15 +1,5 @@
 package com.app.api.bdr.analise;
 
-import com.app.api.acao.analise.entities.AcaoAnalise;
-import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
-import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
-import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
-import com.app.api.acao.cotacao.repositories.CotacaoAcaoDiarioRepository;
-import com.app.api.acao.cotacao.repositories.CotacaoAcaoMensalRepository;
-import com.app.api.acao.cotacao.repositories.CotacaoAcaoSemanalRepository;
-import com.app.api.acao.dividendo.DividendoAcaoService;
-import com.app.api.acao.dividendo.entity.DividendoAcao;
-import com.app.api.acao.principal.entity.Acao;
 import com.app.api.bdr.analise.entities.BdrAnalise;
 import com.app.api.bdr.cotacao.CotacaoBdrService;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
@@ -105,7 +95,7 @@ public class BdrAnaliseService implements BaseAtivoAnaliseService {
             return list;
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     private Double calculateCoeficienteRoiDividendo(List<DividendoBdr> listDividendos) {
@@ -674,5 +664,12 @@ public class BdrAnaliseService implements BaseAtivoAnaliseService {
         }
 
         return null;
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteAllAnalises() {
+        repository.deleteAll();
+        return true;
     }
 }

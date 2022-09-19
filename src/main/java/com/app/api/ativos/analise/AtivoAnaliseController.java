@@ -100,4 +100,12 @@ public class AtivoAnaliseController {
         return new ResponseEntity<>(service.sumIncreasePercentCotacao(), HttpStatus.OK);
     }
 
+
+    @CrossOrigin
+    @DeleteMapping(path = "/delete-all-analises")
+    @Operation(summary = "Limpa todos os registros de analises")
+    public ResponseEntity<?> deleteAllAnalises() {
+        return new ResponseEntity<>(service.deleteAllAnalises(), HttpStatus.OK);
+    }
+
 }

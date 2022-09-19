@@ -198,7 +198,6 @@ public class AtivoAnaliseService {
                 }
             });
         }
-
         return list;
     }
 
@@ -1258,5 +1257,11 @@ public class AtivoAnaliseService {
         }
 
         return listSumIncrease;
+    }
+
+    @Transactional
+    public boolean deleteAllAnalises() {
+        repository.deleteAll();
+        return true;
     }
 }

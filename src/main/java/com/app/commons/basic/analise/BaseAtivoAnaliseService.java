@@ -29,4 +29,6 @@ public interface BaseAtivoAnaliseService {
     List<ResultValorRendimentoPorCotasDTO> simulaRendimentoByQuantidadeCotas(String valorInvestimento);
 
     List<ResultValorRendimentoPorCotasDTO> filterSimulaRendimentoByQuantidadeCotasBySigla(String valorInvestimento, String orderFilter, String typeOrderFilter);
+
+    boolean deleteAllAnalises();
 }

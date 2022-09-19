@@ -97,7 +97,7 @@ public class AcaoAnaliseService implements BaseAtivoAnaliseService {
             return list;
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     private Double calculateCoeficienteRoiDividendo(List<DividendoAcao> listDividendos) {
@@ -693,5 +693,12 @@ public class AcaoAnaliseService implements BaseAtivoAnaliseService {
         }
 
         return null;
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteAllAnalises() {
+        repository.deleteAll();
+        return true;
     }
 }

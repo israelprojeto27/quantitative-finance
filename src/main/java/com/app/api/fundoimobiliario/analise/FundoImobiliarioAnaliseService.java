@@ -1,11 +1,5 @@
 package com.app.api.fundoimobiliario.analise;
 
-import com.app.api.acao.analise.entities.AcaoAnalise;
-import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
-import com.app.api.acao.cotacao.entities.CotacaoAcaoMensal;
-import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
-import com.app.api.acao.dividendo.entity.DividendoAcao;
-import com.app.api.acao.principal.entity.Acao;
 import com.app.api.fundoimobiliario.analise.entities.FundoImobiliarioAnalise;
 import com.app.api.fundoimobiliario.cotacao.CotacaoFundoService;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
@@ -103,7 +97,7 @@ public class FundoImobiliarioAnaliseService implements BaseAtivoAnaliseService {
             return list;
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     private Double calculateCoeficienteRoiDividendo(List<DividendoFundo> listDividendos) {
@@ -674,5 +668,12 @@ public class FundoImobiliarioAnaliseService implements BaseAtivoAnaliseService {
         }
 
         return null;
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteAllAnalises() {
+        repository.deleteAll();
+        return true;
     }
 }

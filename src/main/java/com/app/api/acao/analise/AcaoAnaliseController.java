@@ -113,4 +113,12 @@ public class AcaoAnaliseController implements BaseAtivoAnaliseController {
         return new ResponseEntity<>(service.filterSimulaRendimentoByQuantidadeCotasBySigla(valorInvestimento, orderFilter, typeOrderFilter), HttpStatus.OK);
     }
 
+    @Override
+    @CrossOrigin
+    @DeleteMapping(path = "/delete-all-analises")
+    @Operation(summary = "Limpa todos os registros de analises")
+    public ResponseEntity<?> deleteAllAnalises() {
+        return new ResponseEntity<>(service.deleteAllAnalises(), HttpStatus.OK);
+    }
+
 }
