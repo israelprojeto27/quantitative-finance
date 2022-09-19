@@ -21,6 +21,7 @@ public class AtivoAnaliseController {
     @Autowired
     AtivoAnaliseService service;
 
+
     @CrossOrigin
     @PostMapping("/add-analise-ativo/{tipoAtivo}/{sigla}")
     @Operation(summary = "Adiciona ativo de um determinado tipo para a lista de analises geral")

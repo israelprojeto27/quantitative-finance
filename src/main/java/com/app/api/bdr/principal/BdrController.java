@@ -133,6 +133,7 @@ public class BdrController implements BaseController<Bdr, BdrDTO> {
         return new ResponseEntity<>(service.uploadFile(document, periodo), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @Operation(summary = "Realiza upload do arquivo de cotações em todos os periodos (diario, semanal, mensal)")
     @PostMapping(path = "/uploadFull", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Override
@@ -143,6 +144,7 @@ public class BdrController implements BaseController<Bdr, BdrDTO> {
             return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_EMPTY, HttpStatus.BAD_REQUEST);
     }
 
+    @CrossOrigin
     @Override
     @Operation(summary = "Realiza upload parcial do arquivo de cotações em todos os periodos (diario, semanal, mensal)")
     @PostMapping(path = "/uploadPartial", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})

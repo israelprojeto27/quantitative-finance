@@ -20,47 +20,54 @@ public class IncreasePercentAcaoService {
 
     @Transactional
     public void saveCotacaoDiario(CotacaoAcaoDiario ultimaCotacao, CotacaoAcaoDiario cotacao, Integer intervalo) {
-        Double percent = (ultimaCotacao.getClose() - cotacao.getClose()) / cotacao.getClose();
-        IncreasePercentAcao increasePercentAcao =  new IncreasePercentAcao();
-        increasePercentAcao.setDataBase(ultimaCotacao.getData());
-        increasePercentAcao.setPercentual(percent);
-        increasePercentAcao.setIntervaloPeriodo(intervalo);
-        increasePercentAcao.setPeriodo(PeriodoEnum.DIARIO);
-        increasePercentAcao.setValorFechamentoAtual(ultimaCotacao.getClose());
-        increasePercentAcao.setValorFechamentoAnterior(cotacao.getClose());
-        increasePercentAcao.setAcao(cotacao.getAcao());
-        increasePercentAcao.setDataReference(cotacao.getData());
-        repository.save(increasePercentAcao);
+            if ( ultimaCotacao.getClose() > 0.0d && cotacao.getClose() > 0.0d && cotacao.getClose() > 0.0d ){
+                Double percent = (ultimaCotacao.getClose() - cotacao.getClose()) / cotacao.getClose();
+                IncreasePercentAcao increasePercentAcao =  new IncreasePercentAcao();
+                increasePercentAcao.setDataBase(ultimaCotacao.getData());
+                increasePercentAcao.setPercentual(percent);
+                increasePercentAcao.setIntervaloPeriodo(intervalo);
+                increasePercentAcao.setPeriodo(PeriodoEnum.DIARIO);
+                increasePercentAcao.setValorFechamentoAtual(ultimaCotacao.getClose());
+                increasePercentAcao.setValorFechamentoAnterior(cotacao.getClose());
+                increasePercentAcao.setAcao(cotacao.getAcao());
+                increasePercentAcao.setDataReference(cotacao.getData());
+                repository.save(increasePercentAcao);
+            }
     }
 
     @Transactional
     public void saveCotacaoSemanal(CotacaoAcaoSemanal ultimaCotacao, CotacaoAcaoSemanal cotacao, Integer intervalo) {
-        Double percent = (ultimaCotacao.getClose() - cotacao.getClose()) / cotacao.getClose();
-        IncreasePercentAcao increasePercentAcao =  new IncreasePercentAcao();
-        increasePercentAcao.setDataBase(ultimaCotacao.getData());
-        increasePercentAcao.setPercentual(percent);
-        increasePercentAcao.setIntervaloPeriodo(intervalo);
-        increasePercentAcao.setPeriodo(PeriodoEnum.SEMANAL);
-        increasePercentAcao.setValorFechamentoAtual(ultimaCotacao.getClose());
-        increasePercentAcao.setValorFechamentoAnterior(cotacao.getClose());
-        increasePercentAcao.setAcao(cotacao.getAcao());
-        increasePercentAcao.setDataReference(cotacao.getData());
-        repository.save(increasePercentAcao);
+        if ( ultimaCotacao.getClose() > 0.0d && cotacao.getClose() > 0.0d && cotacao.getClose() > 0.0d ){
+            Double percent = (ultimaCotacao.getClose() - cotacao.getClose()) / cotacao.getClose();
+            IncreasePercentAcao increasePercentAcao =  new IncreasePercentAcao();
+            increasePercentAcao.setDataBase(ultimaCotacao.getData());
+            increasePercentAcao.setPercentual(percent);
+            increasePercentAcao.setIntervaloPeriodo(intervalo);
+            increasePercentAcao.setPeriodo(PeriodoEnum.SEMANAL);
+            increasePercentAcao.setValorFechamentoAtual(ultimaCotacao.getClose());
+            increasePercentAcao.setValorFechamentoAnterior(cotacao.getClose());
+            increasePercentAcao.setAcao(cotacao.getAcao());
+            increasePercentAcao.setDataReference(cotacao.getData());
+            repository.save(increasePercentAcao);
+        }
+
     }
 
     @Transactional
     public void saveCotacaoMensal(CotacaoAcaoMensal ultimaCotacao, CotacaoAcaoMensal cotacao, Integer intervalo) {
-        Double percent = (ultimaCotacao.getClose() - cotacao.getClose()) / cotacao.getClose();
-        IncreasePercentAcao increasePercentAcao =  new IncreasePercentAcao();
-        increasePercentAcao.setDataBase(ultimaCotacao.getData());
-        increasePercentAcao.setPercentual(percent);
-        increasePercentAcao.setIntervaloPeriodo(intervalo);
-        increasePercentAcao.setPeriodo(PeriodoEnum.MENSAL);
-        increasePercentAcao.setValorFechamentoAtual(ultimaCotacao.getClose());
-        increasePercentAcao.setValorFechamentoAnterior(cotacao.getClose());
-        increasePercentAcao.setAcao(cotacao.getAcao());
-        increasePercentAcao.setDataReference(cotacao.getData());
-        repository.save(increasePercentAcao);
+        if ( ultimaCotacao.getClose() > 0.0d && cotacao.getClose() > 0.0d && cotacao.getClose() > 0.0d ){
+            Double percent = (ultimaCotacao.getClose() - cotacao.getClose()) / cotacao.getClose();
+            IncreasePercentAcao increasePercentAcao =  new IncreasePercentAcao();
+            increasePercentAcao.setDataBase(ultimaCotacao.getData());
+            increasePercentAcao.setPercentual(percent);
+            increasePercentAcao.setIntervaloPeriodo(intervalo);
+            increasePercentAcao.setPeriodo(PeriodoEnum.MENSAL);
+            increasePercentAcao.setValorFechamentoAtual(ultimaCotacao.getClose());
+            increasePercentAcao.setValorFechamentoAnterior(cotacao.getClose());
+            increasePercentAcao.setAcao(cotacao.getAcao());
+            increasePercentAcao.setDataReference(cotacao.getData());
+            repository.save(increasePercentAcao);
+        }
     }
 
 
