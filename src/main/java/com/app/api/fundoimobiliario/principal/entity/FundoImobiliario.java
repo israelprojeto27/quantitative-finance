@@ -17,12 +17,16 @@ public class FundoImobiliario {
 
     private String sigla;
 
+    @Column(name = "dividend_yield")
+    private Double dividendYield = 0d;
+
     public FundoImobiliario() {
     }
 
-    public FundoImobiliario(Long id, String sigla) {
+    public FundoImobiliario(Long id, String sigla, Double dividendYield) {
         this.id = id;
         this.sigla = sigla;
+        this.dividendYield = dividendYield;
     }
 
     public FundoImobiliario(String sigla) {

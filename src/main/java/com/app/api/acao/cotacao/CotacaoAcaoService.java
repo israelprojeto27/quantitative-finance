@@ -102,16 +102,20 @@ public class CotacaoAcaoService implements BaseCotacaoService<Acao, AcaoCotacaoD
         }
         else if ( periodo.equals(PeriodoEnum.SEMANAL.getLabel())){
             CotacaoAcaoSemanal cotacaoAcaoSemanal = CotacaoAcaoSemanal.toEntity(array, acao);
-            List<CotacaoAcaoSemanal> listCotacao = cotacaoAcaoSemanalRepository.findByAcaoAndData(acao, cotacaoAcaoSemanal.getData());
-            if ( listCotacao.isEmpty() && cotacaoAcaoSemanal != null){
-                this.createCotacaoSemanal(cotacaoAcaoSemanal);
+            if ( cotacaoAcaoSemanal != null){
+                List<CotacaoAcaoSemanal> listCotacao = cotacaoAcaoSemanalRepository.findByAcaoAndData(acao, cotacaoAcaoSemanal.getData());
+                if ( listCotacao != null && listCotacao.isEmpty() && cotacaoAcaoSemanal != null){
+                    this.createCotacaoSemanal(cotacaoAcaoSemanal);
+                }
             }
         }
         else if ( periodo.equals(PeriodoEnum.MENSAL.getLabel())){
             CotacaoAcaoMensal cotacaoAcaoMensal = CotacaoAcaoMensal.toEntity(array, acao);
-            List<CotacaoAcaoMensal> listCotacao = cotacaoAcaoMensalRepository.findByAcaoAndData(acao, cotacaoAcaoMensal.getData());
-            if ( listCotacao.isEmpty() && cotacaoAcaoMensal != null){
-                this.createCotacaoMensal(cotacaoAcaoMensal);
+            if ( cotacaoAcaoMensal != null ){
+                List<CotacaoAcaoMensal> listCotacao = cotacaoAcaoMensalRepository.findByAcaoAndData(acao, cotacaoAcaoMensal.getData());
+                if ( listCotacao.isEmpty() && cotacaoAcaoMensal != null){
+                    this.createCotacaoMensal(cotacaoAcaoMensal);
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.app.api.fundoimobiliario.cotacao;
 
 import com.app.api.acao.enums.PeriodoEnum;
+import com.app.api.ativos.principal.dto.InfoGeraisAtivosDTO;
 import com.app.api.fundoimobiliario.cotacao.dto.FundoCotacaoDTO;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
@@ -83,23 +84,29 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
 
         if ( periodo.equals(PeriodoEnum.DIARIO.getLabel())){
             CotacaoFundoDiario cotacaoFundoDiario = CotacaoFundoDiario.toEntity(array, fundo);
-            List<CotacaoFundoDiario> listCotacao = cotacaoFundoDiarioRepository.findByFundoAndData(fundo, cotacaoFundoDiario.getData());
-            if ( listCotacao.isEmpty() && cotacaoFundoDiario != null){
-                this.createCotacaoDiario(cotacaoFundoDiario);
+            if ( cotacaoFundoDiario != null){
+                List<CotacaoFundoDiario> listCotacao = cotacaoFundoDiarioRepository.findByFundoAndData(fundo, cotacaoFundoDiario.getData());
+                if ( listCotacao.isEmpty() && cotacaoFundoDiario != null){
+                    this.createCotacaoDiario(cotacaoFundoDiario);
+                }
             }
         }
         else if ( periodo.equals(PeriodoEnum.SEMANAL.getLabel())){
             CotacaoFundoSemanal cotacaoFundoSemanal = CotacaoFundoSemanal.toEntity(array, fundo);
-            List<CotacaoFundoSemanal> listCotacao = cotacaoFundoSemanalRepository.findByFundoAndData(fundo, cotacaoFundoSemanal.getData());
-            if (listCotacao.isEmpty() && cotacaoFundoSemanal != null){
-                this.createCotacaoSemanal(cotacaoFundoSemanal);
+            if ( cotacaoFundoSemanal != null){
+                List<CotacaoFundoSemanal> listCotacao = cotacaoFundoSemanalRepository.findByFundoAndData(fundo, cotacaoFundoSemanal.getData());
+                if (listCotacao.isEmpty() && cotacaoFundoSemanal != null){
+                    this.createCotacaoSemanal(cotacaoFundoSemanal);
+                }
             }
         }
         else if ( periodo.equals(PeriodoEnum.MENSAL.getLabel())){
             CotacaoFundoMensal cotacaoFundoMensal = CotacaoFundoMensal.toEntity(array, fundo);
-            List<CotacaoFundoMensal> listCotacao = cotacaoFundoMensalRepository.findByFundoAndData(fundo, cotacaoFundoMensal.getData());
-            if (listCotacao.isEmpty() && cotacaoFundoMensal != null ){
-                this.createCotacaoMensal(cotacaoFundoMensal);
+            if ( cotacaoFundoMensal != null ){
+                List<CotacaoFundoMensal> listCotacao = cotacaoFundoMensalRepository.findByFundoAndData(fundo, cotacaoFundoMensal.getData());
+                if (listCotacao.isEmpty() && cotacaoFundoMensal != null ){
+                    this.createCotacaoMensal(cotacaoFundoMensal);
+                }
             }
         }
     }
@@ -128,7 +135,8 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
 
     @Override
     public List<CotacaoFundoDiario> findCotacaoDiarioByAtivo(FundoImobiliario fundoImobiliario) {
-        return cotacaoFundoDiarioRepository.findByFundo(fundoImobiliario);
+        List<CotacaoFundoDiario> list = cotacaoFundoDiarioRepository.findByFundo(fundoImobiliario);
+        return list.stream().sorted(Comparator.comparing(CotacaoFundoDiario::getData).reversed()).collect(Collectors.toList());
     }
 
     @Override
@@ -138,7 +146,8 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
 
     @Override
     public List<CotacaoFundoSemanal> findCotacaoSemanalByAtivo(FundoImobiliario fundoImobiliario) {
-        return cotacaoFundoSemanalRepository.findByFundo(fundoImobiliario);
+        List<CotacaoFundoSemanal> list = cotacaoFundoSemanalRepository.findByFundo(fundoImobiliario);
+        return list.stream().sorted(Comparator.comparing(CotacaoFundoSemanal::getData).reversed()).collect(Collectors.toList());
     }
 
     @Override
@@ -148,7 +157,8 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
 
     @Override
     public List<CotacaoFundoMensal> findCotacaoMensalByAtivo(FundoImobiliario fundoImobiliario) {
-        return cotacaoFundoMensalRepository.findByFundo(fundoImobiliario);
+        List<CotacaoFundoMensal> list = cotacaoFundoMensalRepository.findByFundo(fundoImobiliario);
+        return list.stream().sorted(Comparator.comparing(CotacaoFundoMensal::getData).reversed()).collect(Collectors.toList());
     }
 
     @Override

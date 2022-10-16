@@ -30,6 +30,8 @@ public class Utils {
 
     private static final String IGNORED_LINE2 = "Date,Open,High,Low,Close,Adj Close,Volume,Dividends,Stock Splits";
 
+    private static final String IGNORED_LINE4 = ",sigla,dividend_yield";
+
     public static LocalDate converteStringToLocalDateTime3(String data) {
 
         try {
@@ -111,13 +113,15 @@ public class Utils {
     }
 
     public static boolean isLineIgnored(String line){
-        if ( line != null && !line.contains(IGNORED_LINE) && !line.contains(IGNORED_LINE2)  && !line.contains(IGNORED_LINE3)   ){
+        if ( line != null && !line.contains(IGNORED_LINE) && !line.contains(IGNORED_LINE2)  && !line.contains(IGNORED_LINE3)  && !line.contains(IGNORED_LINE4) ){
             return true;
         }
         else {
             return false;
         }
     }
+
+
 
 
     public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {

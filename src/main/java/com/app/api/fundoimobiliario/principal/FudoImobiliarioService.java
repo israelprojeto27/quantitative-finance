@@ -241,6 +241,52 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
         return true;
     }
 
+
+    @Transactional
+    public boolean uploadAnaliseFundamentalista(MultipartFile file) throws IOException{
+        ZipInputStream zis = new ZipInputStream(file.getInputStream());
+        ZipEntry zipEntry = zis.getNextEntry();
+        byte[] buffer = new byte[1024];
+        File destDir = Files.createTempDirectory("tmpDirPrefix").toFile();
+        String[] token;
+        while (zipEntry != null) {
+            File newFile = Utils.newFile(destDir, zipEntry);
+
+            // write file content
+            FileOutputStream fos = new FileOutputStream(newFile);
+            int len;
+            while ((len = zis.read(buffer)) > 0) {
+                fos.write(buffer, 0, len);
+            }
+            fos.close();
+
+            Optional<FundoImobiliario> optFundo = repository.findBySigla(zipEntry.getName().replace("11.SA.csv", ""));
+            if (optFundo.isPresent()){
+                BufferedReader reader = new BufferedReader(new FileReader(newFile));
+                String line = reader.readLine();
+                int i = 0;
+                while (line != null) {
+                    i++;
+                    System.out.println("Linha: " + line);
+                    // read next line
+
+                    if (Utils.isLineIgnored(line)){
+                        token =  line.split(",");
+                        optFundo.get().setDividendYield(Double.parseDouble(token[2]));
+                        repository.save(optFundo.get());
+                    }
+                    line = reader.readLine();
+                }
+                reader.close();
+            }
+
+
+            zipEntry = zis.getNextEntry();
+
+        }
+        return true;
+    }
+
     private FundoImobiliario saveFundo(String sigla) {
         sigla = sigla.replace(".SA.csv", "");
         sigla = sigla.substring(0,4);

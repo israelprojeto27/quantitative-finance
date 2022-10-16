@@ -17,15 +17,19 @@ public class Acao  {
 
     private String sigla;
 
+    @Column(name = "dividend_yield")
+    private Double dividendYield = 0d;
+
 
     public Acao(String sigla) {
         this.sigla = sigla;
 
     }
 
-    public Acao(Long id, String sigla) {
+    public Acao(Long id, String sigla, Double dividendYield) {
         this.id = id;
         this.sigla = sigla;
+        this.dividendYield = dividendYield;
     }
 
     public Acao() {

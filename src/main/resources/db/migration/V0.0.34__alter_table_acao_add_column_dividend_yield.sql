@@ -1,0 +1,1 @@
+alter table acao add dividend_yield decimal(24,12) null;

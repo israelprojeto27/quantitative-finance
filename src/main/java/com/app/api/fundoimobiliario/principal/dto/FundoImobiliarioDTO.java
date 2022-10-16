@@ -1,6 +1,7 @@
 package com.app.api.fundoimobiliario.principal.dto;
 
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
+import com.app.commons.utils.Utils;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,9 +17,15 @@ public class FundoImobiliarioDTO {
 
     private String sigla;
 
-    public FundoImobiliarioDTO(Long id, String sigla) {
+    private Double dividendYield;
+
+    private String dividendYieldFmt;
+
+    public FundoImobiliarioDTO(Long id, String sigla, Double dividendYield, String dividendYieldFmt) {
         this.id = id;
         this.sigla = sigla;
+        this.dividendYield = dividendYield;
+        this.dividendYieldFmt = dividendYieldFmt;
     }
 
     public static FundoImobiliario toEntity(FundoImobiliarioDTO dto){
@@ -32,6 +39,8 @@ public class FundoImobiliarioDTO {
         return FundoImobiliarioDTO.builder()
                 .id(entity.getId())
                 .sigla(entity.getSigla())
+                .dividendYield(entity.getDividendYield())
+                .dividendYieldFmt(Utils.converterDoubleQuatroDecimaisString(entity.getDividendYield()))
                 .build();
     }
 

@@ -212,6 +212,51 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
     }
 
 
+
+    @Transactional
+    public boolean uploadAnaliseFundamentalista(MultipartFile file) throws IOException{
+        ZipInputStream zis = new ZipInputStream(file.getInputStream());
+        ZipEntry zipEntry = zis.getNextEntry();
+        byte[] buffer = new byte[1024];
+        File destDir = Files.createTempDirectory("tmpDirPrefix").toFile();
+        String[] token;
+        while (zipEntry != null) {
+            File newFile = Utils.newFile(destDir, zipEntry);
+
+            // write file content
+            FileOutputStream fos = new FileOutputStream(newFile);
+            int len;
+            while ((len = zis.read(buffer)) > 0) {
+                fos.write(buffer, 0, len);
+            }
+            fos.close();
+
+            Acao acao = this.saveAcao(zipEntry.getName());
+
+            BufferedReader reader = new BufferedReader(new FileReader(newFile));
+            String line = reader.readLine();
+            int i = 0;
+            while (line != null) {
+                i++;
+                System.out.println("Linha: " + line);
+                // read next line
+
+                if (Utils.isLineIgnored(line)){
+                    token =  line.split(",");
+                    acao.setDividendYield(Double.parseDouble(token[2]));
+                    repository.save(acao);
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+            zipEntry = zis.getNextEntry();
+
+        }
+        return true;
+    }
+
+
+
     @Override
     @Transactional
     public boolean uploadFilePartial(MultipartFile file) throws IOException{
@@ -391,6 +436,7 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
         zis.close();
         destDir.delete();
     }
+
 
     private Acao saveAcao(String sigla) {
         sigla = sigla.replace(".csv", "");
