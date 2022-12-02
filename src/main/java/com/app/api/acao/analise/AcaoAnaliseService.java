@@ -201,6 +201,14 @@ public class AcaoAnaliseService implements BaseAtivoAnaliseService {
                     listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getDataUltimoDividendo).reversed()).collect(Collectors.toList());
                 }
             }
+            else if ( orderFilter.equals(OrderFilterEnum.DIVIDEND_YIELD.getLabel())){
+                if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getDividendYieldFmt)).collect(Collectors.toList());
+                }
+                else {
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getDividendYieldFmt).reversed()).collect(Collectors.toList());
+                }
+            }
         }
 
         return listFinal;

@@ -2,17 +2,19 @@ package com.app.api.acao.cotacao.dto;
 
 import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
 import com.app.commons.utils.Utils;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Builder
 public class CotacaoAcaoDiarioDTO {
 
-    public CotacaoAcaoDiarioDTO() {
-    }
 
     private Long id;
 
@@ -30,16 +32,6 @@ public class CotacaoAcaoDiarioDTO {
 
     private Long volume;
 
-    public CotacaoAcaoDiarioDTO(Long id, String data, String high, String low, String open, String close, String adjclose, Long volume) {
-        this.id = id;
-        this.data = data;
-        this.high = high;
-        this.low = low;
-        this.open = open;
-        this.close = close;
-        this.adjclose = adjclose;
-        this.volume = volume;
-    }
 
     public static CotacaoAcaoDiarioDTO  fromEntity(CotacaoAcaoDiario entity) {
         return CotacaoAcaoDiarioDTO.builder()

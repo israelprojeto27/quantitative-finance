@@ -3,8 +3,10 @@ package com.app.api.acao.cotacao.entities;
 
 import com.app.api.acao.principal.entity.Acao;
 import com.app.commons.utils.Utils;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -12,6 +14,8 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Data
 @Entity
@@ -50,24 +54,6 @@ public class CotacaoAcaoDiario {
     @ManyToOne
     @JoinColumn(name = "acao_id")
     private Acao acao;
-
-    public CotacaoAcaoDiario(Long id, LocalDate data, Double high, Double low, Double open, Double close, Double adjclose, Long volume, Double dividend, Timestamp createdAt, Timestamp updatedAt, Acao acao) {
-        this.id = id;
-        this.data = data;
-        this.high = high;
-        this.low = low;
-        this.open = open;
-        this.close = close;
-        this.adjclose = adjclose;
-        this.volume = volume;
-        this.dividend = dividend;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.acao = acao;
-    }
-
-    public CotacaoAcaoDiario() {
-    }
 
 
     //,Date,Open,High,Low,Close,Adj Close,Volume

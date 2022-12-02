@@ -6,12 +6,18 @@ import com.app.api.bdr.cotacao.entities.CotacaoBdrMensal;
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoMensal;
 import com.app.api.fundoimobiliario.dividendo.entity.DividendoFundo;
+import com.app.api.stock.cotacao.entities.CotacaoStockMensal;
+import com.app.api.stock.dividendo.entity.DividendoStock;
 import com.app.commons.utils.Utils;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Builder
 public class RoiDividendoCotacaoDTO {
@@ -38,22 +44,6 @@ public class RoiDividendoCotacaoDTO {
 
     private String periodo;
 
-    public RoiDividendoCotacaoDTO() {
-    }
-
-    public RoiDividendoCotacaoDTO(Double coeficiente, String coeficienteFmt, Double valorDividendo, String valorDividendoFmt, LocalDate dataDividendo, String dataDividendoFmt, Double valorCotacaoMensal, String valorCotacaoMensalFmt, LocalDate dataCotacaoMensal, String dataCotacaoMensalFmt, String periodo) {
-        this.coeficiente = coeficiente;
-        this.coeficienteFmt = coeficienteFmt;
-        this.valorDividendo = valorDividendo;
-        this.valorDividendoFmt = valorDividendoFmt;
-        this.dataDividendo = dataDividendo;
-        this.dataDividendoFmt = dataDividendoFmt;
-        this.valorCotacaoMensal = valorCotacaoMensal;
-        this.valorCotacaoMensalFmt = valorCotacaoMensalFmt;
-        this.dataCotacaoMensal = dataCotacaoMensal;
-        this.dataCotacaoMensalFmt = dataCotacaoMensalFmt;
-        this.periodo = periodo;
-    }
 
     public static RoiDividendoCotacaoDTO from(Double roiDividendoCotacao, DividendoAcao dividendo, CotacaoAcaoMensal cotacaoAcaoMensal) {
         return RoiDividendoCotacaoDTO.builder()
@@ -100,6 +90,23 @@ public class RoiDividendoCotacaoDTO {
                 .dataCotacaoMensal(cotacaoFundoMensal.getData())
                 .dataCotacaoMensalFmt(Utils.converteLocalDateToString(cotacaoFundoMensal.getData()))
                 .periodo(Utils.converteLocalDateToString2(cotacaoFundoMensal.getData()))
+                .build();
+    }
+
+
+    public static RoiDividendoCotacaoDTO from(Double roiDividendoCotacao, DividendoStock dividendo, CotacaoStockMensal cotacaoStockMensal) {
+        return RoiDividendoCotacaoDTO.builder()
+                .coeficiente(roiDividendoCotacao)
+                .coeficienteFmt(Utils.converterDoubleQuatroDecimaisString(roiDividendoCotacao))
+                .valorDividendo(dividendo.getDividend())
+                .valorDividendoFmt(Utils.converterDoubleDoisDecimaisString(dividendo.getDividend()))
+                .dataDividendo(dividendo.getData())
+                .dataDividendoFmt(Utils.converteLocalDateToString(dividendo.getData()))
+                .valorCotacaoMensal(cotacaoStockMensal.getClose())
+                .valorCotacaoMensalFmt(Utils.converterDoubleDoisDecimaisString(cotacaoStockMensal.getClose()))
+                .dataCotacaoMensal(cotacaoStockMensal.getData())
+                .dataCotacaoMensalFmt(Utils.converteLocalDateToString(cotacaoStockMensal.getData()))
+                .periodo(Utils.converteLocalDateToString2(cotacaoStockMensal.getData()))
                 .build();
     }
 }

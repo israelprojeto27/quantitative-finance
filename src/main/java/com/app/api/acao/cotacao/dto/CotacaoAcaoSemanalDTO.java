@@ -2,17 +2,18 @@ package com.app.api.acao.cotacao.dto;
 
 import com.app.api.acao.cotacao.entities.CotacaoAcaoSemanal;
 import com.app.commons.utils.Utils;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Builder
 public class CotacaoAcaoSemanalDTO {
-
-    public CotacaoAcaoSemanalDTO() {
-    }
 
     private Long id;
 
@@ -29,17 +30,6 @@ public class CotacaoAcaoSemanalDTO {
     private String adjclose;
 
     private Long volume;
-
-    public CotacaoAcaoSemanalDTO(Long id, String data, String high, String low, String open, String close, String adjclose, Long volume) {
-        this.id = id;
-        this.data = data;
-        this.high = high;
-        this.low = low;
-        this.open = open;
-        this.close = close;
-        this.adjclose = adjclose;
-        this.volume = volume;
-    }
 
     public static CotacaoAcaoSemanalDTO  fromEntity(CotacaoAcaoSemanal entity) {
         return CotacaoAcaoSemanalDTO.builder()

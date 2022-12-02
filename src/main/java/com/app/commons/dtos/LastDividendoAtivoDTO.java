@@ -3,12 +3,17 @@ package com.app.commons.dtos;
 import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.api.fundoimobiliario.dividendo.entity.DividendoFundo;
+import com.app.api.stock.dividendo.entity.DividendoStock;
 import com.app.commons.utils.Utils;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Builder
 public class LastDividendoAtivoDTO {
@@ -19,14 +24,6 @@ public class LastDividendoAtivoDTO {
 
     private LocalDate dataUltimoDividendoFmt;
 
-    public LastDividendoAtivoDTO() {
-    }
-
-    public LastDividendoAtivoDTO(Double valorUltimoDividendo, String dataUltimoDividendo, LocalDate dataUltimoDividendoFmt) {
-        this.valorUltimoDividendo = valorUltimoDividendo;
-        this.dataUltimoDividendo = dataUltimoDividendo;
-        this.dataUltimoDividendoFmt = dataUltimoDividendoFmt;
-    }
 
     public static LastDividendoAtivoDTO from(DividendoAcao dividendo) {
         return LastDividendoAtivoDTO.builder()
@@ -45,6 +42,14 @@ public class LastDividendoAtivoDTO {
     }
 
     public static LastDividendoAtivoDTO from(DividendoFundo dividendo) {
+        return LastDividendoAtivoDTO.builder()
+                .valorUltimoDividendo(dividendo.getDividend())
+                .dataUltimoDividendo(Utils.converteLocalDateToString(dividendo.getData()))
+                .dataUltimoDividendoFmt(dividendo.getData())
+                .build();
+    }
+
+    public static LastDividendoAtivoDTO from(DividendoStock dividendo) {
         return LastDividendoAtivoDTO.builder()
                 .valorUltimoDividendo(dividendo.getDividend())
                 .dataUltimoDividendo(Utils.converteLocalDateToString(dividendo.getData()))

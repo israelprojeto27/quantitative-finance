@@ -150,6 +150,14 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
                         listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getDataUltimaCotacaoFmt).reversed()).collect(Collectors.toList());
                     }
                 }
+                else if ( orderFilter.equals(OrderFilterEnum.DIVIDEND_YIELD.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getDividendYieldFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getDividendYieldFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
 
 
                 return listFinal;

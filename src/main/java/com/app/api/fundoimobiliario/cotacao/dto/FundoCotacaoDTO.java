@@ -10,6 +10,7 @@ import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import com.app.commons.dtos.DividendoDTO;
 import com.app.commons.dtos.IncreasePercentAtivoDTO;
 import com.app.commons.dtos.dividendo.RoiDividendoCotacaoDTO;
+import com.app.commons.utils.Utils;
 import lombok.Builder;
 import lombok.Data;
 
@@ -40,10 +41,12 @@ public class FundoCotacaoDTO {
 
     private List<RoiDividendoCotacaoDTO> listRoiDividendoCotacao;
 
+    private String dividendYield;
+
     public FundoCotacaoDTO() {
     }
 
-    public FundoCotacaoDTO(Long id, String sigla, Integer quantCotacoesDiarias, Integer quantCotacoesSemanais, Integer quantCotacoesMensais, List<CotacaoFundoDiarioDTO> listCotacaoDiario, List<CotacaoFundoSemanalDTO> listCotacaoSemanal, List<CotacaoFundoMensalDTO> listCotacaoMensal, List<IncreasePercentAtivoDTO> listIncreasePercentDiario, List<IncreasePercentAtivoDTO> listIncreasePercentSemanal, List<IncreasePercentAtivoDTO> listIncreasePercentMensal, List<DividendoDTO> listDividendos, List<RoiDividendoCotacaoDTO> listRoiDividendoCotacao) {
+    public FundoCotacaoDTO(Long id, String sigla, Integer quantCotacoesDiarias, Integer quantCotacoesSemanais, Integer quantCotacoesMensais, List<CotacaoFundoDiarioDTO> listCotacaoDiario, List<CotacaoFundoSemanalDTO> listCotacaoSemanal, List<CotacaoFundoMensalDTO> listCotacaoMensal, List<IncreasePercentAtivoDTO> listIncreasePercentDiario, List<IncreasePercentAtivoDTO> listIncreasePercentSemanal, List<IncreasePercentAtivoDTO> listIncreasePercentMensal, List<DividendoDTO> listDividendos, List<RoiDividendoCotacaoDTO> listRoiDividendoCotacao, String dividendYield) {
         this.id = id;
         this.sigla = sigla;
         this.quantCotacoesDiarias = quantCotacoesDiarias;
@@ -57,6 +60,7 @@ public class FundoCotacaoDTO {
         this.listIncreasePercentMensal = listIncreasePercentMensal;
         this.listDividendos = listDividendos;
         this.listRoiDividendoCotacao = listRoiDividendoCotacao;
+        this.dividendYield = dividendYield;
     }
 
     public static FundoCotacaoDTO fromEntity(FundoImobiliario entity, List<CotacaoFundoDiario> listCotacaoDiario, List<CotacaoFundoSemanal> listCotacaoSemanal, List<CotacaoFundoMensal> listCotacaoMensal) {
@@ -69,6 +73,7 @@ public class FundoCotacaoDTO {
                 .quantCotacoesDiarias(listCotacaoDiario!= null ? listCotacaoDiario.size() : 0)
                 .quantCotacoesSemanais(listCotacaoSemanal!= null ? listCotacaoSemanal.size() : 0)
                 .quantCotacoesMensais(listCotacaoMensal != null ? listCotacaoMensal.size() : 0)
+                .dividendYield(entity.getDividendYield() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getDividendYield()): "")
                 .build();
     }
 
@@ -88,6 +93,7 @@ public class FundoCotacaoDTO {
                 .quantCotacoesDiarias(listCotacaoDiario!= null ? listCotacaoDiario.size() : 0)
                 .quantCotacoesSemanais(listCotacaoSemanal!= null ? listCotacaoSemanal.size() : 0)
                 .quantCotacoesMensais(listCotacaoMensal != null ? listCotacaoMensal.size() : 0)
+                .dividendYield(entity.getDividendYield() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getDividendYield()): "")
                 .build();
     }
 
@@ -108,6 +114,7 @@ public class FundoCotacaoDTO {
                 .quantCotacoesSemanais(listCotacaoSemanal!= null ? listCotacaoSemanal.size() : 0)
                 .quantCotacoesMensais(listCotacaoMensal != null ? listCotacaoMensal.size() : 0)
                 .listRoiDividendoCotacao(listRoiDividendoCotacao)
+                .dividendYield(entity.getDividendYield() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getDividendYield()): "")
                 .build();
     }
 }

@@ -3,12 +3,17 @@ package com.app.commons.dtos.dividendo;
 import com.app.api.acao.principal.entity.Acao;
 import com.app.api.bdr.principal.entity.Bdr;
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
+import com.app.api.stock.principal.entity.Stock;
 import com.app.commons.utils.Utils;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Builder
 public class SumCalculateYieldDividendosAtivoDTO {
@@ -19,14 +24,7 @@ public class SumCalculateYieldDividendosAtivoDTO {
 
     private List<SumCalculateDetailYieldDividendosAcaoDTO> listCalcultaDetailYieldDividendos;
 
-    public SumCalculateYieldDividendosAtivoDTO() {
-    }
 
-    public SumCalculateYieldDividendosAtivoDTO(String sigla, Double totalDividendos, List<SumCalculateDetailYieldDividendosAcaoDTO> listCalcultaDetailYieldDividendos) {
-        this.sigla = sigla;
-        this.totalDividendos = totalDividendos;
-        this.listCalcultaDetailYieldDividendos = listCalcultaDetailYieldDividendos;
-    }
 
     public static SumCalculateYieldDividendosAtivoDTO from(Acao acao, List<SumCalculateDetailYieldDividendosAcaoDTO> listCalcultaDetailYieldDividendos) {
         return SumCalculateYieldDividendosAtivoDTO.builder()
@@ -47,6 +45,14 @@ public class SumCalculateYieldDividendosAtivoDTO {
     public static SumCalculateYieldDividendosAtivoDTO from(Bdr bdr, List<SumCalculateDetailYieldDividendosAcaoDTO> listCalcultaDetailYieldDividendos) {
         return SumCalculateYieldDividendosAtivoDTO.builder()
                 .sigla(bdr.getSigla())
+                .totalDividendos(Utils.converterDoubleDoisDecimais(listCalcultaDetailYieldDividendos.stream().mapToDouble(dividendo -> dividendo.getRendimentoDividendo()).sum()))
+                .listCalcultaDetailYieldDividendos(listCalcultaDetailYieldDividendos)
+                .build();
+    }
+
+    public static SumCalculateYieldDividendosAtivoDTO from(Stock stock, List<SumCalculateDetailYieldDividendosAcaoDTO> listCalcultaDetailYieldDividendos) {
+        return SumCalculateYieldDividendosAtivoDTO.builder()
+                .sigla(stock.getSigla())
                 .totalDividendos(Utils.converterDoubleDoisDecimais(listCalcultaDetailYieldDividendos.stream().mapToDouble(dividendo -> dividendo.getRendimentoDividendo()).sum()))
                 .listCalcultaDetailYieldDividendos(listCalcultaDetailYieldDividendos)
                 .build();

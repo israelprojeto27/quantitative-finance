@@ -6,12 +6,18 @@ import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.dividendo.entity.DividendoFundo;
+import com.app.api.stock.cotacao.entities.CotacaoStockDiario;
+import com.app.api.stock.dividendo.entity.DividendoStock;
 import com.app.commons.utils.Utils;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Builder
 public class ResultSimulaDividendoSiglaDetailDTO {
@@ -27,18 +33,6 @@ public class ResultSimulaDividendoSiglaDetailDTO {
     private Double valorDividendo;
 
     private String valorDividendoFmt;
-
-    public ResultSimulaDividendoSiglaDetailDTO() {
-    }
-
-    public ResultSimulaDividendoSiglaDetailDTO(Double valorRendimento, String valorRendimentoFmt, LocalDate dataDividendo, String dataDividendoFmt, Double valorDividendo, String valorDividendoFmt) {
-        this.valorRendimento = valorRendimento;
-        this.valorRendimentoFmt = valorRendimentoFmt;
-        this.dataDividendo = dataDividendo;
-        this.dataDividendoFmt = dataDividendoFmt;
-        this.valorDividendo = valorDividendo;
-        this.valorDividendoFmt = valorDividendoFmt;
-    }
 
 
     public static ResultSimulaDividendoSiglaDetailDTO from(Double valorInvest, DividendoAcao dividendoAcao, CotacaoAcaoDiario cotacaoAcaoDiario) {
@@ -108,6 +102,33 @@ public class ResultSimulaDividendoSiglaDetailDTO {
     }
 
     public static ResultSimulaDividendoSiglaDetailDTO from(Integer quantCotas, DividendoFundo dividendo, CotacaoFundoDiario cotacaoFundoDiario) {
+
+        return ResultSimulaDividendoSiglaDetailDTO.builder()
+                .valorDividendo(dividendo.getDividend())
+                .valorDividendoFmt(Utils.converterDoubleDoisDecimaisString(dividendo.getDividend()))
+                .dataDividendo(dividendo.getData())
+                .dataDividendoFmt(Utils.converteLocalDateToString(dividendo.getData()))
+                .valorRendimento(quantCotas * dividendo.getDividend())
+                .valorRendimentoFmt(Utils.converterDoubleDoisDecimaisString(quantCotas * dividendo.getDividend()))
+                .build();
+    }
+
+
+    public static ResultSimulaDividendoSiglaDetailDTO from(Double valorInvest, DividendoStock dividendo, CotacaoStockDiario cotacaoStockDiario) {
+
+        Double quantCotas = valorInvest / cotacaoStockDiario.getClose();
+
+        return ResultSimulaDividendoSiglaDetailDTO.builder()
+                .valorDividendo(dividendo.getDividend())
+                .valorDividendoFmt(Utils.converterDoubleDoisDecimaisString(dividendo.getDividend()))
+                .dataDividendo(dividendo.getData())
+                .dataDividendoFmt(Utils.converteLocalDateToString(dividendo.getData()))
+                .valorRendimento(quantCotas * dividendo.getDividend())
+                .valorRendimentoFmt(Utils.converterDoubleDoisDecimaisString(quantCotas * dividendo.getDividend()))
+                .build();
+    }
+
+    public static ResultSimulaDividendoSiglaDetailDTO from(Integer quantCotas, DividendoStock dividendo, CotacaoStockDiario cotacaoStockDiario) {
 
         return ResultSimulaDividendoSiglaDetailDTO.builder()
                 .valorDividendo(dividendo.getDividend())

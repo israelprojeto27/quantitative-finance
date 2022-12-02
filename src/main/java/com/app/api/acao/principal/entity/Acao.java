@@ -1,10 +1,14 @@
 package com.app.api.acao.principal.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Data
 @Entity
@@ -23,16 +27,6 @@ public class Acao  {
 
     public Acao(String sigla) {
         this.sigla = sigla;
-
-    }
-
-    public Acao(Long id, String sigla, Double dividendYield) {
-        this.id = id;
-        this.sigla = sigla;
-        this.dividendYield = dividendYield;
-    }
-
-    public Acao() {
     }
 
 

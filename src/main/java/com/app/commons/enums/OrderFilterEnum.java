@@ -9,7 +9,8 @@ public enum OrderFilterEnum {
     VALOR_INVESTIMENTO(5, "valorInvestimento"),
     VALOR_RENDIMENTO(6, "valorRendimento"),
     COEFICIENTE_ROI_DIVIDENDO(7, "coeficienteRoiDividendo"),
-    QUANTIDADE_OCORRENCIA_DIVIDENDOS(8, "quantidadeOcorrenciaDividendos");
+    QUANTIDADE_OCORRENCIA_DIVIDENDOS(8, "quantidadeOcorrenciaDividendos"),
+    DIVIDEND_YIELD(9, "dividendYield");
 
     private int instrumentId;
     private String label;
