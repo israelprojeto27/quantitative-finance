@@ -3,6 +3,7 @@ package com.app.commons.dtos.dividendo;
 import com.app.api.acao.principal.entity.Acao;
 import com.app.api.bdr.principal.entity.Bdr;
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
+import com.app.api.reit.principal.entity.Reit;
 import com.app.api.stock.principal.entity.Stock;
 import com.app.commons.utils.Utils;
 import lombok.AllArgsConstructor;
@@ -53,6 +54,15 @@ public class SumCalculateYieldDividendosAtivoDTO {
     public static SumCalculateYieldDividendosAtivoDTO from(Stock stock, List<SumCalculateDetailYieldDividendosAcaoDTO> listCalcultaDetailYieldDividendos) {
         return SumCalculateYieldDividendosAtivoDTO.builder()
                 .sigla(stock.getSigla())
+                .totalDividendos(Utils.converterDoubleDoisDecimais(listCalcultaDetailYieldDividendos.stream().mapToDouble(dividendo -> dividendo.getRendimentoDividendo()).sum()))
+                .listCalcultaDetailYieldDividendos(listCalcultaDetailYieldDividendos)
+                .build();
+    }
+
+
+    public static SumCalculateYieldDividendosAtivoDTO from(Reit reit, List<SumCalculateDetailYieldDividendosAcaoDTO> listCalcultaDetailYieldDividendos) {
+        return SumCalculateYieldDividendosAtivoDTO.builder()
+                .sigla(reit.getSigla())
                 .totalDividendos(Utils.converterDoubleDoisDecimais(listCalcultaDetailYieldDividendos.stream().mapToDouble(dividendo -> dividendo.getRendimentoDividendo()).sum()))
                 .listCalcultaDetailYieldDividendos(listCalcultaDetailYieldDividendos)
                 .build();

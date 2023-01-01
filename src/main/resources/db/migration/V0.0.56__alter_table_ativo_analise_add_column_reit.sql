@@ -1,0 +1,1 @@
+alter table ativo_analise add reit_id bigint null;

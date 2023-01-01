@@ -3,6 +3,7 @@ package com.app.commons.dtos;
 import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.api.fundoimobiliario.dividendo.entity.DividendoFundo;
+import com.app.api.reit.dividendo.entity.DividendoReit;
 import com.app.api.stock.dividendo.entity.DividendoStock;
 import com.app.commons.utils.Utils;
 import lombok.AllArgsConstructor;
@@ -50,6 +51,14 @@ public class LastDividendoAtivoDTO {
     }
 
     public static LastDividendoAtivoDTO from(DividendoStock dividendo) {
+        return LastDividendoAtivoDTO.builder()
+                .valorUltimoDividendo(dividendo.getDividend())
+                .dataUltimoDividendo(Utils.converteLocalDateToString(dividendo.getData()))
+                .dataUltimoDividendoFmt(dividendo.getData())
+                .build();
+    }
+
+    public static LastDividendoAtivoDTO from(DividendoReit dividendo) {
         return LastDividendoAtivoDTO.builder()
                 .valorUltimoDividendo(dividendo.getDividend())
                 .dataUltimoDividendo(Utils.converteLocalDateToString(dividendo.getData()))

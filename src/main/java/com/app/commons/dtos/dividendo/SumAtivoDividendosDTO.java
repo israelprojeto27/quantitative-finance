@@ -3,6 +3,7 @@ package com.app.commons.dtos.dividendo;
 import com.app.api.acao.principal.entity.Acao;
 import com.app.api.bdr.principal.entity.Bdr;
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
+import com.app.api.reit.principal.entity.Reit;
 import com.app.api.stock.principal.entity.Stock;
 import com.app.commons.utils.Utils;
 import lombok.AllArgsConstructor;
@@ -45,6 +46,13 @@ public class SumAtivoDividendosDTO {
     public static SumAtivoDividendosDTO from(Stock stock, double sumDividendos) {
         return SumAtivoDividendosDTO.builder()
                 .sigla(stock.getSigla())
+                .sumDividendo(Utils.converterDoubleSeisDecimais(sumDividendos))
+                .build();
+    }
+
+    public static SumAtivoDividendosDTO from(Reit reit, double sumDividendos) {
+        return SumAtivoDividendosDTO.builder()
+                .sigla(reit.getSigla())
                 .sumDividendo(Utils.converterDoubleSeisDecimais(sumDividendos))
                 .build();
     }

@@ -3,6 +3,7 @@ package com.app.commons.basic.analise.dto;
 import com.app.api.acao.analise.entities.AcaoAnalise;
 import com.app.api.bdr.analise.entities.BdrAnalise;
 import com.app.api.fundoimobiliario.analise.entities.FundoImobiliarioAnalise;
+import com.app.api.reit.analise.entities.ReitAnalise;
 import com.app.api.stock.analise.entities.StockAnalise;
 import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
 import com.app.commons.dtos.LastDividendoAtivoDTO;
@@ -119,6 +120,26 @@ public class AtivoAnaliseDTO {
                 .quantidadeOcorrenciasDividendos(Long.valueOf(quantidadeOcorrenciasDividendos))
                 .dividendYield(stockAnalise.getStock().getDividendYield() != null ? Utils.converterDoubleQuatroDecimaisString(stockAnalise.getStock().getDividendYield()): "")
                 .dividendYieldFmt(stockAnalise.getStock().getDividendYield() != null ? stockAnalise.getStock().getDividendYield() : 0d )
+                .build();
+    }
+
+
+    public static AtivoAnaliseDTO from(ReitAnalise reitAnalise, LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiario, LastDividendoAtivoDTO lastDividendoAtivo, int quantidadeOcorrenciasDividendos, Double coeficienteRoiDividendo) {
+        return AtivoAnaliseDTO.builder()
+                .sigla(reitAnalise.getReit().getSigla())
+                .valorUltimaCotacao(lastCotacaoAtivoDiario != null ? lastCotacaoAtivoDiario.getValorUltimaCotacao() : 0d)
+                .valorUltimaCotacaoFmt(lastCotacaoAtivoDiario != null ? Utils.converterDoubleDoisDecimaisString(lastCotacaoAtivoDiario.getValorUltimaCotacao()) : "" )
+                .dataUltimaCotacao(lastCotacaoAtivoDiario != null ? lastCotacaoAtivoDiario.getDataUltimaCotacaoFmt() : null)
+                .dataUltimaCotacaoFmt(lastCotacaoAtivoDiario != null ? Utils.converteLocalDateToString(lastCotacaoAtivoDiario.getDataUltimaCotacaoFmt()) : "")
+                .valorUltimoDividendo(lastDividendoAtivo != null ? lastDividendoAtivo.getValorUltimoDividendo() : 0d)
+                .valorUltimoDividendoFmt(lastDividendoAtivo != null ? Utils.converterDoubleDoisDecimaisString(lastDividendoAtivo.getValorUltimoDividendo())  : "")
+                .dataUltimoDividendo(lastDividendoAtivo != null ? lastDividendoAtivo.getDataUltimoDividendoFmt() : null)
+                .dataUltimoDividendoFmt(lastDividendoAtivo != null ? lastDividendoAtivo.getDataUltimoDividendo() : null)
+                .coeficienteRoiDividendo(coeficienteRoiDividendo != null ? coeficienteRoiDividendo : 0d)
+                .coeficienteRoiDividendoFmt(coeficienteRoiDividendo != null ? Utils.converterDoubleQuatroDecimaisString(coeficienteRoiDividendo) : "")
+                .quantidadeOcorrenciasDividendos(Long.valueOf(quantidadeOcorrenciasDividendos))
+                .dividendYield(reitAnalise.getReit().getDividendYield() != null ? Utils.converterDoubleQuatroDecimaisString(reitAnalise.getReit().getDividendYield()): "")
+                .dividendYieldFmt(reitAnalise.getReit().getDividendYield() != null ? reitAnalise.getReit().getDividendYield() : 0d )
                 .build();
     }
 }

@@ -77,12 +77,12 @@ public class DividendoStockService implements BaseDividendoService<DividendoStoc
     public List<StockListDividendoDTO> findAtivoListDividendos() {
         List<Stock> listStocks = stockRepository.findAll();
         if (!listStocks.isEmpty()){
-            List<StockListDividendoDTO> listAcaoDividendos = new ArrayList<StockListDividendoDTO>();
+            List<StockListDividendoDTO> listStockDividendos = new ArrayList<StockListDividendoDTO>();
             List<DividendoStock> listDividendos = new ArrayList<>();
             listStocks.forEach(stock-> {
-                listAcaoDividendos.add(StockListDividendoDTO.fromEntity(stock, repository.findAllByStock(stock, Sort.by(Sort.Direction.DESC, "data"))));
+                listStockDividendos.add(StockListDividendoDTO.fromEntity(stock, repository.findAllByStock(stock, Sort.by(Sort.Direction.DESC, "data"))));
             });
-           return listAcaoDividendos;
+           return listStockDividendos;
         }
         return null;
     }
@@ -114,8 +114,8 @@ public class DividendoStockService implements BaseDividendoService<DividendoStoc
             if (! map.isEmpty() ){
                 map.keySet().forEach(sigla -> {
                     List<DividendoStock> list = map.get(sigla);
-                    StockListDividendoDTO acaoListDividendoDTO = StockListDividendoDTO.from(sigla, list);
-                    listFinal.add(acaoListDividendoDTO);
+                    StockListDividendoDTO stockListDividendoDTO = StockListDividendoDTO.from(sigla, list);
+                    listFinal.add(stockListDividendoDTO);
                 });
             }
 
@@ -170,9 +170,9 @@ public class DividendoStockService implements BaseDividendoService<DividendoStoc
     }
 
     @Override
-    public SumCalculateYieldDividendosAtivoDTO calculateYieldByIdAtivoByQuantCotas(Long idAcao, Long quantidadeCotas) {
+    public SumCalculateYieldDividendosAtivoDTO calculateYieldByIdAtivoByQuantCotas(Long idStock, Long quantidadeCotas) {
 
-        Optional<Stock> stockOpt = stockRepository.findById(idAcao);
+        Optional<Stock> stockOpt = stockRepository.findById(idStock);
         if (stockOpt.isPresent()){
             List<DividendoStock> listDividendos = repository.findAllByStock(stockOpt.get(), Sort.by(Sort.Direction.DESC, "data"));
             List<CotacaoStockDiario> listCotacaoDiario = cotacaoStockDiarioRepository.findByStock(stockOpt.get());

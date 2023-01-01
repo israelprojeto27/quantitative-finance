@@ -23,7 +23,7 @@ public class ReitListDividendoDTO {
     private List<DividendoDTO> listDividendos;
 
 
-    public static ReitListDividendoDTO fromEntity(Reit reit, List<DividendoStock> listDividendos){
+    public static ReitListDividendoDTO fromEntity(Reit reit, List<DividendoReit> listDividendos){
         return ReitListDividendoDTO.builder()
                 .sigla(reit.getSigla())
                 .listDividendos(listDividendos.stream().map(DividendoDTO::from).collect(Collectors.toList()))

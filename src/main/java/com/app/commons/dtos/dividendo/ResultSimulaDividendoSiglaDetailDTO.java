@@ -6,6 +6,8 @@ import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
 import com.app.api.fundoimobiliario.dividendo.entity.DividendoFundo;
+import com.app.api.reit.cotacao.entities.CotacaoReitDiario;
+import com.app.api.reit.dividendo.entity.DividendoReit;
 import com.app.api.stock.cotacao.entities.CotacaoStockDiario;
 import com.app.api.stock.dividendo.entity.DividendoStock;
 import com.app.commons.utils.Utils;
@@ -129,6 +131,33 @@ public class ResultSimulaDividendoSiglaDetailDTO {
     }
 
     public static ResultSimulaDividendoSiglaDetailDTO from(Integer quantCotas, DividendoStock dividendo, CotacaoStockDiario cotacaoStockDiario) {
+
+        return ResultSimulaDividendoSiglaDetailDTO.builder()
+                .valorDividendo(dividendo.getDividend())
+                .valorDividendoFmt(Utils.converterDoubleDoisDecimaisString(dividendo.getDividend()))
+                .dataDividendo(dividendo.getData())
+                .dataDividendoFmt(Utils.converteLocalDateToString(dividendo.getData()))
+                .valorRendimento(quantCotas * dividendo.getDividend())
+                .valorRendimentoFmt(Utils.converterDoubleDoisDecimaisString(quantCotas * dividendo.getDividend()))
+                .build();
+    }
+
+
+    public static ResultSimulaDividendoSiglaDetailDTO from(Integer quantCotas, DividendoReit dividendo, CotacaoReitDiario cotacaoReitDiario) {
+
+        return ResultSimulaDividendoSiglaDetailDTO.builder()
+                .valorDividendo(dividendo.getDividend())
+                .valorDividendoFmt(Utils.converterDoubleDoisDecimaisString(dividendo.getDividend()))
+                .dataDividendo(dividendo.getData())
+                .dataDividendoFmt(Utils.converteLocalDateToString(dividendo.getData()))
+                .valorRendimento(quantCotas * dividendo.getDividend())
+                .valorRendimentoFmt(Utils.converterDoubleDoisDecimaisString(quantCotas * dividendo.getDividend()))
+                .build();
+    }
+
+    public static ResultSimulaDividendoSiglaDetailDTO from(Double valorInvest, DividendoReit dividendo, CotacaoReitDiario cotacaoReitDiario) {
+
+        Double quantCotas = valorInvest / cotacaoReitDiario.getClose();
 
         return ResultSimulaDividendoSiglaDetailDTO.builder()
                 .valorDividendo(dividendo.getDividend())

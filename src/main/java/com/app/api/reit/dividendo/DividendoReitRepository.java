@@ -21,4 +21,6 @@ public interface DividendoReitRepository extends JpaRepository<DividendoReit, Lo
     List<DividendoReit> findByReitAndDataBetween(Reit reit, LocalDate start, LocalDate end, Sort sort);
 
     List<DividendoReit> findByReitAndDataBetween(Reit reit, LocalDate start, LocalDate end);
+
+    List<DividendoReit> findByReit(Reit reit, Sort data);
 }

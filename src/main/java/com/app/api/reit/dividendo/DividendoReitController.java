@@ -9,6 +9,7 @@ import com.app.commons.dtos.dividendo.SumCalculateYieldDividendosAtivoDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class DividendoReitController implements BaseDividendoController<Dividend
     @Override
     @Operation(summary = "Lista os dividendos de uma Reit a partir de um id")
     public ResponseEntity<List<DividendoReitDTO>> findDividendoByIdAtivo(@PathVariable Long idReit) {
-        return null;
+        return new ResponseEntity<>(service.findDividendoByIdAtivo(idReit), HttpStatus.OK);
     }
 
     @CrossOrigin
@@ -35,7 +36,7 @@ public class DividendoReitController implements BaseDividendoController<Dividend
     @Override
     @Operation(summary = "Lista os dividendos de uma Reit a partir de uma sigla")
     public ResponseEntity<List<DividendoReitDTO>> findDividendoBySigla(@PathVariable String sigla) {
-        return null;
+        return new ResponseEntity<>(service.findDividendoBySigla(sigla), HttpStatus.OK);
     }
 
     @CrossOrigin
@@ -43,7 +44,7 @@ public class DividendoReitController implements BaseDividendoController<Dividend
     @Override
     @Operation(summary = "Lista todas as Reits e a lista completa de dividendos para reit cadastrada ")
     public ResponseEntity<List<ReitListDividendoDTO>> findAtivoListDividendos() {
-        return null;
+        return new ResponseEntity<>(service.findAtivoListDividendos(), HttpStatus.OK);
     }
 
     @CrossOrigin
@@ -51,7 +52,7 @@ public class DividendoReitController implements BaseDividendoController<Dividend
     @Override
     @Operation(summary = "Lista todos os dividendos de um determinado periodo ")
     public ResponseEntity<List<ReitListDividendoDTO>> filterDividendosByPeriod(@RequestBody FilterPeriodDTO dto) {
-        return null;
+        return new ResponseEntity<>(service.filterDividendosByPeriod(dto), HttpStatus.OK);
     }
 
     @CrossOrigin
@@ -59,7 +60,7 @@ public class DividendoReitController implements BaseDividendoController<Dividend
     @Override
     @Operation(summary = "Lista para cada Reit cadastrada o respectivo somatório de todos os seus dividendos ")
     public ResponseEntity<List<SumAtivoDividendosDTO>> sumDividendosByAtivo() {
-        return null;
+        return new ResponseEntity<>(service.sumDividendosByAtivo(), HttpStatus.OK);
     }
 
     @CrossOrigin
@@ -67,7 +68,7 @@ public class DividendoReitController implements BaseDividendoController<Dividend
     @Override
     @Operation(summary = "Filtra os dividendos em um período e exibe o somatório recuperado por reit ")
     public ResponseEntity<List<SumAtivoDividendosDTO>> sumDividendosByAtivoByPeriod(@RequestBody FilterPeriodDTO dto) {
-        return null;
+        return new ResponseEntity<>(service.filterSumDividendosByAtivoByPeriod(dto), HttpStatus.OK);
     }
 
     @CrossOrigin
@@ -76,7 +77,7 @@ public class DividendoReitController implements BaseDividendoController<Dividend
     @Operation(summary = "Calcula o rendimento em dividendos de uma Reit a partir do Id e a quantidade de cotas informados",
             description = "Deverá ser exibido a Sigla da idReit, Data, o Valor Rendimento em dividendos, Cotação da Reit, Valor Dividendo" )
     public ResponseEntity<SumCalculateYieldDividendosAtivoDTO> calculateYieldByIdAtivoByQuantCotas(@PathVariable Long idReit, @PathVariable Long quantidadeCotas) {
-        return null;
+        return new ResponseEntity<>(service.calculateYieldByIdAtivoByQuantCotas(idReit, quantidadeCotas), HttpStatus.OK);
     }
 
     @CrossOrigin
@@ -85,7 +86,7 @@ public class DividendoReitController implements BaseDividendoController<Dividend
     @Operation(summary = "Calcula o rendimento em dividendos de uma reit a partir da Sigla e a quantidade de cotas informados",
             description = "Deverá ser exibido a Sigla da reit, Data, o Valor Rendimento em dividendos, Cotação da reit, Valor Dividendo" )
     public ResponseEntity<SumCalculateYieldDividendosAtivoDTO> calculateYieldBySiglaAtivoByQuantCotas(@PathVariable String sigla, @PathVariable Long quantidadeCotas) {
-        return null;
+        return new ResponseEntity<>(service.calculateYieldBySiglaAtivoByQuantCotas(sigla, quantidadeCotas), HttpStatus.OK);
     }
 
     @CrossOrigin
@@ -94,7 +95,7 @@ public class DividendoReitController implements BaseDividendoController<Dividend
     @Operation(summary = "Calcula o rendimento em dividendos de todas as Reits e é informada a quantidade de cotas",
             description = "Deverá ser exibido a Sigla da Reit, Data, o Valor Rendimento em dividendos, Cotação da Reit, Valor Dividendo" )
     public ResponseEntity<List<SumCalculateYieldDividendosAtivoDTO>> calculateYieldBySiglaAllAtivosByQuantCotas(@PathVariable Long quantidadeCotas) {
-        return null;
+        return new ResponseEntity<>(service.calculateYieldBySiglaAllAtivosByQuantCotas(quantidadeCotas), HttpStatus.OK);
     }
 
     @CrossOrigin
@@ -103,7 +104,7 @@ public class DividendoReitController implements BaseDividendoController<Dividend
     @Operation(summary = "Calcula o rendimento em dividendos de uma Stock a partir do Id, e a quantidade de cotas informados em um periodo especifico",
             description = "Deverá ser exibido a Sigla da Reit, Data, o Valor Rendimento em dividendos, Cotação da Stock, Valor Dividendo" )
     public ResponseEntity<SumCalculateYieldDividendosAtivoDTO> calculateYieldByIdAtivoByQuantCotasByPeriod(@PathVariable Long idReit, @PathVariable Long quantidadeCotas, @RequestBody FilterPeriodDTO filterPeriodDTO) {
-        return null;
+        return new ResponseEntity<>(service.calculateYieldByIdAtivoByQuantCotasByPeriod(idReit, quantidadeCotas, filterPeriodDTO), HttpStatus.OK);
     }
 
     @CrossOrigin
@@ -112,7 +113,7 @@ public class DividendoReitController implements BaseDividendoController<Dividend
     @Operation(summary = "Calcula o rendimento em dividendos de uma Reit a partir do Id, e a quantidade de cotas informados em um periodo especifico",
             description = "Deverá ser exibido a Sigla da Reit, Data, o Valor Rendimento em dividendos, Cotação da Reit, Valor Dividendo" )
     public ResponseEntity<SumCalculateYieldDividendosAtivoDTO> calculateYieldBySiglaByQuantCotasByPeriod(@PathVariable String sigla, @PathVariable Long quantidadeCotas,@RequestBody  FilterPeriodDTO filterPeriodDTO) {
-        return null;
+        return new ResponseEntity<>(service.calculateYieldBySiglaByQuantCotasByPeriod(sigla, quantidadeCotas, filterPeriodDTO), HttpStatus.OK);
     }
 
     @CrossOrigin
@@ -121,7 +122,7 @@ public class DividendoReitController implements BaseDividendoController<Dividend
     @Operation(summary = "Simula o rendimento em dividendos a partir de uma sigla e um valor investimento",
             description = "Deverá ser exibido a Sigla da Reit, Data, o Valor Rendimento em dividendos, Cotação da Reit, Valor Dividendo" )
     public ResponseEntity<?> simulaRendimentoDividendoBySigla(@PathVariable String sigla, @PathVariable String valorInvestimento) {
-        return null;
+        return new ResponseEntity<>(service.simulaRendimentoDividendoBySigla(sigla, valorInvestimento), HttpStatus.OK);
     }
 
     @CrossOrigin
@@ -130,6 +131,6 @@ public class DividendoReitController implements BaseDividendoController<Dividend
     @Operation(summary = "Simula o rendimento em dividendos a partir de uma sigla e um valor investimento",
             description = "Deverá ser exibido a Sigla da Reit, Data, o Valor Rendimento em dividendos, Cotação da Reit, Valor Dividendo" )
     public ResponseEntity<?> simulaRendimentoDividendoBySiglaByQuantCotas(@PathVariable String sigla, @PathVariable String quantCotas) {
-        return null;
+        return new ResponseEntity<>(service.simulaRendimentoDividendoBySiglaByQuantCotas(sigla, quantCotas), HttpStatus.OK);
     }
 }
