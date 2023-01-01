@@ -337,15 +337,15 @@ public class CotacaoStockService implements BaseCotacaoService<Stock, StockCotac
         if ( !listCotacaoInicio.isEmpty() && !listCotacaoFim.isEmpty() ){
 
             listCotacaoInicio.forEach(cotacaoInicio -> {
-                Optional<CotacaoStockDiario> CotacaoStockDiarioFimOpt = this.getCotacaoDiarioFim(cotacaoInicio, listCotacaoFim);
-                if ( CotacaoStockDiarioFimOpt.isPresent()){
-                    Double valorPercentGrow = (CotacaoStockDiarioFimOpt.get().getClose() - cotacaoInicio.getClose()) / cotacaoInicio.getClose();
+                Optional<CotacaoStockDiario> cotacaoStockDiarioFimOpt = this.getCotacaoDiarioFim(cotacaoInicio, listCotacaoFim);
+                if ( cotacaoStockDiarioFimOpt.isPresent()){
+                    Double valorPercentGrow = (cotacaoStockDiarioFimOpt.get().getClose() - cotacaoInicio.getClose()) / cotacaoInicio.getClose();
                     ResultFilterAtivoCotacaoGrowDTO  resultFilterAtivoCotacaoGrowDTO = ResultFilterAtivoCotacaoGrowDTO.from(valorPercentGrow,
                                                                                                                             cotacaoInicio.getStock().getSigla(),
                                                                                                                             cotacaoInicio.getClose(),
-                                                                                                                            CotacaoStockDiarioFimOpt.get().getClose(),
+                            cotacaoStockDiarioFimOpt.get().getClose(),
                                                                                                                             Utils.converteLocalDateToString(cotacaoInicio.getData()),
-                                                                                                                            Utils.converteLocalDateToString(CotacaoStockDiarioFimOpt.get().getData()));
+                                                                                                                            Utils.converteLocalDateToString(cotacaoStockDiarioFimOpt.get().getData()));
                     listResultFilterAtivoCotacaoGrow.add(resultFilterAtivoCotacaoGrowDTO);
                 }
             });
@@ -381,15 +381,15 @@ public class CotacaoStockService implements BaseCotacaoService<Stock, StockCotac
         if ( !listCotacaoInicio.isEmpty() && !listCotacaoFim.isEmpty() ){
 
             listCotacaoInicio.forEach(cotacaoInicio -> {
-                Optional<CotacaoStockSemanal> CotacaoStockSemanalFimOpt = this.getCotacaoSemanalFim(cotacaoInicio, listCotacaoFim);
-                if ( CotacaoStockSemanalFimOpt.isPresent()){
-                    Double valorPercentGrow = (CotacaoStockSemanalFimOpt.get().getClose() - cotacaoInicio.getClose()) / cotacaoInicio.getClose();
+                Optional<CotacaoStockSemanal> cotacaoStockSemanalFimOpt = this.getCotacaoSemanalFim(cotacaoInicio, listCotacaoFim);
+                if ( cotacaoStockSemanalFimOpt.isPresent()){
+                    Double valorPercentGrow = (cotacaoStockSemanalFimOpt.get().getClose() - cotacaoInicio.getClose()) / cotacaoInicio.getClose();
                     ResultFilterAtivoCotacaoGrowDTO  resultFilterAtivoCotacaoGrowDTO = ResultFilterAtivoCotacaoGrowDTO.from(valorPercentGrow,
                             cotacaoInicio.getStock().getSigla(),
                             cotacaoInicio.getClose(),
-                            CotacaoStockSemanalFimOpt.get().getClose(),
+                            cotacaoStockSemanalFimOpt.get().getClose(),
                             Utils.converteLocalDateToString(cotacaoInicio.getData()),
-                            Utils.converteLocalDateToString(CotacaoStockSemanalFimOpt.get().getData()));
+                            Utils.converteLocalDateToString(cotacaoStockSemanalFimOpt.get().getData()));
                     listResultFilterAtivoCotacaoGrow.add(resultFilterAtivoCotacaoGrowDTO);
                 }
             });
@@ -425,15 +425,15 @@ public class CotacaoStockService implements BaseCotacaoService<Stock, StockCotac
         if ( !listCotacaoInicio.isEmpty() && !listCotacaoFim.isEmpty() ){
 
             listCotacaoInicio.forEach(cotacaoInicio -> {
-                Optional<CotacaoStockMensal> CotacaoStockMensalFimOpt = this.getCotacaoMensalFim(cotacaoInicio, listCotacaoFim);
-                if ( CotacaoStockMensalFimOpt.isPresent()){
-                    Double valorPercentGrow = (CotacaoStockMensalFimOpt.get().getClose() - cotacaoInicio.getClose()) / cotacaoInicio.getClose();
+                Optional<CotacaoStockMensal> cotacaoStockMensalFimOpt = this.getCotacaoMensalFim(cotacaoInicio, listCotacaoFim);
+                if ( cotacaoStockMensalFimOpt.isPresent()){
+                    Double valorPercentGrow = (cotacaoStockMensalFimOpt.get().getClose() - cotacaoInicio.getClose()) / cotacaoInicio.getClose();
                     ResultFilterAtivoCotacaoGrowDTO  resultFilterAtivoCotacaoGrowDTO = ResultFilterAtivoCotacaoGrowDTO.from(valorPercentGrow,
                             cotacaoInicio.getStock().getSigla(),
                             cotacaoInicio.getClose(),
-                            CotacaoStockMensalFimOpt.get().getClose(),
+                            cotacaoStockMensalFimOpt.get().getClose(),
                             Utils.converteLocalDateToString(cotacaoInicio.getData()),
-                            Utils.converteLocalDateToString(CotacaoStockMensalFimOpt.get().getData()));
+                            Utils.converteLocalDateToString(cotacaoStockMensalFimOpt.get().getData()));
                     listResultFilterAtivoCotacaoGrow.add(resultFilterAtivoCotacaoGrowDTO);
                 }
             });

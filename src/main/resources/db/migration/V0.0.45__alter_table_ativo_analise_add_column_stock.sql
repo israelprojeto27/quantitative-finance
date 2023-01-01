@@ -1,0 +1,1 @@
+alter table ativo_analise add stock_id bigint null;

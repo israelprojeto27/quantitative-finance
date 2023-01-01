@@ -4,7 +4,8 @@ public enum TipoAtivoEnum {
 
     ACAO(1, "acao"),
     BDR(2, "bdr"),
-    FUNDO_IMOBILIARIO(3, "fundo imobiliario");
+    FUNDO_IMOBILIARIO(3, "fundo imobiliario"),
+    STOCK(4, "stock");
 
     private int instrumentId;
     private String label;

@@ -62,25 +62,25 @@ public class CotacaoStockController implements BaseCotacaoController<StockCotaca
     }
 
 
-    @PostMapping("/cotacao-acao-grow-diary")
+    @PostMapping("/cotacao-stock-grow-diary")
     @Override
-    @Operation(summary = "Recupera as Ações cujas as cotações diarias mais cresceram ou menos cresceram em um determinado periodo")
+    @Operation(summary = "Recupera as Stocks cujas as cotações diarias mais cresceram ou menos cresceram em um determinado periodo")
     public ResponseEntity<List<ResultFilterAtivoCotacaoGrowDTO>> findAtivosCotacaoGrowDiary(@RequestBody FilterAtivoCotacaoGrowDTO dto) {
 
         return new ResponseEntity<>(service.findAtivosCotacaoGrowDiary(dto), HttpStatus.OK);
     }
 
-    @PostMapping("/cotacao-acao-grow-week")
+    @PostMapping("/cotacao-stock-grow-week")
     @Override
-    @Operation(summary = "Recupera as Ações cujas as cotações semanais mais cresceram ou menos cresceram em um determinado periodo")
+    @Operation(summary = "Recupera as Stocks cujas as cotações semanais mais cresceram ou menos cresceram em um determinado periodo")
     public ResponseEntity<List<ResultFilterAtivoCotacaoGrowDTO>> findAtivosCotacaoGrowWeek(@RequestBody FilterAtivoCotacaoGrowDTO dto) {
 
         return new ResponseEntity<>(service.findAtivosCotacaoGrowWeek(dto), HttpStatus.OK);
     }
 
-    @PostMapping("/cotacao-acao-grow-month")
+    @PostMapping("/cotacao-stock-grow-month")
     @Override
-    @Operation(summary = "Recupera as Ações cujas as cotações mensais mais cresceram ou menos cresceram em um determinado periodo")
+    @Operation(summary = "Recupera as Stocks cujas as cotações mensais mais cresceram ou menos cresceram em um determinado periodo")
     public ResponseEntity<List<ResultFilterAtivoCotacaoGrowDTO>> findAtivosCotacaoGrowMonth(@RequestBody FilterAtivoCotacaoGrowDTO dto) {
 
         return new ResponseEntity<>(service.findAtivosCotacaoGrowMonth(dto), HttpStatus.OK);

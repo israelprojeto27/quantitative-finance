@@ -1,11 +1,10 @@
 package com.app.api.stock.dividendo;
 
 
-import com.app.api.acao.principal.entity.Acao;
 import com.app.api.stock.cotacao.entities.CotacaoStockDiario;
 import com.app.api.stock.cotacao.repositories.CotacaoStockDiarioRepository;
-import com.app.api.stock.dividendo.dto.StockListDividendoDTO;
 import com.app.api.stock.dividendo.dto.DividendoStockDTO;
+import com.app.api.stock.dividendo.dto.StockListDividendoDTO;
 import com.app.api.stock.dividendo.entity.DividendoStock;
 import com.app.api.stock.principal.StockRepository;
 import com.app.api.stock.principal.entity.Stock;

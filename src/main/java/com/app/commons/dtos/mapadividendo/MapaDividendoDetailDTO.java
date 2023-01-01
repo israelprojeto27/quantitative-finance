@@ -3,6 +3,7 @@ package com.app.commons.dtos.mapadividendo;
 import com.app.api.acao.dividendo.entity.DividendoAcao;
 import com.app.api.bdr.dividendo.entity.DividendoBdr;
 import com.app.api.fundoimobiliario.dividendo.entity.DividendoFundo;
+import com.app.api.reit.dividendo.entity.DividendoReit;
 import com.app.api.stock.dividendo.entity.DividendoStock;
 import com.app.commons.utils.Utils;
 import lombok.AllArgsConstructor;
@@ -51,6 +52,14 @@ public class MapaDividendoDetailDTO {
     public static MapaDividendoDetailDTO from(DividendoStock dividendo) {
         return MapaDividendoDetailDTO.builder()
                 .sigla(dividendo.getStock().getSigla())
+                .dividendo(dividendo.getDividend())
+                .dividendoFmt(Utils.converterDoubleDoisDecimaisString(dividendo.getDividend()))
+                .build();
+    }
+
+    public static MapaDividendoDetailDTO from(DividendoReit dividendo) {
+        return MapaDividendoDetailDTO.builder()
+                .sigla(dividendo.getReit().getSigla())
                 .dividendo(dividendo.getDividend())
                 .dividendoFmt(Utils.converterDoubleDoisDecimaisString(dividendo.getDividend()))
                 .build();

@@ -31,7 +31,7 @@ public class StockAnaliseController implements BaseAtivoAnaliseController {
 
     @CrossOrigin
     @Override
-    @PostMapping("/add-acao/{sigla}")
+    @PostMapping("/add-stock/{sigla}")
     @Operation(summary = "Adiçiona a stock para a lista de analises")
     public ResponseEntity<?> addAtivoAnalise(@PathVariable String sigla) {
 

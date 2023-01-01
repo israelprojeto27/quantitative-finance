@@ -1,18 +1,18 @@
-package com.app.api.stock.principal;
+package com.app.api.reit.principal;
 
 import com.app.api.acao.enums.PeriodoEnum;
 import com.app.api.parametro.ParametroService;
 import com.app.api.parametro.dto.ParametroDTO;
 import com.app.api.parametro.enums.TipoParametroEnum;
-import com.app.api.stock.cotacao.CotacaoStockService;
-import com.app.api.stock.cotacao.entities.CotacaoStockDiario;
-import com.app.api.stock.cotacao.entities.CotacaoStockMensal;
-import com.app.api.stock.cotacao.entities.CotacaoStockSemanal;
-import com.app.api.stock.dividendo.DividendoStockService;
-import com.app.api.stock.dividendo.entity.DividendoStock;
-import com.app.api.stock.increasepercent.IncreasePercentStockService;
-import com.app.api.stock.principal.dto.StockDTO;
-import com.app.api.stock.principal.entity.Stock;
+import com.app.api.reit.cotacao.CotacaoReitService;
+import com.app.api.reit.cotacao.entities.CotacaoReitDiario;
+import com.app.api.reit.cotacao.entities.CotacaoReitMensal;
+import com.app.api.reit.cotacao.entities.CotacaoReitSemanal;
+import com.app.api.reit.dividendo.DividendoReitService;
+import com.app.api.reit.dividendo.entity.DividendoReit;
+import com.app.api.reit.increasepercent.IncreasePercentReitService;
+import com.app.api.reit.principal.dto.ReitDTO;
+import com.app.api.reit.principal.entity.Reit;
 import com.app.commons.basic.general.BaseService;
 import com.app.commons.dtos.AtivoInfoGeraisDTO;
 import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
@@ -38,30 +38,29 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @Service
-public class StockService implements BaseService<Stock, StockDTO> {
+public class ReitService implements BaseService<Reit, ReitDTO> {
 
     @Autowired
-    StockRepository repository;
-
-
-    @Autowired
-    CotacaoStockService cotacaoStockService;
+    ReitRepository repository;
 
     @Autowired
-    DividendoStockService dividendoStockService;
+    CotacaoReitService cotacaoReitService;
 
     @Autowired
-    IncreasePercentStockService increasePercentStockService;
+    DividendoReitService dividendoReitService;
+
+    @Autowired
+    IncreasePercentReitService increasePercentReitService;
 
 
     @Autowired
     ParametroService parametroService;
 
     @Override
-    public List<StockDTO> getListAll() {
+    public List<ReitDTO> getListAll() {
         return repository.findAll()
                 .stream()
-                .map(StockDTO::fromEntity)
+                .map(ReitDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 
@@ -72,7 +71,7 @@ public class StockService implements BaseService<Stock, StockDTO> {
             System.out.println("File is empty");
         }
         else {
-            cotacaoStockService.cleanByPeriodo(periodo);
+            cotacaoReitService.cleanByPeriodo(periodo);
             ZipInputStream zis = new ZipInputStream(file.getInputStream());
             ZipEntry zipEntry = zis.getNextEntry();
             byte[] buffer = new byte[1024];
@@ -82,7 +81,7 @@ public class StockService implements BaseService<Stock, StockDTO> {
                 File newFile = Utils.newFile(destDir, zipEntry);
 
 
-                Stock stock = this.saveStock(zipEntry.getName());
+                Reit reit = this.saveReit(zipEntry.getName());
 
                 // write file content
                 FileOutputStream fos = new FileOutputStream(newFile);
@@ -100,7 +99,7 @@ public class StockService implements BaseService<Stock, StockDTO> {
                     System.out.println("Linha: " + line);
                     // read next line
                     if (Utils.isLineIgnored(line)){
-                        cotacaoStockService.addCotacaoAtivo(line, stock, periodo);
+                        cotacaoReitService.addCotacaoAtivo(line, reit, periodo);
                     }
                     line = reader.readLine();
                 }
@@ -113,6 +112,19 @@ public class StockService implements BaseService<Stock, StockDTO> {
             destDir.delete();
         }
         return true;
+    }
+    @Transactional
+    private Reit saveReit(String sigla) {
+        sigla = sigla.replace(".csv", "");
+
+        Optional<Reit> reitOpt = repository.findBySigla(sigla);
+        if ( reitOpt.isPresent()){
+            return reitOpt.get();
+        }
+        else {
+            Reit reit = new Reit(sigla);
+            return repository.save(reit);
+        }
     }
 
     @Transactional
@@ -145,7 +157,7 @@ public class StockService implements BaseService<Stock, StockDTO> {
             else if ( newFile.getAbsolutePath().contains(PeriodoEnum.MENSAL.getLabel())){
                 periodo = PeriodoEnum.MENSAL.getLabel();
             }
-            cotacaoStockService.cleanByPeriodo(periodo);
+            cotacaoReitService.cleanByPeriodo(periodo);
             loadFileAtivoZipado(newFile, periodo);
 
             zipEntry = zis.getNextEntry();
@@ -159,8 +171,8 @@ public class StockService implements BaseService<Stock, StockDTO> {
         return true;
     }
 
-    @Override
     @Transactional
+    @Override
     public boolean uploadFilePartial(MultipartFile file) throws IOException {
         ZipInputStream zis = new ZipInputStream(file.getInputStream());
         ZipEntry zipEntry = zis.getNextEntry();
@@ -202,8 +214,7 @@ public class StockService implements BaseService<Stock, StockDTO> {
         return true;
     }
 
-    public void loadFileAtivoZipadoPartial(File file, String periodo) throws IOException{
-
+    private void loadFileAtivoZipadoPartial(File file, String periodo) throws IOException{
         ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
         ZipEntry zipEntry = zis.getNextEntry();
         byte[] buffer = new byte[1024];
@@ -213,7 +224,7 @@ public class StockService implements BaseService<Stock, StockDTO> {
             File newFile = Utils.newFile(destDir, zipEntry);
 
 
-            Stock stock = this.saveStock(zipEntry.getName());
+            Reit reit = this.saveReit(zipEntry.getName());
 
             System.out.println("Arquivo analisado: " + newFile);
 
@@ -233,7 +244,7 @@ public class StockService implements BaseService<Stock, StockDTO> {
                 System.out.println("Linha: " + line);
                 // read next line
                 if (Utils.isLineIgnored(line)){
-                    cotacaoStockService.addCotacaoAtivoPartial(line, stock, periodo);
+                    cotacaoReitService.addCotacaoAtivoPartial(line, reit, periodo);
                 }
 
                 line = reader.readLine();
@@ -248,80 +259,131 @@ public class StockService implements BaseService<Stock, StockDTO> {
     }
 
     @Override
-    public StockDTO findById(Long id) {
-        Optional<Stock> stockOpt = repository.findById(id);
-        return stockOpt.isPresent() ? StockDTO.fromEntity(stockOpt.get()) : null ;
+    public ReitDTO findById(Long id) {
+        Optional<Reit> reitOpt = repository.findById(id);
+        return reitOpt.isPresent() ? ReitDTO.fromEntity(reitOpt.get()) : null ;
     }
 
     @Override
-    public StockDTO findBySigla(String sigla) {
-        Optional<Stock> stockOpt = repository.findBySigla(sigla);
-        return stockOpt.isPresent() ? StockDTO.fromEntity(stockOpt.get()) : null ;
+    public ReitDTO findBySigla(String sigla) {
+        Optional<Reit> reitOpt = repository.findBySigla(sigla);
+        return reitOpt.isPresent() ? ReitDTO.fromEntity(reitOpt.get()) : null ;
     }
 
     @Override
     public boolean calculaIncreasePercent(String periodo) {
-        List<StockDTO> listStock = this.getListAll();
-        if ( !listStock.isEmpty()){
-            increasePercentStockService.cleanIncreasePercentByPeriodo(periodo);
-            listStock.forEach(stock ->{
+        List<ReitDTO> listReit = this.getListAll();
+        if ( !listReit.isEmpty()){
+            increasePercentReitService.cleanIncreasePercentByPeriodo(periodo);
+            listReit.forEach(reit ->{
                 if ( periodo.equals(PeriodoEnum.DIARIO.getLabel())){
-                    calculateIncreasePercentDiario(stock);
+                    calculateIncreasePercentDiario(reit);
                 }
                 else if ( periodo.equals(PeriodoEnum.SEMANAL.getLabel())){
-                    calculateIncreasePercentSemanal(stock);
+                    calculateIncreasePercentSemanal(reit);
                 }
                 else if ( periodo.equals(PeriodoEnum.MENSAL.getLabel())){
-                    calculateIncreasePercentMensal(stock);
+                    calculateIncreasePercentMensal(reit);
                 }
             });
         }
         return true;
+    }
+
+
+    private void calculateIncreasePercentDiario(ReitDTO reit) {
+        List<CotacaoReitDiario> listCotacaoDiario = cotacaoReitService.findCotacaoDiarioByAtivo(ReitDTO.toEntity(reit), Sort.by(Sort.Direction.DESC, "data"));
+        if ( listCotacaoDiario != null && !listCotacaoDiario.isEmpty()){
+            List<ParametroDTO> listParametros = parametroService.findByTipoParametro(TipoParametroEnum.INTERVALO_COTACAO_DIARIO);
+            CotacaoReitDiario ultimaCotacao = listCotacaoDiario.stream().findFirst().get();
+
+            if (! listParametros.isEmpty()){
+                listParametros.forEach(param ->{
+                    Integer intervalo = Integer.valueOf(param.getValor());
+                    CotacaoReitDiario cotacao = listCotacaoDiario.get(intervalo);
+                    increasePercentReitService.saveCotacaoDiario(ultimaCotacao, cotacao, intervalo);
+                });
+            }
+        }
+    }
+
+    private void calculateIncreasePercentSemanal(ReitDTO reit) {
+        List<CotacaoReitSemanal> listCotacaoSemanal = cotacaoReitService.findCotacaoSemanalByAtivo(ReitDTO.toEntity(reit), Sort.by(Sort.Direction.DESC, "data"));
+        if ( listCotacaoSemanal != null && !listCotacaoSemanal.isEmpty()){
+            List<ParametroDTO> listParametros = parametroService.findByTipoParametro(TipoParametroEnum.INTERVALO_COTACAO_SEMANAL);
+            CotacaoReitSemanal ultimaCotacao = listCotacaoSemanal.stream().findFirst().get();
+
+            if (! listParametros.isEmpty()){
+                listParametros.forEach(param ->{
+                    Integer intervalo = Integer.valueOf(param.getValor());
+                    try{
+                        CotacaoReitSemanal cotacao = listCotacaoSemanal.get(intervalo);
+                        if ( cotacao != null)
+                            increasePercentReitService.saveCotacaoSemanal(ultimaCotacao, cotacao, intervalo);
+                    }
+                    catch (Exception e){
+                        System.out.println("Erro no calculateIncreasePercentSemanal");
+                        System.out.println("reit : " + reit.getSigla());
+                        System.out.println("periodo : " + intervalo);
+                    }
+                });
+            }
+        }
+    }
+
+    private void calculateIncreasePercentMensal(ReitDTO reit) {
+        List<CotacaoReitMensal> listCotacaoMensal = cotacaoReitService.findCotacaoMensalByAtivo(ReitDTO.toEntity(reit), Sort.by(Sort.Direction.DESC, "data"));
+        if ( listCotacaoMensal != null && !listCotacaoMensal.isEmpty()){
+            List<ParametroDTO> listParametros = parametroService.findByTipoParametro(TipoParametroEnum.INTERVALO_COTACAO_MENSAL);
+            CotacaoReitMensal ultimaCotacao = listCotacaoMensal.stream().findFirst().get();
+
+            if (! listParametros.isEmpty()){
+                listParametros.forEach(param ->{
+                    try{
+                        Integer intervalo = Integer.valueOf(param.getValor());
+                        CotacaoReitMensal cotacao = listCotacaoMensal.get(intervalo);
+                        increasePercentReitService.saveCotacaoMensal(ultimaCotacao, cotacao, intervalo);
+                    }
+                    catch (Exception e){
+                        System.out.println("Erro no calculateIncreasePercentSemanal");
+                        System.out.println("reit : " + reit.getSigla());
+                    }
+                });
+            }
+        }
     }
 
     @Override
     public boolean calculaIncreasePercentFull() {
-        List<StockDTO> listStock = this.getListAll();
-        if ( !listStock.isEmpty()){
-            increasePercentStockService.cleanIncreasePercentByPeriodo(PeriodoEnum.DIARIO.getLabel());
-            increasePercentStockService.cleanIncreasePercentByPeriodo(PeriodoEnum.SEMANAL.getLabel());
-            increasePercentStockService.cleanIncreasePercentByPeriodo(PeriodoEnum.MENSAL.getLabel());
-            listStock.forEach(stock ->{
-                calculateIncreasePercentDiario(stock);
-                calculateIncreasePercentSemanal(stock);
-                calculateIncreasePercentMensal(stock);
+        List<ReitDTO> listReit = this.getListAll();
+        if ( !listReit.isEmpty()){
+            increasePercentReitService.cleanIncreasePercentByPeriodo(PeriodoEnum.DIARIO.getLabel());
+            increasePercentReitService.cleanIncreasePercentByPeriodo(PeriodoEnum.SEMANAL.getLabel());
+            increasePercentReitService.cleanIncreasePercentByPeriodo(PeriodoEnum.MENSAL.getLabel());
+            listReit.forEach(reit ->{
+                calculateIncreasePercentDiario(reit);
+                calculateIncreasePercentSemanal(reit);
+                calculateIncreasePercentMensal(reit);
             });
         }
         return true;
     }
 
     @Override
-    @Transactional
     public boolean deleteById(Long id) {
-        try{
-            repository.deleteById(id);
-            return true;
-        }
-        catch (Exception e){
-            return false;
-        }
+        return false;
     }
 
     @Override
-    public StockDTO update(StockDTO dto) {
-        Optional<Stock> stockOpt = repository.findById(dto.getId());
-        if ( stockOpt.isPresent()){
-            Stock  stock = StockDTO.toEntity(dto);
-            repository.save(stock);
-            return dto;
-        }
+    public ReitDTO update(ReitDTO dto) {
         return null;
     }
 
     @Override
+    @Transactional
     public boolean cleanAll() {
-        dividendoStockService.cleanAll();
-        cotacaoStockService.cleanAll();
+        dividendoReitService.cleanAll();
+        cotacaoReitService.cleanAll();
         repository.deleteAll();
         return true;
     }
@@ -336,7 +398,7 @@ public class StockService implements BaseService<Stock, StockDTO> {
         while (zipEntry != null) {
             File newFile = Utils.newFile(destDir, zipEntry);
 
-            Stock stock = this.saveStock(zipEntry.getName());
+            Reit reit = this.saveReit(zipEntry.getName());
 
             System.out.println("Arquivo analisado: " + newFile);
 
@@ -356,7 +418,7 @@ public class StockService implements BaseService<Stock, StockDTO> {
                 System.out.println("Linha: " + line);
                 // read next line
                 if (Utils.isLineIgnored(line)){
-                    cotacaoStockService.addCotacaoAtivo(line, stock, periodo);
+                    cotacaoReitService.addCotacaoAtivo(line, reit, periodo);
                 }
 
                 line = reader.readLine();
@@ -370,29 +432,15 @@ public class StockService implements BaseService<Stock, StockDTO> {
         destDir.delete();
     }
 
-    @Transactional
-    private Stock saveStock(String sigla) {
-        sigla = sigla.replace(".csv", "");
-
-        Optional<Stock> stockOpt = repository.findBySigla(sigla);
-        if ( stockOpt.isPresent()){
-            return stockOpt.get();
-        }
-        else {
-            Stock stock = new Stock(sigla);
-            return repository.save(stock);
-        }
-    }
-
     @Override
     public List<AtivoInfoGeraisDTO> getInfoGerais() {
-        List<Stock> listStocks = repository.findAll();
-        if ( !listStocks.isEmpty()){
+        List<Reit> listReits = repository.findAll();
+        if ( !listReits.isEmpty()){
             List<AtivoInfoGeraisDTO> list =  new ArrayList<>();
-            listStocks.forEach(stock -> {
-                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoStockService.getLastCotacaoDiario(stock);
-                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoStockService.getLastDividendo(stock);
-                list.add(AtivoInfoGeraisDTO.from(stock,
+            listReits.forEach(reit -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoReitService.getLastCotacaoDiario(reit);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoReitService.getLastDividendo(reit);
+                list.add(AtivoInfoGeraisDTO.from(reit,
                         lastCotacaoAtivoDiarioDTO,
                         lastDividendoAtivoDTO));
             });
@@ -403,13 +451,13 @@ public class StockService implements BaseService<Stock, StockDTO> {
 
     @Override
     public List<AtivoInfoGeraisDTO> getInfoGeraisBySigla(String sigla) {
-        List<Stock> listStocks  = repository.findBySiglaContaining(sigla);
+        List<Reit> listReits  = repository.findBySiglaContaining(sigla);
         List<AtivoInfoGeraisDTO> list =  new ArrayList<>();
-        if ( !listStocks.isEmpty()){
-            listStocks.forEach(stock -> {
-                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoStockService.getLastCotacaoDiario(stock);
-                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoStockService.getLastDividendo(stock);
-                list.add(AtivoInfoGeraisDTO.from(stock,
+        if ( !listReits.isEmpty()){
+            listReits.forEach(reit -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoReitService.getLastCotacaoDiario(reit);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoReitService.getLastDividendo(reit);
+                list.add(AtivoInfoGeraisDTO.from(reit,
                         lastCotacaoAtivoDiarioDTO,
                         lastDividendoAtivoDTO));
             });
@@ -419,13 +467,13 @@ public class StockService implements BaseService<Stock, StockDTO> {
 
     @Override
     public List<AtivoInfoGeraisDTO> filterInfoGerais(String orderFilter, String typeOrderFilter) {
-        List<Stock> listStocks  = repository.findAll();
+        List<Reit> listReits  = repository.findAll();
         List<AtivoInfoGeraisDTO> list =  new ArrayList<>();
-        if ( !listStocks.isEmpty()){
-            listStocks.forEach(stock -> {
-                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoStockService.getLastCotacaoDiario(stock);
-                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoStockService.getLastDividendo(stock);
-                list.add(AtivoInfoGeraisDTO.from(stock,
+        if ( !listReits.isEmpty()){
+            listReits.forEach(reit -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoReitService.getLastCotacaoDiario(reit);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoReitService.getLastDividendo(reit);
+                list.add(AtivoInfoGeraisDTO.from(reit,
                         lastCotacaoAtivoDiarioDTO,
                         lastDividendoAtivoDTO));
             });
@@ -486,7 +534,7 @@ public class StockService implements BaseService<Stock, StockDTO> {
         LocalDate dtFim = Utils.converteStringToLocalDateTime3(anoMesFim + "-01");
         dtFim = dtFim.plusMonths(1);
 
-        List<DividendoStock> listDividendos = dividendoStockService.findDividendoBetweenDates(dtInicio, dtFim);
+        List<DividendoReit> listDividendos = dividendoReitService.findDividendoBetweenDates(dtInicio, dtFim);
         List<MapaDividendosDTO> listResult = new ArrayList<>();
         List<MapaDividendosDTO> listFinal = new ArrayList<>();
 
@@ -578,20 +626,20 @@ public class StockService implements BaseService<Stock, StockDTO> {
     }
 
 
-    private List<MapaRoiInvestimentoDividendoDTO> getRoiInvestimentoDividendoCotacao(List<DividendoStock> listDividendos) {
+    private List<MapaRoiInvestimentoDividendoDTO> getRoiInvestimentoDividendoCotacao(List<DividendoReit> listDividendos) {
 
         HashMap<String, Double> mapRoi = new HashMap<>();
         if (! listDividendos.isEmpty()){
             listDividendos.forEach(dividendo -> {
-                CotacaoStockMensal cotacaoMensal = cotacaoStockService.findCotacaoMensalByAtivo(dividendo.getStock(), dividendo.getData());
+                CotacaoReitMensal cotacaoMensal = cotacaoReitService.findCotacaoMensalByAtivo(dividendo.getReit(), dividendo.getData());
                 Double coeficiente = dividendo.getDividend() / cotacaoMensal.getClose();
-                if (mapRoi.containsKey(dividendo.getStock().getSigla())){
-                    Double coeficienteTotal = mapRoi.get(dividendo.getStock().getSigla());
+                if (mapRoi.containsKey(dividendo.getReit().getSigla())){
+                    Double coeficienteTotal = mapRoi.get(dividendo.getReit().getSigla());
                     coeficienteTotal = coeficienteTotal + coeficiente;
-                    mapRoi.put(dividendo.getStock().getSigla(),coeficienteTotal );
+                    mapRoi.put(dividendo.getReit().getSigla(),coeficienteTotal );
                 }
                 else {
-                    mapRoi.put(dividendo.getStock().getSigla(),  coeficiente);
+                    mapRoi.put(dividendo.getReit().getSigla(),  coeficiente);
                 }
             });
         }
@@ -616,16 +664,16 @@ public class StockService implements BaseService<Stock, StockDTO> {
 
     @Override
     public List<ResultValorInvestidoDTO> simulaValorInvestido(String rendimentoMensalEstimado) {
-        List<Stock> listStocks = repository.findAll();
-        if ( !listStocks.isEmpty()){
+        List<Reit> listReits = repository.findAll();
+        if ( !listReits.isEmpty()){
             List<ResultValorInvestidoDTO> list =  new ArrayList<>();
-            listStocks.forEach(stock -> {
-                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoStockService.getLastCotacaoDiario(stock);
-                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoStockService.getLastDividendo(stock);
-                list.add(ResultValorInvestidoDTO.from(stock,
-                        Double.valueOf(rendimentoMensalEstimado),
-                        lastCotacaoAtivoDiarioDTO,
-                        lastDividendoAtivoDTO));
+            listReits.forEach(reit -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoReitService.getLastCotacaoDiario(reit);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoReitService.getLastDividendo(reit);
+                list.add(ResultValorInvestidoDTO.from(reit,
+                                                    Double.valueOf(rendimentoMensalEstimado),
+                                                    lastCotacaoAtivoDiarioDTO,
+                                                    lastDividendoAtivoDTO));
 
             });
             return list;
@@ -635,13 +683,13 @@ public class StockService implements BaseService<Stock, StockDTO> {
 
     @Override
     public List<ResultValorInvestidoDTO> simulaValorInvestidoBySigla(String rendimentoMensalEstimado, String sigla) {
-        List<Stock> listStocks = repository.findBySiglaContaining(sigla);
-        if ( !listStocks.isEmpty()){
+        List<Reit> listReits = repository.findBySiglaContaining(sigla);
+        if ( !listReits.isEmpty()){
             List<ResultValorInvestidoDTO> list =  new ArrayList<>();
-            listStocks.forEach(stock -> {
-                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoStockService.getLastCotacaoDiario(stock);
-                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoStockService.getLastDividendo(stock);
-                list.add(ResultValorInvestidoDTO.from(stock,
+            listReits.forEach(reit -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoReitService.getLastCotacaoDiario(reit);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoReitService.getLastDividendo(reit);
+                list.add(ResultValorInvestidoDTO.from(reit,
                         Double.valueOf(rendimentoMensalEstimado),
                         lastCotacaoAtivoDiarioDTO,
                         lastDividendoAtivoDTO));
@@ -654,15 +702,15 @@ public class StockService implements BaseService<Stock, StockDTO> {
 
     @Override
     public List<ResultValorInvestidoDTO> filterSimulaValorInvestido(String rendimentoMensalEstimado, String orderFilter, String typeOrderFilter) {
-        List<Stock> listStocks = repository.findAll();
-        if ( !listStocks.isEmpty()){
+        List<Reit> listReits = repository.findAll();
+        if ( !listReits.isEmpty()){
             List<ResultValorInvestidoDTO> list =  new ArrayList<>();
             List<ResultValorInvestidoDTO> list2 =  new ArrayList<>();
             List<ResultValorInvestidoDTO> listFinal =  new ArrayList<>();
-            listStocks.forEach(stock -> {
-                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoStockService.getLastCotacaoDiario(stock);
-                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoStockService.getLastDividendo(stock);
-                list.add(ResultValorInvestidoDTO.from(stock,
+            listReits.forEach(reit -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoReitService.getLastCotacaoDiario(reit);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoReitService.getLastDividendo(reit);
+                list.add(ResultValorInvestidoDTO.from(reit,
                         Double.valueOf(rendimentoMensalEstimado),
                         lastCotacaoAtivoDiarioDTO,
                         lastDividendoAtivoDTO));
@@ -721,13 +769,13 @@ public class StockService implements BaseService<Stock, StockDTO> {
 
     @Override
     public List<ResultValorRendimentoPorCotasDTO> simulaRendimentoByQuantidadeCotas(String valorInvestimento) {
-        List<Stock> listStocks = repository.findAll();
-        if ( !listStocks.isEmpty()){
+        List<Reit> listReits = repository.findAll();
+        if ( !listReits.isEmpty()){
             List<ResultValorRendimentoPorCotasDTO> list = new ArrayList<>();
-            listStocks.forEach(stock -> {
-                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoStockService.getLastCotacaoDiario(stock);
-                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoStockService.getLastDividendo(stock);
-                list.add(ResultValorRendimentoPorCotasDTO.from(stock,
+            listReits.forEach(reit -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoReitService.getLastCotacaoDiario(reit);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoReitService.getLastDividendo(reit);
+                list.add(ResultValorRendimentoPorCotasDTO.from(reit,
                         Double.valueOf(valorInvestimento),
                         lastCotacaoAtivoDiarioDTO,
                         lastDividendoAtivoDTO));
@@ -739,12 +787,12 @@ public class StockService implements BaseService<Stock, StockDTO> {
 
     @Override
     public List<ResultValorRendimentoPorCotasDTO> simulaRendimentoByQuantidadeCotasBySigla(String valorInvestimento, String sigla) {
-        Optional<Stock> optStock = repository.findBySigla(sigla);
-        if ( optStock.isPresent()){
+        Optional<Reit> optReit = repository.findBySigla(sigla);
+        if ( optReit.isPresent()){
             List<ResultValorRendimentoPorCotasDTO> list = new ArrayList<>();
-            LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoStockService.getLastCotacaoDiario(optStock.get());
-            LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoStockService.getLastDividendo(optStock.get());
-            list.add(ResultValorRendimentoPorCotasDTO.from(optStock.get(),
+            LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoReitService.getLastCotacaoDiario(optReit.get());
+            LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoReitService.getLastDividendo(optReit.get());
+            list.add(ResultValorRendimentoPorCotasDTO.from(optReit.get(),
                     Double.valueOf(valorInvestimento),
                     lastCotacaoAtivoDiarioDTO,
                     lastDividendoAtivoDTO));
@@ -755,16 +803,16 @@ public class StockService implements BaseService<Stock, StockDTO> {
 
     @Override
     public List<ResultValorRendimentoPorCotasDTO> filterSimulaRendimentoByQuantidadeCotasBySigla(String valorInvestimento, String orderFilter, String typeOrderFilter) {
-        List<Stock> listStocks = repository.findAll();
-        if ( !listStocks.isEmpty()){
+        List<Reit> listReits = repository.findAll();
+        if ( !listReits.isEmpty()){
             List<ResultValorRendimentoPorCotasDTO> list = new ArrayList<>();
             List<ResultValorRendimentoPorCotasDTO> list2 =  new ArrayList<>();
             List<ResultValorRendimentoPorCotasDTO> listFinal =  new ArrayList<>();
 
-            listStocks.forEach(stock -> {
-                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoStockService.getLastCotacaoDiario(stock);
-                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoStockService.getLastDividendo(stock);
-                list.add(ResultValorRendimentoPorCotasDTO.from(stock,
+            listReits.forEach(reit -> {
+                LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoReitService.getLastCotacaoDiario(reit);
+                LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoReitService.getLastDividendo(reit);
+                list.add(ResultValorRendimentoPorCotasDTO.from(reit,
                         Double.valueOf(valorInvestimento),
                         lastCotacaoAtivoDiarioDTO,
                         lastDividendoAtivoDTO));
@@ -819,68 +867,5 @@ public class StockService implements BaseService<Stock, StockDTO> {
             return list;
         }
         return null;
-    }
-
-
-    private void calculateIncreasePercentDiario(StockDTO stock) {
-        List<CotacaoStockDiario> listCotacaoDiario = cotacaoStockService.findCotacaoDiarioByAtivo(StockDTO.toEntity(stock), Sort.by(Sort.Direction.DESC, "data"));
-        if ( listCotacaoDiario != null && !listCotacaoDiario.isEmpty()){
-            List<ParametroDTO> listParametros = parametroService.findByTipoParametro(TipoParametroEnum.INTERVALO_COTACAO_DIARIO);
-            CotacaoStockDiario ultimaCotacao = listCotacaoDiario.stream().findFirst().get();
-
-            if (! listParametros.isEmpty()){
-                listParametros.forEach(param ->{
-                    Integer intervalo = Integer.valueOf(param.getValor());
-                    CotacaoStockDiario cotacao = listCotacaoDiario.get(intervalo);
-                    increasePercentStockService.saveCotacaoDiario(ultimaCotacao, cotacao, intervalo);
-                });
-            }
-        }
-    }
-
-    private void calculateIncreasePercentSemanal(StockDTO stock) {
-        List<CotacaoStockSemanal> listCotacaoSemanal = cotacaoStockService.findCotacaoSemanalByAtivo(StockDTO.toEntity(stock), Sort.by(Sort.Direction.DESC, "data"));
-        if ( listCotacaoSemanal != null && !listCotacaoSemanal.isEmpty()){
-            List<ParametroDTO> listParametros = parametroService.findByTipoParametro(TipoParametroEnum.INTERVALO_COTACAO_SEMANAL);
-            CotacaoStockSemanal ultimaCotacao = listCotacaoSemanal.stream().findFirst().get();
-
-            if (! listParametros.isEmpty()){
-                listParametros.forEach(param ->{
-                    Integer intervalo = Integer.valueOf(param.getValor());
-                    try{
-                        CotacaoStockSemanal cotacao = listCotacaoSemanal.get(intervalo);
-                        if ( cotacao != null)
-                            increasePercentStockService.saveCotacaoSemanal(ultimaCotacao, cotacao, intervalo);
-                    }
-                    catch (Exception e){
-                        System.out.println("Erro no calculateIncreasePercentSemanal");
-                        System.out.println("stock : " + stock.getSigla());
-                        System.out.println("periodo : " + intervalo);
-                    }
-                });
-            }
-        }
-    }
-
-    private void calculateIncreasePercentMensal(StockDTO stock) {
-        List<CotacaoStockMensal> listCotacaoMensal = cotacaoStockService.findCotacaoMensalByAtivo(StockDTO.toEntity(stock), Sort.by(Sort.Direction.DESC, "data"));
-        if ( listCotacaoMensal != null && !listCotacaoMensal.isEmpty()){
-            List<ParametroDTO> listParametros = parametroService.findByTipoParametro(TipoParametroEnum.INTERVALO_COTACAO_MENSAL);
-            CotacaoStockMensal ultimaCotacao = listCotacaoMensal.stream().findFirst().get();
-
-            if (! listParametros.isEmpty()){
-                listParametros.forEach(param ->{
-                    try{
-                        Integer intervalo = Integer.valueOf(param.getValor());
-                        CotacaoStockMensal cotacao = listCotacaoMensal.get(intervalo);
-                        increasePercentStockService.saveCotacaoMensal(ultimaCotacao, cotacao, intervalo);
-                    }
-                    catch (Exception e){
-                        System.out.println("Erro no calculateIncreasePercentSemanal");
-                        System.out.println("stock : " + stock.getSigla());
-                    }
-                });
-            }
-        }
     }
 }

@@ -3,14 +3,19 @@ package com.app.api.ativos.principal.entities;
 import com.app.api.acao.principal.entity.Acao;
 import com.app.api.bdr.principal.entity.Bdr;
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
+import com.app.api.stock.principal.entity.Stock;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Data
 @Entity
@@ -33,6 +38,10 @@ public class AtivoAnalise {
     @JoinColumn(name = "fundo_id")
     private FundoImobiliario fundo;
 
+    @ManyToOne
+    @JoinColumn(name = "stock_id")
+    private Stock stock;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private Timestamp createdAt;
@@ -41,17 +50,7 @@ public class AtivoAnalise {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
-    public AtivoAnalise() {
-    }
 
-    public AtivoAnalise(Long id, Acao acao, Bdr bdr, FundoImobiliario fundo, Timestamp createdAt, Timestamp updatedAt) {
-        this.id = id;
-        this.acao = acao;
-        this.bdr = bdr;
-        this.fundo = fundo;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 
     public static AtivoAnalise toEntity(Acao acao) {
         return AtivoAnalise.builder()
@@ -68,6 +67,12 @@ public class AtivoAnalise {
     public static AtivoAnalise toEntity(FundoImobiliario fundoImobiliario) {
         return AtivoAnalise.builder()
                 .fundo(fundoImobiliario)
+                .build();
+    }
+
+    public static AtivoAnalise toEntity(Stock stock) {
+        return AtivoAnalise.builder()
+                .stock(stock)
                 .build();
     }
 }

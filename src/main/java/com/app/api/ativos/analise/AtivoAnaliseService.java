@@ -19,6 +19,7 @@ import com.app.api.ativos.principal.repositories.AtivoAnaliseRepository;
 import com.app.api.ativos.principal.services.AtivoAcaoService;
 import com.app.api.ativos.principal.services.AtivoBdrService;
 import com.app.api.ativos.principal.services.AtivoFundoImobiliarioService;
+import com.app.api.ativos.principal.services.AtivoStockService;
 import com.app.api.bdr.cotacao.CotacaoBdrService;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrMensal;
@@ -43,6 +44,18 @@ import com.app.api.fundoimobiliario.dividendo.DividendoFundoService;
 import com.app.api.fundoimobiliario.dividendo.entity.DividendoFundo;
 import com.app.api.fundoimobiliario.principal.FundoImobiliarioRepository;
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
+import com.app.api.stock.cotacao.CotacaoStockService;
+import com.app.api.stock.cotacao.entities.CotacaoStockDiario;
+import com.app.api.stock.cotacao.entities.CotacaoStockMensal;
+import com.app.api.stock.cotacao.entities.CotacaoStockSemanal;
+import com.app.api.stock.cotacao.repositories.CotacaoStockDiarioRepository;
+import com.app.api.stock.cotacao.repositories.CotacaoStockMensalRepository;
+import com.app.api.stock.cotacao.repositories.CotacaoStockSemanalRepository;
+import com.app.api.stock.dividendo.DividendoStockRepository;
+import com.app.api.stock.dividendo.DividendoStockService;
+import com.app.api.stock.dividendo.entity.DividendoStock;
+import com.app.api.stock.principal.StockRepository;
+import com.app.api.stock.principal.entity.Stock;
 import com.app.commons.basic.analise.dto.AtivoAnaliseDTO;
 import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
 import com.app.commons.dtos.LastDividendoAtivoDTO;
@@ -78,6 +91,9 @@ public class AtivoAnaliseService {
     FundoImobiliarioRepository fundoImobiliarioRepository;
 
     @Autowired
+    StockRepository stockRepository;
+
+    @Autowired
     AtivoAcaoService ativoAcaoService;
 
     @Autowired
@@ -85,6 +101,9 @@ public class AtivoAnaliseService {
 
     @Autowired
     AtivoFundoImobiliarioService ativoFundoImobiliarioService;
+
+    @Autowired
+    AtivoStockService ativoStockService;
 
 
     @Autowired
@@ -97,6 +116,9 @@ public class AtivoAnaliseService {
     DividendoFundoRepository dividendoFundoRepository;
 
     @Autowired
+    DividendoStockRepository dividendoStockRepository;
+
+    @Autowired
     CotacaoAcaoService cotacaoAcaoService;
 
     @Autowired
@@ -106,6 +128,10 @@ public class AtivoAnaliseService {
     CotacaoFundoService cotacaoFundoService;
 
     @Autowired
+    CotacaoStockService cotacaoStockService;
+
+
+    @Autowired
     DividendoAcaoService dividendoAcaoService;
 
     @Autowired
@@ -113,6 +139,9 @@ public class AtivoAnaliseService {
 
     @Autowired
     DividendoFundoService dividendoFundoService;
+
+    @Autowired
+    DividendoStockService dividendoStockService;
 
     @Autowired
     CotacaoAcaoDiarioRepository cotacaoAcaoDiarioRepository;
@@ -140,6 +169,16 @@ public class AtivoAnaliseService {
 
     @Autowired
     CotacaoFundoMensalRepository cotacaoFundoMensalRepository;
+
+
+    @Autowired
+    CotacaoStockDiarioRepository cotacaoStockDiarioRepository;
+
+    @Autowired
+    CotacaoStockSemanalRepository cotacaoStockSemanalRepository;
+
+    @Autowired
+    CotacaoStockMensalRepository cotacaoStockMensalRepository;
 
     @Transactional
     public boolean addAnaliseAtivo(String tipoAtivo, String sigla) {
@@ -176,6 +215,19 @@ public class AtivoAnaliseService {
                 return true;
             }
         }
+        else if (tipoAtivo.equals(TipoAtivoEnum.STOCK.getLabel())){
+            Optional<Stock> optStock = stockRepository.findBySigla(sigla);
+            if (optStock.isPresent()){
+                Optional<AtivoAnalise> optAtivoAnaliseFundo = repository.findByStock(optStock.get());
+                if (!optAtivoAnaliseFundo.isPresent()){
+                    AtivoAnalise ativoAnalise = AtivoAnalise.toEntity(optStock.get());
+                    repository.save(ativoAnalise);
+                }
+                return true;
+            }
+        }
+
+
         return false;
     }
 
@@ -195,6 +247,10 @@ public class AtivoAnaliseService {
                 else if ( ativoAnalise.getFundo() != null ){
                     InfoGeraisAtivosDTO dtoFundo = ativoFundoImobiliarioService.getInfoGeraisByFundo(ativoAnalise.getFundo());
                     list.add(dtoFundo);
+                }
+                else if ( ativoAnalise.getStock() != null ){
+                    InfoGeraisAtivosDTO dtoStock = ativoStockService.getInfoGeraisByStock(ativoAnalise.getStock());
+                    list.add(dtoStock);
                 }
             });
         }
@@ -292,6 +348,16 @@ public class AtivoAnaliseService {
                 }
             }
         }
+        else if (tipoAtivo.equals(TipoAtivoEnum.STOCK.getLabel())){
+            Optional<Stock> optStock = stockRepository.findBySigla(sigla);
+            if (optStock.isPresent()){
+                Optional<AtivoAnalise> optAtivoAnaliseStock = repository.findByStock(optStock.get());
+                if (optAtivoAnaliseStock.isPresent()){
+                    repository.delete(optAtivoAnaliseStock.get());
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -315,6 +381,7 @@ public class AtivoAnaliseService {
             List<DividendoAcao> listDividendosAcaoFinal = new ArrayList<>();
             List<DividendoBdr> listDividendosBdrFinal = new ArrayList<>();
             List<DividendoFundo> listDividendosFundoFinal = new ArrayList<>();
+            List<DividendoStock> listDividendosStockFinal = new ArrayList<>();
 
             listAtivosAnalise.forEach(ativoAnalise -> {
 
@@ -516,6 +583,73 @@ public class AtivoAnaliseService {
                         }
                     }
                 }
+
+                if ( ativoAnalise.getStock() != null){
+                    List<DividendoStock> listDividendos = dividendoStockRepository.findByStockAndDataBetween( ativoAnalise.getStock(), dtInicio, dtFimFinal);
+                    if (! listDividendos.isEmpty()){
+                        listDividendosStockFinal.addAll(listDividendos);
+                        HashMap<String, List<MapaDividendoDetailDTO>> map = new HashMap<>();
+                        listDividendos.forEach(dividendo ->{
+                            String anoMes = Utils.getAnosMesLocalDate(dividendo.getData());
+                            if ( map.containsKey(anoMes)){
+                                List<MapaDividendoDetailDTO> list = map.get(anoMes);
+                                if (list == null ){
+                                    list = new ArrayList<>();
+                                }
+                                list.add(MapaDividendoDetailDTO.from(dividendo));
+                                map.put(anoMes, list);
+                            }
+                            else {
+                                List<MapaDividendoDetailDTO> list = new ArrayList<>();
+                                list.add(MapaDividendoDetailDTO.from(dividendo));
+                                map.put(anoMes, list);
+                            }
+                        });
+
+                        if (! map.isEmpty()){
+                            HashMap<String, Integer> mapSiglaCountDividendos = new HashMap<>();
+                            HashMap<String, Double> mapSiglaSumDividendos = new HashMap<>();
+                            map.keySet().forEach(anoMes -> {
+                                List<MapaDividendoDetailDTO> list = map.get(anoMes);
+                                list.forEach(mapaDividendoDetail ->{
+                                    if ( mapSiglaCountDividendos.containsKey(mapaDividendoDetail.getSigla())){
+                                        Integer count = mapSiglaCountDividendos.get(mapaDividendoDetail.getSigla());
+                                        count += 1;
+                                        mapSiglaCountDividendos.put(mapaDividendoDetail.getSigla(), count);
+                                    }
+                                    else {
+                                        mapSiglaCountDividendos.put(mapaDividendoDetail.getSigla(), 1);
+                                    }
+
+                                    if ( mapSiglaSumDividendos.containsKey(mapaDividendoDetail.getSigla())){
+                                        Double sumDividendo = mapSiglaSumDividendos.get(mapaDividendoDetail.getSigla());
+                                        sumDividendo = sumDividendo + mapaDividendoDetail.getDividendo();
+                                        mapSiglaSumDividendos.put(mapaDividendoDetail.getSigla(), sumDividendo);
+                                    }
+                                    else {
+                                        mapSiglaSumDividendos.put(mapaDividendoDetail.getSigla(),  mapaDividendoDetail.getDividendo());
+                                    }
+                                });
+                                List<MapaDividendoDetailDTO> listMap = list.stream().sorted(Comparator.comparingDouble(MapaDividendoDetailDTO::getDividendo).reversed()).collect(Collectors.toList());
+                                listResult.add(MapaDividendosDTO.from(anoMes, listMap));
+                            });
+
+                            if (! mapSiglaCountDividendos.isEmpty()){
+                                mapSiglaCountDividendos.keySet().forEach(sigla ->{
+                                    Integer count = mapSiglaCountDividendos.get(sigla);
+                                    listCount.add(MapaDividendoCountDTO.from(sigla, count));
+                                });
+                            }
+
+                            if (! mapSiglaSumDividendos.isEmpty()){
+                                mapSiglaSumDividendos.keySet().forEach(sigla ->{
+                                    Double sumDividendo = mapSiglaSumDividendos.get(sigla);
+                                    listSum.add(MapaDividendoSumDTO.from(sigla, sumDividendo));
+                                });
+                            }
+                        }
+                    }
+                }
             });
 
             if ( !listResult.isEmpty()){
@@ -533,6 +667,7 @@ public class AtivoAnaliseService {
             List<MapaRoiInvestimentoDividendoDTO> listRoiInvestimentoDividendoAcao = this.getRoiInvestimentoDividendoCotacaoAcao(listDividendosAcaoFinal);
             List<MapaRoiInvestimentoDividendoDTO> listRoiInvestimentoDividendoBdr = this.getRoiInvestimentoDividendoCotacaoBdr(listDividendosBdrFinal);
             List<MapaRoiInvestimentoDividendoDTO> listRoiInvestimentoDividendoFundo = this.getRoiInvestimentoDividendoCotacaoFundo(listDividendosFundoFinal);
+            List<MapaRoiInvestimentoDividendoDTO> listRoiInvestimentoDividendoStock = this.getRoiInvestimentoDividendoCotacaoStock(listDividendosStockFinal);
 
             List<MapaRoiInvestimentoDividendoDTO> listRoiInvestimentoDividendoFinal = new ArrayList<>();
             if (listRoiInvestimentoDividendoAcao != null && !listRoiInvestimentoDividendoAcao.isEmpty())
@@ -543,6 +678,9 @@ public class AtivoAnaliseService {
 
             if (listRoiInvestimentoDividendoFundo != null && !listRoiInvestimentoDividendoFundo.isEmpty())
                 listRoiInvestimentoDividendoFinal.addAll(listRoiInvestimentoDividendoFundo);
+
+            if (listRoiInvestimentoDividendoStock != null && !listRoiInvestimentoDividendoStock.isEmpty())
+                listRoiInvestimentoDividendoFinal.addAll(listRoiInvestimentoDividendoStock);
 
             ResultMapaDividendoDTO resultMapaDividendoDTO = ResultMapaDividendoDTO.from(listFinal, listCountFinal, listSumFinal, listRoiInvestimentoDividendoFinal );
 
@@ -661,6 +799,42 @@ public class AtivoAnaliseService {
         return null;
     }
 
+    private List<MapaRoiInvestimentoDividendoDTO> getRoiInvestimentoDividendoCotacaoStock(List<DividendoStock> listDividendos) {
+
+        HashMap<String, Double> mapRoi = new HashMap<>();
+        if (! listDividendos.isEmpty()){
+            listDividendos.forEach(dividendo -> {
+                CotacaoStockMensal cotacaoMensal = cotacaoStockService.findCotacaoMensalByAtivo(dividendo.getStock(), dividendo.getData());
+                Double coeficiente = dividendo.getDividend() / cotacaoMensal.getClose();
+                if (mapRoi.containsKey(dividendo.getStock().getSigla())){
+                    Double coeficienteTotal = mapRoi.get(dividendo.getStock().getSigla());
+                    coeficienteTotal = coeficienteTotal + coeficiente;
+                    mapRoi.put(dividendo.getStock().getSigla(),coeficienteTotal );
+                }
+                else {
+                    mapRoi.put(dividendo.getStock().getSigla(),  coeficiente);
+                }
+            });
+        }
+
+        if ( !mapRoi.isEmpty()){
+            List<MapaRoiInvestimentoDividendoDTO> list = new ArrayList<>();
+            mapRoi.keySet().forEach(sigla ->{
+                Double coeficienteTotal = mapRoi.get(sigla);
+                MapaRoiInvestimentoDividendoDTO dto = MapaRoiInvestimentoDividendoDTO.from(sigla, coeficienteTotal);
+                list.add(dto);
+            });
+
+            if (! list.isEmpty()){
+                List<MapaRoiInvestimentoDividendoDTO> listFinal = list.stream()
+                        .sorted(Comparator.comparing(MapaRoiInvestimentoDividendoDTO::getCoeficienteRoi).reversed())
+                        .collect(Collectors.toList());
+                return listFinal;
+            }
+        }
+        return null;
+    }
+
     public List<ResultValorInvestidoDTO> simulaValorInvestido(String rendimentoMensalEstimado) {
 
         List<AtivoAnalise> listAtivosAnalise = repository.findAll();
@@ -688,6 +862,14 @@ public class AtivoAnaliseService {
                     LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoFundoService.getLastCotacaoDiario(ativoAnalise.getFundo());
                     LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoFundoService.getLastDividendo(ativoAnalise.getFundo());
                     list.add(ResultValorInvestidoDTO.from(ativoAnalise.getFundo(),
+                            Double.valueOf(rendimentoMensalEstimado),
+                            lastCotacaoAtivoDiarioDTO,
+                            lastDividendoAtivoDTO));
+                }
+                else if (ativoAnalise.getStock() != null){
+                    LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoStockService.getLastCotacaoDiario(ativoAnalise.getStock());
+                    LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoStockService.getLastDividendo(ativoAnalise.getStock());
+                    list.add(ResultValorInvestidoDTO.from(ativoAnalise.getStock(),
                             Double.valueOf(rendimentoMensalEstimado),
                             lastCotacaoAtivoDiarioDTO,
                             lastDividendoAtivoDTO));
@@ -780,6 +962,14 @@ public class AtivoAnaliseService {
                     LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoFundoService.getLastCotacaoDiario(ativoAnalise.getFundo());
                     LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoFundoService.getLastDividendo(ativoAnalise.getFundo());
                     list.add(ResultValorRendimentoPorCotasDTO.from(ativoAnalise.getFundo(),
+                            Double.valueOf(valorInvestimento),
+                            lastCotacaoAtivoDiarioDTO,
+                            lastDividendoAtivoDTO));
+                }
+                else if ( ativoAnalise.getStock() != null){
+                    LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO = cotacaoStockService.getLastCotacaoDiario(ativoAnalise.getStock());
+                    LastDividendoAtivoDTO lastDividendoAtivoDTO = dividendoStockService.getLastDividendo(ativoAnalise.getStock());
+                    list.add(ResultValorRendimentoPorCotasDTO.from(ativoAnalise.getStock(),
                             Double.valueOf(valorInvestimento),
                             lastCotacaoAtivoDiarioDTO,
                             lastDividendoAtivoDTO));
@@ -891,6 +1081,19 @@ public class AtivoAnaliseService {
                     List<SumIncreasePercentCotacaoDTO> listDiario = sumListIncreasePercentCotacaoDiario(listCotacaoDiario, ativoAnalise.getFundo());
                     List<SumIncreasePercentCotacaoDTO> listSemanal = sumListIncreasePercentCotacaoSemanal(listCotacaoSemanal, ativoAnalise.getFundo());
                     List<SumIncreasePercentCotacaoDTO> listMensal = sumListIncreasePercentCotacaoMensal(listCotacaoMensal, ativoAnalise.getFundo());
+
+                    listDiarioFinal.addAll(listDiario);
+                    listSemanalFinal.addAll(listSemanal);
+                    listMensalFinal.addAll(listMensal);
+                }
+                else if ( ativoAnalise.getStock() != null){
+                    List<CotacaoStockDiario>  listCotacaoDiario  = cotacaoStockDiarioRepository.findByStock(ativoAnalise.getStock());
+                    List<CotacaoStockSemanal> listCotacaoSemanal = cotacaoStockSemanalRepository.findByStock(ativoAnalise.getStock());
+                    List<CotacaoStockMensal> listCotacaoMensal   = cotacaoStockMensalRepository.findByStock(ativoAnalise.getStock());
+
+                    List<SumIncreasePercentCotacaoDTO> listDiario = sumListIncreasePercentCotacaoDiario(listCotacaoDiario, ativoAnalise.getStock());
+                    List<SumIncreasePercentCotacaoDTO> listSemanal = sumListIncreasePercentCotacaoSemanal(listCotacaoSemanal, ativoAnalise.getStock());
+                    List<SumIncreasePercentCotacaoDTO> listMensal = sumListIncreasePercentCotacaoMensal(listCotacaoMensal, ativoAnalise.getStock());
 
                     listDiarioFinal.addAll(listDiario);
                     listSemanalFinal.addAll(listSemanal);
@@ -1250,6 +1453,121 @@ public class AtivoAnaliseService {
                     }
                     finally{
                         SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(acao.getSigla(), valorPercentGrow);
+                        listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                    }
+                }
+            }
+        }
+
+        return listSumIncrease;
+    }
+
+
+    // @Override
+    public List<SumIncreasePercentCotacaoDTO> sumListIncreasePercentCotacaoDiario(List<CotacaoStockDiario> listCotacaoDiario, Stock stock) {
+        List<SumIncreasePercentCotacaoDTO> listSumIncrease = new ArrayList<>();
+        if (! listCotacaoDiario.isEmpty()){
+            List<CotacaoStockDiario>  list = listCotacaoDiario.stream()
+                    .sorted(Comparator.comparingDouble(CotacaoStockDiario::getClose).reversed())
+                    .collect(Collectors.toList());
+            if ( !list.isEmpty() ){
+                if ( list.size() == 2){
+                    CotacaoStockDiario cotacaoAtual = list.get(0);
+                    CotacaoStockDiario cotacaoAnterior = list.get(1);
+                    Double valorPercentGrow = (cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose();
+                    SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(stock.getSigla(), valorPercentGrow);
+                    listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                }
+                else if ( list.size() >= 3){
+                    Double valorPercentGrow = 0d;
+                    try{
+                        for(int i = 0; i <= list.size(); i++){
+                            CotacaoStockDiario cotacaoAtual = list.get(i);
+                            CotacaoStockDiario cotacaoAnterior = list.get(i+1);
+                            valorPercentGrow = valorPercentGrow + ((cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose());
+                        }
+                    }
+                    catch (Exception e){
+
+                    }
+                    finally{
+                        SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(stock.getSigla(), valorPercentGrow);
+                        listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                    }
+                }
+            }
+        }
+
+        return listSumIncrease;
+    }
+
+    //@Override
+    public List<SumIncreasePercentCotacaoDTO> sumListIncreasePercentCotacaoSemanal(List<CotacaoStockSemanal> listCotacaoSemanal, Stock stock) {
+        List<SumIncreasePercentCotacaoDTO> listSumIncrease = new ArrayList<>();
+        if (! listCotacaoSemanal.isEmpty()){
+            List<CotacaoStockSemanal>  list = listCotacaoSemanal.stream()
+                    .sorted(Comparator.comparingDouble(CotacaoStockSemanal::getClose).reversed())
+                    .collect(Collectors.toList());
+            if ( !list.isEmpty() ){
+                if ( list.size() == 2){
+                    CotacaoStockSemanal cotacaoAtual = list.get(0);
+                    CotacaoStockSemanal cotacaoAnterior = list.get(1);
+                    Double valorPercentGrow = (cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose();
+                    SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(stock.getSigla(), valorPercentGrow);
+                    listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                }
+                else if ( list.size() >= 3){
+                    Double valorPercentGrow = 0d;
+                    try{
+                        for(int i = 0; i <= list.size(); i++){
+                            CotacaoStockSemanal cotacaoAtual = list.get(i);
+                            CotacaoStockSemanal cotacaoAnterior = list.get(i+1);
+                            valorPercentGrow = valorPercentGrow + ((cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose());
+                        }
+                    }
+                    catch (Exception e){
+
+                    }
+                    finally{
+                        SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(stock.getSigla(), valorPercentGrow);
+                        listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                    }
+                }
+            }
+        }
+
+        return listSumIncrease;
+    }
+
+    //@Override
+    public List<SumIncreasePercentCotacaoDTO> sumListIncreasePercentCotacaoMensal(List<CotacaoStockMensal> listCotacaoMensal, Stock stock) {
+        List<SumIncreasePercentCotacaoDTO> listSumIncrease = new ArrayList<>();
+        if (! listCotacaoMensal.isEmpty()){
+            List<CotacaoStockMensal>  list = listCotacaoMensal.stream()
+                    .sorted(Comparator.comparingDouble(CotacaoStockMensal::getClose).reversed())
+                    .collect(Collectors.toList());
+            if ( !list.isEmpty() ){
+                if ( list.size() == 2){
+                    CotacaoStockMensal cotacaoAtual = list.get(0);
+                    CotacaoStockMensal cotacaoAnterior = list.get(1);
+                    Double valorPercentGrow = (cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose();
+                    SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(stock.getSigla(), valorPercentGrow);
+                    listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                }
+                else if ( list.size() >= 3){
+                    Double valorPercentGrow = 0d;
+                    try{
+                        for(int i = 0; i <= list.size(); i++){
+                            CotacaoStockMensal cotacaoAtual = list.get(i);
+                            CotacaoStockMensal cotacaoAnterior = list.get(i+1);
+                            valorPercentGrow = valorPercentGrow + ((cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose());
+                        }
+                    }
+                    catch (Exception e){
+
+                    }
+                    finally{
+                        SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(stock.getSigla(), valorPercentGrow);
                         listSumIncrease.add(sumIncreasePercentCotacaoDTO);
                     }
                 }

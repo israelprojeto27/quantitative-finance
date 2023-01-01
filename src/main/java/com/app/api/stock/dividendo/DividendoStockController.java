@@ -23,13 +23,15 @@ public class DividendoStockController implements BaseDividendoController<Dividen
     @Autowired
     DividendoStockService service;
 
-    @GetMapping("/dividendos-by-idativo/{idAcao}")
+    @CrossOrigin
+    @GetMapping("/dividendos-by-idativo/{idStock}")
     @Override
     @Operation(summary = "Lista os dividendos de uma Stock a partir de um id")
-    public ResponseEntity<List<DividendoStockDTO>> findDividendoByIdAtivo(@PathVariable Long idAcao) {
-        return new ResponseEntity<>(service.findDividendoByIdAtivo(idAcao), HttpStatus.OK);
+    public ResponseEntity<List<DividendoStockDTO>> findDividendoByIdAtivo(@PathVariable Long idStock) {
+        return new ResponseEntity<>(service.findDividendoByIdAtivo(idStock), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @GetMapping("/dividendos-by-sigla/{sigla}")
     @Override
     @Operation(summary = "Lista os dividendos de uma Stock a partir de uma sigla")
@@ -37,15 +39,15 @@ public class DividendoStockController implements BaseDividendoController<Dividen
         return new ResponseEntity<>(service.findDividendoBySigla(sigla), HttpStatus.OK);
     }
 
-
-    @GetMapping("/acao-list-all-dividendo")
+    @CrossOrigin
+    @GetMapping("/stock-list-all-dividendo")
     @Override
     @Operation(summary = "Lista todas as Stocks e a lista completa de dividendos para stock cadastrada ")
     public ResponseEntity<List<StockListDividendoDTO>> findAtivoListDividendos() {
         return new ResponseEntity<>(service.findAtivoListDividendos(), HttpStatus.OK);
     }
 
-
+    @CrossOrigin
     @PostMapping("/all-dividendos-filter-period")
     @Override
     @Operation(summary = "Lista todos os dividendos de um determinado periodo ")
@@ -53,13 +55,15 @@ public class DividendoStockController implements BaseDividendoController<Dividen
         return new ResponseEntity<>(service.filterDividendosByPeriod(dto), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @GetMapping("/sum-dividendos-by-stock")
     @Override
-    @Operation(summary = "Lista para cada Ação cadastrada o respectivo somatório de todos os seus dividendos ")
+    @Operation(summary = "Lista para cada Stock cadastrada o respectivo somatório de todos os seus dividendos ")
     public ResponseEntity<List<SumAtivoDividendosDTO>> sumDividendosByAtivo() {
         return new ResponseEntity<>(service.sumDividendosByAtivo(), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @PostMapping("/sum-dividendos-by-stock-by-period")
     @Override
     @Operation(summary = "Filtra os dividendos em um período e exibe o somatório recuperado por stock ")
@@ -67,7 +71,7 @@ public class DividendoStockController implements BaseDividendoController<Dividen
         return new ResponseEntity<>(service.filterSumDividendosByAtivoByPeriod(dto), HttpStatus.OK);
     }
 
-
+    @CrossOrigin
     @GetMapping("/calculate-yield-by-cotas-by-id-stock/{idStock}/{quantidadeCotas}")
     @Override
     @Operation(summary = "Calcula o rendimento em dividendos de uma Stock a partir do Id e a quantidade de cotas informados",
@@ -76,6 +80,7 @@ public class DividendoStockController implements BaseDividendoController<Dividen
         return new ResponseEntity<>(service.calculateYieldByIdAtivoByQuantCotas(idStock, quantidadeCotas), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @GetMapping("/calculate-yield-by-cotas-by-sigla/{sigla}/{quantidadeCotas}")
     @Override
     @Operation(summary = "Calcula o rendimento em dividendos de uma Stock a partir da Sigla e a quantidade de cotas informados",
@@ -84,6 +89,7 @@ public class DividendoStockController implements BaseDividendoController<Dividen
         return new ResponseEntity<>(service.calculateYieldBySiglaAtivoByQuantCotas(sigla, quantidadeCotas), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @GetMapping("/calculate-yield-by-cotas-all-stocks/{quantidadeCotas}")
     @Override
     @Operation(summary = "Calcula o rendimento em dividendos de todas as Stocks e é informada a quantidade de cotas",
@@ -93,22 +99,25 @@ public class DividendoStockController implements BaseDividendoController<Dividen
     }
 
 
+    @CrossOrigin
     @PostMapping("/calculate-yield-by-cotas-by-id-stock-by-period/{idStock}/{quantidadeCotas}")
     @Override
     @Operation(summary = "Calcula o rendimento em dividendos de uma Stock a partir do Id, e a quantidade de cotas informados em um periodo especifico",
-            description = "Deverá ser exibido a Sigla da Ação, Data, o Valor Rendimento em dividendos, Cotação da Stock, Valor Dividendo" )
+            description = "Deverá ser exibido a Sigla da Stock, Data, o Valor Rendimento em dividendos, Cotação da Stock, Valor Dividendo" )
     public ResponseEntity<SumCalculateYieldDividendosAtivoDTO> calculateYieldByIdAtivoByQuantCotasByPeriod(@PathVariable Long idStock, @PathVariable Long quantidadeCotas, @RequestBody FilterPeriodDTO filterPeriodDTO) {
         return new ResponseEntity<>(service.calculateYieldByIdAtivoByQuantCotasByPeriod(idStock, quantidadeCotas, filterPeriodDTO), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @PostMapping("/calculate-yield-by-cotas-by-sigla-by-period/{sigla}/{quantidadeCotas}")
     @Override
     @Operation(summary = "Calcula o rendimento em dividendos de uma Stock a partir do Id, e a quantidade de cotas informados em um periodo especifico",
-            description = "Deverá ser exibido a Sigla da Stock, Data, o Valor Rendimento em dividendos, Cotação da Ação, Valor Dividendo" )
+            description = "Deverá ser exibido a Sigla da Stock, Data, o Valor Rendimento em dividendos, Cotação da Stock, Valor Dividendo" )
     public ResponseEntity<SumCalculateYieldDividendosAtivoDTO> calculateYieldBySiglaByQuantCotasByPeriod(@PathVariable String sigla, @PathVariable Long quantidadeCotas, @RequestBody FilterPeriodDTO filterPeriodDTO) {
         return new ResponseEntity<>(service.calculateYieldBySiglaByQuantCotasByPeriod(sigla, quantidadeCotas, filterPeriodDTO), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @Override
     @GetMapping("/simula-rendimento-dividendo-by-sigla/{sigla}/{valorInvestimento}")
     @Operation(summary = "Simula o rendimento em dividendos a partir de uma sigla e um valor investimento",
@@ -117,6 +126,7 @@ public class DividendoStockController implements BaseDividendoController<Dividen
         return new ResponseEntity<>(service.simulaRendimentoDividendoBySigla(sigla, valorInvestimento), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @Override
     @GetMapping("/simula-rendimento-dividendo-by-sigla-by-cotas/{sigla}/{quantCotas}")
     @Operation(summary = "Simula o rendimento em dividendos a partir de uma sigla e um valor investimento",

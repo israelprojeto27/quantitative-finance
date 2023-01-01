@@ -1,8 +1,8 @@
-package com.app.api.stock.principal;
+package com.app.api.reit.principal;
 
-import com.app.api.acao.principal.dto.AcaoDTO;
-import com.app.api.stock.principal.dto.StockDTO;
-import com.app.api.stock.principal.entity.Stock;
+
+import com.app.api.reit.principal.dto.ReitDTO;
+import com.app.api.reit.principal.entity.Reit;
 import com.app.commons.basic.general.BaseController;
 import com.app.commons.dtos.AtivoInfoGeraisDTO;
 import com.app.commons.messages.Message;
@@ -20,26 +20,25 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/stock")
-@Tag(name = "Stock")
-public class StockController implements BaseController<Stock, StockDTO>  {
+@RequestMapping("/reit")
+@Tag(name = "Reit")
+public class ReitController implements BaseController<Reit, ReitDTO> {
 
     @Autowired
-    StockService service;
-
+    ReitService service;
 
 
     @GetMapping
     @Override
-    @Operation(summary = "Lista todas as Stocks cadastradas")
-    public ResponseEntity<List<StockDTO>> getListAll() {
+    @Operation(summary = "Lista todas as Reits cadastradas")
+    public ResponseEntity<List<ReitDTO>> getListAll() {
         return new ResponseEntity<>(service.getListAll(), HttpStatus.OK);
     }
 
     @Operation(summary = "Realiza upload do arquivo de cotações em um período específico")
     @PostMapping(path = "/{periodo}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Override
-    public ResponseEntity<?> uploadFile(@RequestPart MultipartFile document,@PathVariable String periodo) throws IOException {
+    public ResponseEntity<?> uploadFile(@RequestPart MultipartFile document, @PathVariable String periodo) throws IOException {
         if (!Utils.isPeriodValid(periodo)){
             return new ResponseEntity<>(Message.ERROR_MESSAGE_PERIODO_INVALID, HttpStatus.BAD_REQUEST);
         }
@@ -74,33 +73,32 @@ public class StockController implements BaseController<Stock, StockDTO>  {
             return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_EMPTY, HttpStatus.BAD_REQUEST);
     }
 
-    @Operation(summary = "Recupera informações de uma Stock por id")
+    @Operation(summary = "Recupera informações de uma Reit por id")
     @GetMapping("/{id}")
     @Override
-    public ResponseEntity<StockDTO> findById(Long id) {
-        StockDTO stockDTO = service.findById(id);
-        if ( stockDTO != null )
-            return new ResponseEntity<>(stockDTO, HttpStatus.OK);
+    public ResponseEntity<ReitDTO> findById(@PathVariable Long id) {
+        ReitDTO reitDTO = service.findById(id);
+        if ( reitDTO != null )
+            return new ResponseEntity<>(reitDTO, HttpStatus.OK);
         else
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
-    @Operation(summary = "Recupera informações de uma Stock por sigla")
+    @Operation(summary = "Recupera informações de uma Reit por sigla")
     @GetMapping("/sigla/{sigla}")
     @Override
-    public ResponseEntity<StockDTO> findBySigla(@PathVariable String sigla) {
-        StockDTO stockDTO = service.findBySigla(sigla);
-        if ( stockDTO != null )
-            return new ResponseEntity<>(stockDTO, HttpStatus.OK);
+    public ResponseEntity<ReitDTO> findBySigla(@PathVariable String sigla) {
+        ReitDTO reitDTO = service.findBySigla(sigla);
+        if ( reitDTO != null )
+            return new ResponseEntity<>(reitDTO, HttpStatus.OK);
         else
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
-    @Operation(summary = "Calcula e armazena o percentual que uma Stock cresceu de uma data para outra. Esse cálculo é feito a partir de um periodo selecionado (diario, semanal, mensal) ")
+    @Operation(summary = "Calcula e armazena o percentual que uma Reit cresceu de uma data para outra. Esse cálculo é feito a partir de um periodo selecionado (diario, semanal, mensal) ")
     @PostMapping("/calculate-increase-percent/{periodo}")
     @Override
     public ResponseEntity<?> calculaIncreasePercent(@PathVariable String periodo) {
-
         if (!Utils.isPeriodValid(periodo)){
             return new ResponseEntity<>(Message.ERROR_MESSAGE_FILE_UPLOAD_PERIODO, HttpStatus.BAD_REQUEST);
         }
@@ -108,15 +106,24 @@ public class StockController implements BaseController<Stock, StockDTO>  {
         return new ResponseEntity<>(service.calculaIncreasePercent(periodo), HttpStatus.OK);
     }
 
-    @Operation(summary = "Calcula e armazena o percentual que uma Stock cresceu de uma data para outra. Esse cálculo é feito para todos os periodos de uma vez (diario, semanal, mensal) ")
+    @Operation(summary = "Calcula e armazena o percentual que uma Reit cresceu de uma data para outra. Esse cálculo é feito para todos os periodos de uma vez (diario, semanal, mensal) ")
     @PostMapping("/calculate-increase-percent-full")
     @Override
     public ResponseEntity<?> calculaIncreasePercentFull() {
         return new ResponseEntity<>(service.calculaIncreasePercentFull(), HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity<?> deleteById(Long id) {
+        return null;
+    }
 
-    @Operation(summary = "Limpa todos os registros das tabelas de Stock, Cotação e Dividendo ")
+    @Override
+    public ResponseEntity<ReitDTO> update(ReitDTO dto) {
+        return null;
+    }
+
+    @Operation(summary = "Limpa todos os registros das tabelas de Reit, Cotação e Dividendo ")
     @GetMapping("/cleanAll")
     @Override
     public ResponseEntity<?> cleanAll() {
@@ -125,21 +132,21 @@ public class StockController implements BaseController<Stock, StockDTO>  {
 
     @Override
     @GetMapping(path = "/info-gerais")
-    @Operation(summary = "Recuperar informações gerais das stocks cadastradas")
+    @Operation(summary = "Recuperar informações gerais das reits cadastradas")
     public ResponseEntity<List<AtivoInfoGeraisDTO>> getInfoGerais() {
         return new ResponseEntity<>(service.getInfoGerais(), HttpStatus.OK);
     }
 
     @Override
     @GetMapping(path = "/info-gerais-by-sigla/{sigla}")
-    @Operation(summary = "Recuperar informações gerais de uma stock")
+    @Operation(summary = "Recuperar informações gerais de uma reit")
     public ResponseEntity<List<AtivoInfoGeraisDTO>> getInfoGeraisBySigla(@PathVariable String sigla) {
         return new ResponseEntity<>(service.getInfoGeraisBySigla(sigla), HttpStatus.OK);
     }
 
     @Override
     @GetMapping(path = "/filter-info-gerais")
-    @Operation(summary = "Filtrar e ordenar informações gerais das stocks cadastradas")
+    @Operation(summary = "Filtrar e ordenar informações gerais das reits cadastradas")
     public ResponseEntity<List<AtivoInfoGeraisDTO>> filterInfoGerais(@RequestParam String orderFilter, @RequestParam String typeOrderFilter) {
         return new ResponseEntity<>(service.filterInfoGerais(orderFilter, typeOrderFilter), HttpStatus.OK);
     }
@@ -147,9 +154,8 @@ public class StockController implements BaseController<Stock, StockDTO>  {
     @CrossOrigin
     @Override
     @GetMapping(path = "/mapa-dividendos/{anoMesInicio}/{anoMesFim}")
-    @Operation(summary = "Gerar mapa de dividendos entre datas específicas das stocks cadastradas")
-    public ResponseEntity<?> mapaDividendos(@PathVariable String anoMesInicio, @PathVariable String anoMesFim) {
-
+    @Operation(summary = "Gerar mapa de dividendos entre datas específicas das reits cadastradas")
+    public ResponseEntity<?> mapaDividendos(@PathVariable  String anoMesInicio, @PathVariable String anoMesFim) {
         if (!Utils.isAnoMesValid(anoMesInicio)){
             return new ResponseEntity<>(Message.ERROR_MESSAGE_ANO_MES_INVALID, HttpStatus.BAD_REQUEST);
         }
@@ -173,7 +179,7 @@ public class StockController implements BaseController<Stock, StockDTO>  {
     @Override
     @GetMapping(path = "/simula-valor-investido-by-sigla/{rendimentoMensalEstimado}/{sigla}")
     @Operation(summary = "Simula e informa o valor a ser investido para se alcançar um rendimento mensal estimado de dividendos")
-    public ResponseEntity<?> simulaValorInvestidoBySigla(@PathVariable String rendimentoMensalEstimado, @PathVariable String sigla) {
+    public ResponseEntity<?> simulaValorInvestidoBySigla(@PathVariable  String rendimentoMensalEstimado, @PathVariable  String sigla) {
         return new ResponseEntity<>(service.simulaValorInvestidoBySigla(rendimentoMensalEstimado, sigla), HttpStatus.OK);
     }
 
@@ -207,17 +213,5 @@ public class StockController implements BaseController<Stock, StockDTO>  {
     @Operation(summary = "Filtra a simulacao do rendimento ganho de dividendos a partir da quantidade de cotas a partir do valor investimento")
     public ResponseEntity<?> filterSimulaRendimentoByQuantidadeCotasBySigla(@PathVariable String valorInvestimento, @RequestParam String orderFilter, @RequestParam String typeOrderFilter) {
         return new ResponseEntity<>(service.filterSimulaRendimentoByQuantidadeCotasBySigla(valorInvestimento, orderFilter, typeOrderFilter), HttpStatus.OK);
-    }
-
-    @Operation(summary = "Deleta uma Stock por Id")
-    @DeleteMapping("/{id}")
-    @Override
-    public ResponseEntity<?> deleteById(Long id) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<StockDTO> update(StockDTO dto) {
-        return null;
     }
 }
