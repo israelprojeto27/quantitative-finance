@@ -14,6 +14,7 @@ import com.app.api.reit.increasepercent.IncreasePercentReit;
 import com.app.api.reit.increasepercent.IncreasePercentReitService;
 import com.app.api.reit.principal.ReitRepository;
 import com.app.api.reit.principal.entity.Reit;
+import com.app.api.stock.cotacao.entities.CotacaoStockMensal;
 import com.app.commons.basic.cotacao.BaseCotacaoService;
 import com.app.commons.dtos.*;
 import com.app.commons.dtos.dividendo.RoiDividendoCotacaoDTO;
@@ -470,26 +471,159 @@ public class CotacaoReitService implements BaseCotacaoService<Reit, ReitCotacaoD
 
     @Override
     public LastCotacaoAtivoDiarioDTO getLastCotacaoDiario(Reit reit) {
+        List<CotacaoReitDiario> listCotacaoReitDiario = cotacaoReitDiarioRepository.findByReit(reit, Sort.by(Sort.Direction.DESC, "data"));
+        if (! listCotacaoReitDiario.isEmpty()){
+            Optional<CotacaoReitDiario> optCotacaoReitDiario = listCotacaoReitDiario.stream()
+                    .findFirst();
+            if ( optCotacaoReitDiario.isPresent()){
+                return LastCotacaoAtivoDiarioDTO.from(optCotacaoReitDiario.get());
+            }
+        }
         return null;
     }
 
     @Override
     public ResultSumIncreasePercentCotacaoDTO sumIncreasePercentCotacao() {
+        List<Reit> listReit = reitRepository.findAll();
+        if ( !listReit.isEmpty()){
+            ResultSumIncreasePercentCotacaoDTO dto = new ResultSumIncreasePercentCotacaoDTO();
+            listReit.forEach(reit ->{
+                List<CotacaoReitDiario>  listCotacaoDiario  = cotacaoReitDiarioRepository.findByReit(reit);
+                List<CotacaoReitSemanal> listCotacaoSemanal = cotacaoReitSemanalRepository.findByReit(reit);
+                List<CotacaoReitMensal> listCotacaoMensal   = cotacaoReitMensalRepository.findByReit(reit);
+
+                List<SumIncreasePercentCotacaoDTO> listDiario = sumListIncreasePercentCotacaoDiario(listCotacaoDiario, reit);
+                List<SumIncreasePercentCotacaoDTO> listSemanal = sumListIncreasePercentCotacaoSemanal(listCotacaoSemanal, reit);
+                List<SumIncreasePercentCotacaoDTO> listMensal = sumListIncreasePercentCotacaoMensal(listCotacaoMensal, reit);
+
+                dto.getListDiario().addAll(listDiario);
+                dto.getListSemanal().addAll(listSemanal);
+                dto.getListMensal().addAll(listMensal);
+            });
+
+            List<SumIncreasePercentCotacaoDTO> listDiarioFinal  = dto.getListDiario().stream().sorted(Comparator.comparingDouble(SumIncreasePercentCotacaoDTO::getSumIncreasePercent).reversed()).collect(Collectors.toList());
+            List<SumIncreasePercentCotacaoDTO> listSemanalFinal = dto.getListSemanal().stream().sorted(Comparator.comparingDouble(SumIncreasePercentCotacaoDTO::getSumIncreasePercent).reversed()).collect(Collectors.toList());
+            List<SumIncreasePercentCotacaoDTO> listMensalFinal  = dto.getListMensal().stream().sorted(Comparator.comparingDouble(SumIncreasePercentCotacaoDTO::getSumIncreasePercent).reversed()).collect(Collectors.toList());
+
+            dto.setListDiario(listDiarioFinal);
+            dto.setListSemanal(listSemanalFinal);
+            dto.setListMensal(listMensalFinal);
+            return dto;
+        }
         return null;
     }
 
     @Override
     public List<SumIncreasePercentCotacaoDTO> sumListIncreasePercentCotacaoDiario(List<CotacaoReitDiario> listCotacaoDiario, Reit reit) {
-        return null;
+        List<SumIncreasePercentCotacaoDTO> listSumIncrease = new ArrayList<>();
+        if (! listCotacaoDiario.isEmpty()){
+            List<CotacaoReitDiario>  list = listCotacaoDiario.stream()
+                    .sorted(Comparator.comparingDouble(CotacaoReitDiario::getClose).reversed())
+                    .collect(Collectors.toList());
+            if ( !list.isEmpty() ){
+                if ( list.size() == 2){
+                    CotacaoReitDiario cotacaoAtual = list.get(0);
+                    CotacaoReitDiario cotacaoAnterior = list.get(1);
+                    Double valorPercentGrow = (cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose();
+                    SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(reit.getSigla(), valorPercentGrow);
+                    listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                }
+                else if ( list.size() >= 3){
+                    Double valorPercentGrow = 0d;
+                    try{
+                        for(int i = 0; i <= list.size(); i++){
+                            CotacaoReitDiario cotacaoAtual = list.get(i);
+                            CotacaoReitDiario cotacaoAnterior = list.get(i+1);
+                            valorPercentGrow = valorPercentGrow + ((cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose());
+                        }
+                    }
+                    catch (Exception e){
+
+                    }
+                    finally{
+                        SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(reit.getSigla(), valorPercentGrow);
+                        listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                    }
+                }
+            }
+        }
+
+        return listSumIncrease;
     }
 
     @Override
     public List<SumIncreasePercentCotacaoDTO> sumListIncreasePercentCotacaoSemanal(List<CotacaoReitSemanal> listCotacaoSemanal, Reit reit) {
-        return null;
+        List<SumIncreasePercentCotacaoDTO> listSumIncrease = new ArrayList<>();
+        if (! listCotacaoSemanal.isEmpty()){
+            List<CotacaoReitSemanal>  list = listCotacaoSemanal.stream()
+                    .sorted(Comparator.comparingDouble(CotacaoReitSemanal::getClose).reversed())
+                    .collect(Collectors.toList());
+            if ( !list.isEmpty() ){
+                if ( list.size() == 2){
+                    CotacaoReitSemanal cotacaoAtual = list.get(0);
+                    CotacaoReitSemanal cotacaoAnterior = list.get(1);
+                    Double valorPercentGrow = (cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose();
+                    SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(reit.getSigla(), valorPercentGrow);
+                    listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                }
+                else if ( list.size() >= 3){
+                    Double valorPercentGrow = 0d;
+                    try{
+                        for(int i = 0; i <= list.size(); i++){
+                            CotacaoReitSemanal cotacaoAtual = list.get(i);
+                            CotacaoReitSemanal cotacaoAnterior = list.get(i+1);
+                            valorPercentGrow = valorPercentGrow + ((cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose());
+                        }
+                    }
+                    catch (Exception e){
+
+                    }
+                    finally{
+                        SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(reit.getSigla(), valorPercentGrow);
+                        listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                    }
+                }
+            }
+        }
+
+        return listSumIncrease;
     }
 
     @Override
     public List<SumIncreasePercentCotacaoDTO> sumListIncreasePercentCotacaoMensal(List<CotacaoReitMensal> listCotacaoMensal, Reit reit) {
-        return null;
+        List<SumIncreasePercentCotacaoDTO> listSumIncrease = new ArrayList<>();
+        if (! listCotacaoMensal.isEmpty()){
+            List<CotacaoReitMensal>  list = listCotacaoMensal.stream()
+                    .sorted(Comparator.comparingDouble(CotacaoReitMensal::getClose).reversed())
+                    .collect(Collectors.toList());
+            if ( !list.isEmpty() ){
+                if ( list.size() == 2){
+                    CotacaoReitMensal cotacaoAtual = list.get(0);
+                    CotacaoReitMensal cotacaoAnterior = list.get(1);
+                    Double valorPercentGrow = (cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose();
+                    SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(reit.getSigla(), valorPercentGrow);
+                    listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                }
+                else if ( list.size() >= 3){
+                    Double valorPercentGrow = 0d;
+                    try{
+                        for(int i = 0; i <= list.size(); i++){
+                            CotacaoReitMensal cotacaoAtual = list.get(i);
+                            CotacaoReitMensal cotacaoAnterior = list.get(i+1);
+                            valorPercentGrow = valorPercentGrow + ((cotacaoAtual.getClose() - cotacaoAnterior.getClose()) / cotacaoAnterior.getClose());
+                        }
+                    }
+                    catch (Exception e){
+
+                    }
+                    finally{
+                        SumIncreasePercentCotacaoDTO sumIncreasePercentCotacaoDTO = SumIncreasePercentCotacaoDTO.from(reit.getSigla(), valorPercentGrow);
+                        listSumIncrease.add(sumIncreasePercentCotacaoDTO);
+                    }
+                }
+            }
+        }
+
+        return listSumIncrease;
     }
 }

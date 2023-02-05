@@ -717,14 +717,16 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
         if (! listDividendos.isEmpty()){
             listDividendos.forEach(dividendo -> {
                 CotacaoAcaoMensal cotacaoMensal = cotacaoAcaoService.findCotacaoMensalByAtivo(dividendo.getAcao(), dividendo.getData());
-                Double coeficiente = dividendo.getDividend() / cotacaoMensal.getClose();
-                if (mapRoi.containsKey(dividendo.getAcao().getSigla())){
-                    Double coeficienteTotal = mapRoi.get(dividendo.getAcao().getSigla());
-                    coeficienteTotal = coeficienteTotal + coeficiente;
-                    mapRoi.put(dividendo.getAcao().getSigla(),coeficienteTotal );
-                }
-                else {
-                    mapRoi.put(dividendo.getAcao().getSigla(),  coeficiente);
+                if ( cotacaoMensal != null && dividendo.getDividend() != null){
+                    Double coeficiente = dividendo.getDividend() / cotacaoMensal.getClose();
+                    if (mapRoi.containsKey(dividendo.getAcao().getSigla())){
+                        Double coeficienteTotal = mapRoi.get(dividendo.getAcao().getSigla());
+                        coeficienteTotal = coeficienteTotal + coeficiente;
+                        mapRoi.put(dividendo.getAcao().getSigla(),coeficienteTotal );
+                    }
+                    else {
+                        mapRoi.put(dividendo.getAcao().getSigla(),  coeficiente);
+                    }
                 }
             });
         }

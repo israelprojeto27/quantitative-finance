@@ -48,7 +48,7 @@ public class CotacaoReitSemanal {
     private Timestamp updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "stock_id")
+    @JoinColumn(name = "reit_id")
     private Reit reit;
 
     public static CotacaoReitSemanal toEntity(String[] array, Reit reit) {

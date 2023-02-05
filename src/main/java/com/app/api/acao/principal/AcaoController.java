@@ -59,6 +59,7 @@ public class AcaoController implements BaseController<Acao, AcaoDTO> {
     @Override
     @GetMapping(path = "/mapa-dividendos/{anoMesInicio}/{anoMesFim}")
     @Operation(summary = "Gerar mapa de dividendos entre datas específicas das ações cadastradas")
+    @CrossOrigin
     public ResponseEntity<?> mapaDividendos(@PathVariable String anoMesInicio, @PathVariable String anoMesFim) {
 
         if (!Utils.isAnoMesValid(anoMesInicio)){

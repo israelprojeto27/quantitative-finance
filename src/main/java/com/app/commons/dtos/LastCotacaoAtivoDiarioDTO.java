@@ -3,6 +3,7 @@ package com.app.commons.dtos;
 import com.app.api.acao.cotacao.entities.CotacaoAcaoDiario;
 import com.app.api.bdr.cotacao.entities.CotacaoBdrDiario;
 import com.app.api.fundoimobiliario.cotacao.entities.CotacaoFundoDiario;
+import com.app.api.reit.cotacao.entities.CotacaoReitDiario;
 import com.app.api.stock.cotacao.entities.CotacaoStockDiario;
 import com.app.commons.utils.Utils;
 import lombok.AllArgsConstructor;
@@ -50,6 +51,14 @@ public class LastCotacaoAtivoDiarioDTO {
     }
 
     public static LastCotacaoAtivoDiarioDTO from(CotacaoStockDiario cotacaoDiario) {
+        return LastCotacaoAtivoDiarioDTO.builder()
+                .valorUltimaCotacao(cotacaoDiario.getClose())
+                .dataUltimaCotacao(Utils.converteLocalDateToString(cotacaoDiario.getData()))
+                .dataUltimaCotacaoFmt(cotacaoDiario.getData())
+                .build();
+    }
+
+    public static LastCotacaoAtivoDiarioDTO from(CotacaoReitDiario cotacaoDiario) {
         return LastCotacaoAtivoDiarioDTO.builder()
                 .valorUltimaCotacao(cotacaoDiario.getClose())
                 .dataUltimaCotacao(Utils.converteLocalDateToString(cotacaoDiario.getData()))

@@ -82,32 +82,40 @@ public class CotacaoFundoService implements BaseCotacaoService<FundoImobiliario,
     public void addCotacaoAtivoPartial(String line, FundoImobiliario fundo, String periodo) {
         String[] array =  line.split(",");
 
-        if ( periodo.equals(PeriodoEnum.DIARIO.getLabel())){
-            CotacaoFundoDiario cotacaoFundoDiario = CotacaoFundoDiario.toEntity(array, fundo);
-            if ( cotacaoFundoDiario != null){
-                List<CotacaoFundoDiario> listCotacao = cotacaoFundoDiarioRepository.findByFundoAndData(fundo, cotacaoFundoDiario.getData());
-                if ( listCotacao.isEmpty() && cotacaoFundoDiario != null){
-                    this.createCotacaoDiario(cotacaoFundoDiario);
+        try{
+            if ( periodo.equals(PeriodoEnum.DIARIO.getLabel())){
+                CotacaoFundoDiario cotacaoFundoDiario = CotacaoFundoDiario.toEntity(array, fundo);
+                if ( cotacaoFundoDiario != null){
+                    List<CotacaoFundoDiario> listCotacao = cotacaoFundoDiarioRepository.findByFundoAndData(fundo, cotacaoFundoDiario.getData());
+                    if ( listCotacao.isEmpty() && cotacaoFundoDiario != null){
+                        this.createCotacaoDiario(cotacaoFundoDiario);
+                    }
+                }
+            }
+            else if ( periodo.equals(PeriodoEnum.SEMANAL.getLabel())){
+                CotacaoFundoSemanal cotacaoFundoSemanal = CotacaoFundoSemanal.toEntity(array, fundo);
+                if ( cotacaoFundoSemanal != null){
+                    List<CotacaoFundoSemanal> listCotacao = cotacaoFundoSemanalRepository.findByFundoAndData(fundo, cotacaoFundoSemanal.getData());
+                    if (listCotacao.isEmpty() && cotacaoFundoSemanal != null){
+                        this.createCotacaoSemanal(cotacaoFundoSemanal);
+                    }
+                }
+            }
+            else if ( periodo.equals(PeriodoEnum.MENSAL.getLabel())){
+                CotacaoFundoMensal cotacaoFundoMensal = CotacaoFundoMensal.toEntity(array, fundo);
+                if ( cotacaoFundoMensal != null ){
+                    List<CotacaoFundoMensal> listCotacao = cotacaoFundoMensalRepository.findByFundoAndData(fundo, cotacaoFundoMensal.getData());
+                    if (listCotacao.isEmpty() && cotacaoFundoMensal != null ){
+                        this.createCotacaoMensal(cotacaoFundoMensal);
+                    }
                 }
             }
         }
-        else if ( periodo.equals(PeriodoEnum.SEMANAL.getLabel())){
-            CotacaoFundoSemanal cotacaoFundoSemanal = CotacaoFundoSemanal.toEntity(array, fundo);
-            if ( cotacaoFundoSemanal != null){
-                List<CotacaoFundoSemanal> listCotacao = cotacaoFundoSemanalRepository.findByFundoAndData(fundo, cotacaoFundoSemanal.getData());
-                if (listCotacao.isEmpty() && cotacaoFundoSemanal != null){
-                    this.createCotacaoSemanal(cotacaoFundoSemanal);
-                }
-            }
-        }
-        else if ( periodo.equals(PeriodoEnum.MENSAL.getLabel())){
-            CotacaoFundoMensal cotacaoFundoMensal = CotacaoFundoMensal.toEntity(array, fundo);
-            if ( cotacaoFundoMensal != null ){
-                List<CotacaoFundoMensal> listCotacao = cotacaoFundoMensalRepository.findByFundoAndData(fundo, cotacaoFundoMensal.getData());
-                if (listCotacao.isEmpty() && cotacaoFundoMensal != null ){
-                    this.createCotacaoMensal(cotacaoFundoMensal);
-                }
-            }
+        catch (Exception e){
+            System.out.println("Mensagem erro: " + e.getMessage());
+            System.out.println("Fundo analisado: " + fundo.getSigla());
+            System.out.println("Linha analisada: " + line);
+            System.out.println("periodo: " + periodo);
         }
     }
 
