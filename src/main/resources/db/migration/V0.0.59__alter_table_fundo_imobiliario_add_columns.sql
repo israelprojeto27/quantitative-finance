@@ -1,0 +1,14 @@
+alter table fundo_imobiliario add dividendo_cota decimal(24,12) null;
+alter table fundo_imobiliario add ffo_yield decimal(24,12) null;
+alter table fundo_imobiliario add ffo_cota decimal(24,12) null;
+alter table fundo_imobiliario add pvp decimal(24,12) null;
+alter table fundo_imobiliario add vp_cota decimal(24,12) null;
+alter table fundo_imobiliario add valor_mercado decimal(24,12) null;
+alter table fundo_imobiliario add nro_cota decimal(24,12) null;
+alter table fundo_imobiliario add qtd_imoveis decimal(24,12) null;
+alter table fundo_imobiliario add cap_rate decimal(24,12) null;
+alter table fundo_imobiliario add qtd_unid decimal(24,12) null;
+alter table fundo_imobiliario add aluguel_m2 decimal(24,12) null;
+alter table fundo_imobiliario add vacancia_media decimal(24,12) null;
+alter table fundo_imobiliario add imoveis_pl decimal(24,12) null;
+alter table fundo_imobiliario add preco_m2 decimal(24,12) null;

@@ -158,8 +158,62 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
                         listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getDividendYieldFmt).reversed()).collect(Collectors.toList());
                     }
                 }
-
-
+                else if ( orderFilter.equals(OrderFilterEnum.ROE.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getRoeFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getRoeFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.PVP.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPvpFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPvpFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.PL.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPlFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPlFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.PSR.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPsrFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPsrFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.P_ATIVOS.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPAtivosFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPAtivosFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.P_EBIT.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPEbitFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPEbitFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.MARG_EBIT.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getMargEbitFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getMargEbitFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
                 return listFinal;
             }
         }
@@ -250,9 +304,22 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
                 // read next line
 
                 if (Utils.isLineIgnored(line)){
-                    token =  line.split(",");
-                    acao.setDividendYield(Double.parseDouble(token[2]));
-                    repository.save(acao);
+                    try{
+                        token =  line.split(",");
+                        acao.setDividendYield(Double.parseDouble(formataParametroAnaliseFundamentalista(token[2])));
+                        acao.setRoe(Double.parseDouble(formataParametroAnaliseFundamentalista(token[3])));
+                        acao.setPvp(Double.parseDouble(formataParametroAnaliseFundamentalista(token[4])));
+                        acao.setPl(Double.parseDouble(formataParametroAnaliseFundamentalista(token[5])));
+                        acao.setPsr(Double.parseDouble(formataParametroAnaliseFundamentalista(token[6])));
+                        acao.setPAtivos(Double.parseDouble(formataParametroAnaliseFundamentalista(token[7])));
+                        acao.setPEbit(Double.parseDouble(formataParametroAnaliseFundamentalista(token[8])));
+                        acao.setMargEbit(Double.parseDouble(formataParametroAnaliseFundamentalista(token[9])));
+                        repository.save(acao);
+                    }
+                    catch (Exception e){
+                        System.out.println("Message error: " + e.getMessage());
+                    }
+
                 }
                 line = reader.readLine();
             }
@@ -263,6 +330,19 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
         return true;
     }
 
+    private String formataParametroAnaliseFundamentalista(String s) {
+        if ( s == null ){
+            return "0";
+        }
+        else if ( s != null && s.trim().equals("")){
+            return "0";
+        }
+        else if ( s.trim().equals("-") || s.trim().equals(".-")){
+            return "0";
+        }
+        else
+            return s;
+    }
 
 
     @Override

@@ -30,6 +30,13 @@ public class AcaoCotacaoDTO {
     private String sigla;
 
     private String dividendYield;
+    private String roe;
+    private String pvp;
+    private String pl;
+    private String psr;
+    private String pAtivos;
+    private String pEbit;
+    private String margemEbit;
 
     private Integer quantCotacoesDiarias = 0;
     private Integer quantCotacoesSemanais = 0;
@@ -53,6 +60,13 @@ public class AcaoCotacaoDTO {
                 .id(entity.getId())
                 .sigla(entity.getSigla())
                 .dividendYield(entity.getDividendYield() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getDividendYield()): "")
+                .roe(entity.getRoe() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getRoe()): "")
+                .pvp(entity.getPvp() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPvp()): "")
+                .pl(entity.getPl() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPl()): "")
+                .psr(entity.getPsr() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPsr()): "")
+                .pAtivos(entity.getPAtivos() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPAtivos()): "")
+                .pEbit(entity.getPEbit() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPEbit()): "")
+                .margemEbit(entity.getMargEbit() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getMargEbit()): "")
                 .listCotacaoDiario(listCotacaoDiario != null && !listCotacaoDiario.isEmpty() ? listCotacaoDiario.stream().map(CotacaoAcaoDiarioDTO::fromEntity).collect(Collectors.toList()) : null)
                 .listCotacaoSemanal(listCotacaoSemanal != null && !listCotacaoSemanal.isEmpty() ? listCotacaoSemanal.stream().map(CotacaoAcaoSemanalDTO::fromEntity).collect(Collectors.toList()) : null)
                 .listCotacaoMensal(listCotacaoMensal != null && !listCotacaoMensal.isEmpty() ? listCotacaoMensal.stream().map(CotacaoAcaoMensalDTO::fromEntity).collect(Collectors.toList()) : null)
@@ -68,6 +82,13 @@ public class AcaoCotacaoDTO {
                 .id(entity.getId())
                 .sigla(entity.getSigla())
                 .dividendYield(entity.getDividendYield() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getDividendYield()): "")
+                .roe(entity.getRoe() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getRoe()): "")
+                .pvp(entity.getPvp() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPvp()): "")
+                .pl(entity.getPl() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPl()): "")
+                .psr(entity.getPsr() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPsr()): "")
+                .pAtivos(entity.getPAtivos() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPAtivos()): "")
+                .pEbit(entity.getPEbit() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPEbit()): "")
+                .margemEbit(entity.getMargEbit() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getMargEbit()): "")
                 .listCotacaoDiario(listCotacaoDiario != null && !listCotacaoDiario.isEmpty() ? listCotacaoDiario.stream().map(CotacaoAcaoDiarioDTO::fromEntity).collect(Collectors.toList()) : null)
                 .listCotacaoSemanal(listCotacaoSemanal != null && !listCotacaoSemanal.isEmpty() ? listCotacaoSemanal.stream().map(CotacaoAcaoSemanalDTO::fromEntity).collect(Collectors.toList()) : null)
                 .listCotacaoMensal(listCotacaoMensal != null && !listCotacaoMensal.isEmpty() ? listCotacaoMensal.stream().map(CotacaoAcaoMensalDTO::fromEntity).collect(Collectors.toList()) : null)
@@ -88,6 +109,13 @@ public class AcaoCotacaoDTO {
                 .id(entity.getId())
                 .sigla(entity.getSigla())
                 .dividendYield(entity.getDividendYield() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getDividendYield()): "")
+                .roe(entity.getRoe() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getRoe()): "")
+                .pvp(entity.getPvp() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPvp()): "")
+                .pl(entity.getPl() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPl()): "")
+                .psr(entity.getPsr() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPsr()): "")
+                .pAtivos(entity.getPAtivos() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPAtivos()): "")
+                .pEbit(entity.getPEbit() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPEbit()): "")
+                .margemEbit(entity.getMargEbit() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getMargEbit()): "")
                 .listCotacaoDiario(listCotacaoDiario != null && !listCotacaoDiario.isEmpty() ? listCotacaoDiario.stream().map(CotacaoAcaoDiarioDTO::fromEntity).collect(Collectors.toList()) : null)
                 .listCotacaoSemanal(listCotacaoSemanal != null && !listCotacaoSemanal.isEmpty() ? listCotacaoSemanal.stream().map(CotacaoAcaoSemanalDTO::fromEntity).collect(Collectors.toList()) : null)
                 .listCotacaoMensal(listCotacaoMensal != null && !listCotacaoMensal.isEmpty() ? listCotacaoMensal.stream().map(CotacaoAcaoMensalDTO::fromEntity).collect(Collectors.toList()) : null)

@@ -15,10 +15,7 @@ import com.app.api.acao.principal.AcaoRepository;
 import com.app.api.acao.principal.entity.Acao;
 import com.app.commons.basic.analise.BaseAtivoAnaliseService;
 import com.app.commons.basic.analise.dto.AtivoAnaliseDTO;
-import com.app.commons.dtos.LastCotacaoAtivoDiarioDTO;
-import com.app.commons.dtos.LastDividendoAtivoDTO;
-import com.app.commons.dtos.ResultSumIncreasePercentCotacaoDTO;
-import com.app.commons.dtos.SumIncreasePercentCotacaoDTO;
+import com.app.commons.dtos.*;
 import com.app.commons.dtos.mapadividendo.*;
 import com.app.commons.dtos.simulacoes.ResultValorInvestidoDTO;
 import com.app.commons.dtos.simulacoes.ResultValorRendimentoPorCotasDTO;
@@ -207,6 +204,63 @@ public class AcaoAnaliseService implements BaseAtivoAnaliseService {
                 }
                 else {
                     listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getDividendYieldFmt).reversed()).collect(Collectors.toList());
+                }
+            }
+
+            else if ( orderFilter.equals(OrderFilterEnum.ROE.getLabel())){
+                if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getRoeFmt)).collect(Collectors.toList());
+                }
+                else {
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getRoeFmt).reversed()).collect(Collectors.toList());
+                }
+            }
+            else if ( orderFilter.equals(OrderFilterEnum.PVP.getLabel())){
+                if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getPvpFmt)).collect(Collectors.toList());
+                }
+                else {
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getPvpFmt).reversed()).collect(Collectors.toList());
+                }
+            }
+            else if ( orderFilter.equals(OrderFilterEnum.PL.getLabel())){
+                if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getPlFmt)).collect(Collectors.toList());
+                }
+                else {
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getPlFmt).reversed()).collect(Collectors.toList());
+                }
+            }
+            else if ( orderFilter.equals(OrderFilterEnum.PSR.getLabel())){
+                if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getPsrFmt)).collect(Collectors.toList());
+                }
+                else {
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getPsrFmt).reversed()).collect(Collectors.toList());
+                }
+            }
+            else if ( orderFilter.equals(OrderFilterEnum.P_ATIVOS.getLabel())){
+                if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getPAtivosFmt)).collect(Collectors.toList());
+                }
+                else {
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getPAtivosFmt).reversed()).collect(Collectors.toList());
+                }
+            }
+            else if ( orderFilter.equals(OrderFilterEnum.P_EBIT.getLabel())){
+                if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getPEbitFmt)).collect(Collectors.toList());
+                }
+                else {
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getPEbitFmt).reversed()).collect(Collectors.toList());
+                }
+            }
+            else if ( orderFilter.equals(OrderFilterEnum.MARG_EBIT.getLabel())){
+                if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getMargemEbit)).collect(Collectors.toList());
+                }
+                else {
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getMargemEbit).reversed()).collect(Collectors.toList());
                 }
             }
         }

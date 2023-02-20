@@ -11,12 +11,16 @@ import com.app.commons.dtos.DividendoDTO;
 import com.app.commons.dtos.IncreasePercentAtivoDTO;
 import com.app.commons.dtos.dividendo.RoiDividendoCotacaoDTO;
 import com.app.commons.utils.Utils;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Data
 public class FundoCotacaoDTO {
@@ -43,25 +47,22 @@ public class FundoCotacaoDTO {
 
     private String dividendYield;
 
-    public FundoCotacaoDTO() {
-    }
+    private String pvp;
+    private String dividendoCota;
+    private String ffoYield;
+    private String ffoCota;
+    private String vpCota;
+    private String valorMercado;
+    private String nroCota;
+    private String qtdImoveis;
+    private String capRate;
+    private String qtdUnid;
+    private String aluguelM2;
+    private String vacanciaMedia;
+    private String imoveisPl;
+    private String precoM2;
 
-    public FundoCotacaoDTO(Long id, String sigla, Integer quantCotacoesDiarias, Integer quantCotacoesSemanais, Integer quantCotacoesMensais, List<CotacaoFundoDiarioDTO> listCotacaoDiario, List<CotacaoFundoSemanalDTO> listCotacaoSemanal, List<CotacaoFundoMensalDTO> listCotacaoMensal, List<IncreasePercentAtivoDTO> listIncreasePercentDiario, List<IncreasePercentAtivoDTO> listIncreasePercentSemanal, List<IncreasePercentAtivoDTO> listIncreasePercentMensal, List<DividendoDTO> listDividendos, List<RoiDividendoCotacaoDTO> listRoiDividendoCotacao, String dividendYield) {
-        this.id = id;
-        this.sigla = sigla;
-        this.quantCotacoesDiarias = quantCotacoesDiarias;
-        this.quantCotacoesSemanais = quantCotacoesSemanais;
-        this.quantCotacoesMensais = quantCotacoesMensais;
-        this.listCotacaoDiario = listCotacaoDiario;
-        this.listCotacaoSemanal = listCotacaoSemanal;
-        this.listCotacaoMensal = listCotacaoMensal;
-        this.listIncreasePercentDiario = listIncreasePercentDiario;
-        this.listIncreasePercentSemanal = listIncreasePercentSemanal;
-        this.listIncreasePercentMensal = listIncreasePercentMensal;
-        this.listDividendos = listDividendos;
-        this.listRoiDividendoCotacao = listRoiDividendoCotacao;
-        this.dividendYield = dividendYield;
-    }
+
 
     public static FundoCotacaoDTO fromEntity(FundoImobiliario entity, List<CotacaoFundoDiario> listCotacaoDiario, List<CotacaoFundoSemanal> listCotacaoSemanal, List<CotacaoFundoMensal> listCotacaoMensal) {
         return FundoCotacaoDTO.builder()
@@ -74,8 +75,24 @@ public class FundoCotacaoDTO {
                 .quantCotacoesSemanais(listCotacaoSemanal!= null ? listCotacaoSemanal.size() : 0)
                 .quantCotacoesMensais(listCotacaoMensal != null ? listCotacaoMensal.size() : 0)
                 .dividendYield(entity.getDividendYield() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getDividendYield()): "")
+
+                .pvp(entity.getPvp() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPvp()): "")
+                .dividendoCota(entity.getDividendoCota() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getDividendoCota()): "")
+                .ffoYield(entity.getFfoYield() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getFfoYield()): "")
+                .ffoCota(entity.getFfoCota() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getFfoCota()): "")
+                .vpCota(entity.getVpCota() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getVpCota()): "")
+                .valorMercado(entity.getValorMercado() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getValorMercado()): "")
+                .nroCota(entity.getNroCota() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getNroCota()): "")
+                .qtdImoveis(entity.getQtdImoveis() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getQtdImoveis()): "")
+                .capRate(entity.getCapRate() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getCapRate()): "")
+                .qtdUnid(entity.getQtdUnid() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getQtdUnid()): "")
+                .aluguelM2(entity.getAluguelM2() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getAluguelM2()): "")
+                .vacanciaMedia(entity.getVacanciaMedia() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getVacanciaMedia()): "")
+                .imoveisPl(entity.getImoveisPl() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getImoveisPl()): "")
+                .precoM2(entity.getPrecoM2() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPrecoM2()): "")
                 .build();
     }
+
 
     public static FundoCotacaoDTO fromEntity(FundoImobiliario entity, List<CotacaoFundoDiario> listCotacaoDiario, List<CotacaoFundoSemanal> listCotacaoSemanal, List<CotacaoFundoMensal> listCotacaoMensal, List<IncreasePercentFundoImobiliario> listIncreasePercentDiario, List<IncreasePercentFundoImobiliario> listIncreasePercentSemanal, List<IncreasePercentFundoImobiliario> listIncreasePercentMensal, List<DividendoFundo> listaDividendos) {
         return FundoCotacaoDTO.builder()
@@ -94,6 +111,21 @@ public class FundoCotacaoDTO {
                 .quantCotacoesSemanais(listCotacaoSemanal!= null ? listCotacaoSemanal.size() : 0)
                 .quantCotacoesMensais(listCotacaoMensal != null ? listCotacaoMensal.size() : 0)
                 .dividendYield(entity.getDividendYield() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getDividendYield()): "")
+
+                .pvp(entity.getPvp() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPvp()): "")
+                .dividendoCota(entity.getDividendoCota() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getDividendoCota()): "")
+                .ffoYield(entity.getFfoYield() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getFfoYield()): "")
+                .ffoCota(entity.getFfoCota() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getFfoCota()): "")
+                .vpCota(entity.getVpCota() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getVpCota()): "")
+                .valorMercado(entity.getValorMercado() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getValorMercado()): "")
+                .nroCota(entity.getNroCota() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getNroCota()): "")
+                .qtdImoveis(entity.getQtdImoveis() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getQtdImoveis()): "")
+                .capRate(entity.getCapRate() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getCapRate()): "")
+                .qtdUnid(entity.getQtdUnid() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getQtdUnid()): "")
+                .aluguelM2(entity.getAluguelM2() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getAluguelM2()): "")
+                .vacanciaMedia(entity.getVacanciaMedia() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getVacanciaMedia()): "")
+                .imoveisPl(entity.getImoveisPl() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getImoveisPl()): "")
+                .precoM2(entity.getPrecoM2() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPrecoM2()): "")
                 .build();
     }
 
@@ -115,6 +147,21 @@ public class FundoCotacaoDTO {
                 .quantCotacoesMensais(listCotacaoMensal != null ? listCotacaoMensal.size() : 0)
                 .listRoiDividendoCotacao(listRoiDividendoCotacao)
                 .dividendYield(entity.getDividendYield() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getDividendYield()): "")
+
+                .pvp(entity.getPvp() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPvp()): "")
+                .dividendoCota(entity.getDividendoCota() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getDividendoCota()): "")
+                .ffoYield(entity.getFfoYield() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getFfoYield()): "")
+                .ffoCota(entity.getFfoCota() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getFfoCota()): "")
+                .vpCota(entity.getVpCota() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getVpCota()): "")
+                .valorMercado(entity.getValorMercado() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getValorMercado()): "")
+                .nroCota(entity.getNroCota() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getNroCota()): "")
+                .qtdImoveis(entity.getQtdImoveis() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getQtdImoveis()): "")
+                .capRate(entity.getCapRate() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getCapRate()): "")
+                .qtdUnid(entity.getQtdUnid() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getQtdUnid()): "")
+                .aluguelM2(entity.getAluguelM2() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getAluguelM2()): "")
+                .vacanciaMedia(entity.getVacanciaMedia() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getVacanciaMedia()): "")
+                .imoveisPl(entity.getImoveisPl() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getImoveisPl()): "")
+                .precoM2(entity.getPrecoM2() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPrecoM2()): "")
                 .build();
     }
 }

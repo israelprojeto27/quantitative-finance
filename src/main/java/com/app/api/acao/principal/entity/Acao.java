@@ -24,6 +24,27 @@ public class Acao  {
     @Column(name = "dividend_yield")
     private Double dividendYield = 0d;
 
+    @Column(name = "roe")
+    private Double roe = 0d;
+
+    @Column(name = "pvp")
+    private Double pvp = 0d;
+
+    @Column(name = "pl")
+    private Double pl = 0d;
+
+    @Column(name = "psr")
+    private Double psr = 0d;
+
+    @Column(name = "p_ativos")
+    private Double pAtivos = 0d;
+
+    @Column(name = "p_ebit")
+    private Double pEbit = 0d;
+
+    @Column(name = "marg_ebit")
+    private Double margEbit = 0d;
+
 
     public Acao(String sigla) {
         this.sigla = sigla;

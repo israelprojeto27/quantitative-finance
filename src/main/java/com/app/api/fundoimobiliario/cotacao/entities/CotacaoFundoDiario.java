@@ -3,8 +3,10 @@ package com.app.api.fundoimobiliario.cotacao.entities;
 
 import com.app.api.fundoimobiliario.principal.entity.FundoImobiliario;
 import com.app.commons.utils.Utils;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -12,6 +14,8 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Data
 @Entity
@@ -51,25 +55,6 @@ public class CotacaoFundoDiario {
     @JoinColumn(name = "fundo_id")
     private FundoImobiliario fundo;
 
-
-
-    public CotacaoFundoDiario() {
-    }
-
-    public CotacaoFundoDiario(Long id, LocalDate data, Double high, Double low, Double open, Double close, Double adjclose, Long volume, Double dividend, Timestamp createdAt, Timestamp updatedAt, FundoImobiliario fundoImobiliario) {
-        this.id = id;
-        this.data = data;
-        this.high = high;
-        this.low = low;
-        this.open = open;
-        this.close = close;
-        this.adjclose = adjclose;
-        this.volume = volume;
-        this.dividend = dividend;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.fundo = fundoImobiliario;
-    }
 
     //,Date,Open,High,Low,Close,Adj Close,Volume
     //0,2019-12-02,18.049999,18.16,17.889999,17.969999,16.340429,10259800

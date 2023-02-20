@@ -185,6 +185,17 @@ public class Utils {
         }
     }
 
+    public static String converterDoubleDoisDecimaisStringSemMoeda(double precoDouble) {
+        try{
+            DecimalFormat fmt = new DecimalFormat("0,00");
+            String string = fmt.format(precoDouble);
+            return string;
+        }
+        catch (Exception e){
+            return "";
+        }
+    }
+
     public static boolean isAnoMesValid(String anoMes) {
         try {
              DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");

@@ -35,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.*;
+import java.nio.DoubleBuffer;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.*;
@@ -272,19 +273,54 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
 
                     if (Utils.isLineIgnored(line)){
                         token =  line.split(",");
-                        optFundo.get().setDividendYield(Double.parseDouble(token[2]));
-                        repository.save(optFundo.get());
+                        if ( token.length == 17){
+                            optFundo.get().setDividendYield(Double.parseDouble(token[2]));
+
+                            optFundo.get().setDividendoCota(formataToken(token[3]));
+                            optFundo.get().setFfoYield(formataToken(token[4]));
+                            optFundo.get().setFfoCota(formataToken(token[5]));
+                            optFundo.get().setPvp(formataToken(token[6]));
+                            optFundo.get().setVpCota(formataToken(token[7]));
+                            optFundo.get().setValorMercado(formataToken(token[8].replace(".", "")));
+                            optFundo.get().setNroCota(formataToken(token[9].replace(".", "")));
+                            optFundo.get().setQtdImoveis(formataToken(token[10]));
+                            optFundo.get().setCapRate(formataToken(token[11]));
+                            optFundo.get().setQtdUnid(formataToken(token[12]));
+                            optFundo.get().setAluguelM2(formataToken(token[13].replace(".", "")));
+                            optFundo.get().setVacanciaMedia(formataToken(token[14]));
+                            optFundo.get().setImoveisPl(formataToken(token[15]));
+                            optFundo.get().setPrecoM2(formataToken(token[16].replace(".", "")));
+                            repository.save(optFundo.get());
+                        }
+                        else {
+                            System.out.println("Não foi possível tratar o fundo: " + token[1]);
+                        }
+
                     }
                     line = reader.readLine();
                 }
                 reader.close();
             }
 
-
             zipEntry = zis.getNextEntry();
 
         }
         return true;
+    }
+
+    private Double formataToken(String token){
+
+        try{
+            if (token.equals("-")){
+                return 0d;
+            }
+            else {
+                return Double.parseDouble(token);
+            }
+        }
+        catch (Exception e){
+            return 0d;
+        }
     }
 
     private FundoImobiliario saveFundo(String sigla) {
@@ -574,7 +610,126 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
                         listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getDividendYieldFmt).reversed()).collect(Collectors.toList());
                     }
                 }
-
+                else if ( orderFilter.equals(OrderFilterEnum.PVP.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPvpFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPvpFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.PVP.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPvpFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPvpFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.DIVIDENDO_COTA.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getDividendoCotaFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getDividendoCotaFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.FFO_YIELD.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getFfoYieldFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getFfoYieldFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.FFO_COTA.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getFfoCotaFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getFfoCotaFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.VP_COTA.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getVpCotaFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getVpCotaFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.VALOR_MERCADO.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getValorMercadoFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getValorMercadoFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.NRO_COTA.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getNroCotaFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getNroCotaFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.QTD_IMOVEIS.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getQtdImoveisFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getQtdImoveisFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.CAP_RATE.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getCapRateFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getCapRateFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.QTD_UNID.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getQtdUnidFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getQtdUnidFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.ALUGUEL_M2.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getAluguelM2Fmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getAluguelM2Fmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.VACANCIA_MEDIA.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getVacanciaMediaFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getVacanciaMediaFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.IMOVEIS_PL.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getImoveisPlFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getImoveisPlFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.PRECO_M2.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPrecoM2Fmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getPrecoM2Fmt).reversed()).collect(Collectors.toList());
+                    }
+                }
                 return listFinal;
             }
         }
