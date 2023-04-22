@@ -45,6 +45,11 @@ public class Acao  {
     @Column(name = "marg_ebit")
     private Double margEbit = 0d;
 
+    @Column(name = "lpa")
+    private Double lpa = 0d;
+
+    @Column(name = "vpa")
+    private Double vpa = 0d;
 
     public Acao(String sigla) {
         this.sigla = sigla;

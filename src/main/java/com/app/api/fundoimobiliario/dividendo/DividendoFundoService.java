@@ -355,6 +355,21 @@ public class DividendoFundoService implements BaseDividendoService<DividendoFund
     }
 
     @Transactional
+    public boolean addDividendoFundoImobiliarioPartialV2(String arr[], FundoImobiliario fundoImobiliario) {
+
+        LocalDate dataDividendo = Utils.converteStringToLocalDateTime3(arr[0]);
+        Double dividendo = Double.parseDouble(arr[1]);
+
+        DividendoFundo dividendoFundo = DividendoFundo.toEntity(fundoImobiliario, dataDividendo, dividendo);
+        List<DividendoFundo> listDividendo = repository.findByFundoAndData(fundoImobiliario, dividendoFundo.getData());
+        if ( listDividendo.isEmpty() && dividendoFundo != null){
+            repository.save(dividendoFundo);
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
     public boolean addDividendoFundoImobiliarioPartial(String line, FundoImobiliario fundoImobiliario) {
         //0,HGLG11,2019-12-01, 0.78
 

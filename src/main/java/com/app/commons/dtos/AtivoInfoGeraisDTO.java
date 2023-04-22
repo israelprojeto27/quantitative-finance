@@ -101,6 +101,12 @@ public class AtivoInfoGeraisDTO {
     private String precoM2;
     private Double precoM2Fmt;
 
+    private String lpa;
+    private Double lpaFmt;
+
+    private String vpa;
+    private Double vpaFmt;
+
     public static AtivoInfoGeraisDTO from(Acao acao, LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiarioDTO, LastDividendoAtivoDTO lastDividendoAtivoDTO) {
         return AtivoInfoGeraisDTO.builder()
                                 .sigla(acao.getSigla())
@@ -128,6 +134,10 @@ public class AtivoInfoGeraisDTO {
                                 .pEbitFmt(acao.getPEbit() != null ? acao.getPEbit() : 0d )
                                 .margEbit(acao.getMargEbit() != null ? Utils.converterDoubleQuatroDecimaisString(acao.getMargEbit()): "")
                                 .margEbitFmt(acao.getMargEbit() != null ? acao.getMargEbit() : 0d )
+                                .vpa(acao.getVpa() != null ? Utils.converterDoubleQuatroDecimaisString(acao.getVpa()): "" )
+                                .vpaFmt(acao.getVpa() != null ? acao.getVpa() : 0d )
+                                .lpa(acao.getLpa() != null ? Utils.converterDoubleQuatroDecimaisString(acao.getLpa()): "" )
+                                .lpaFmt(acao.getLpa() != null ? acao.getLpa() : 0d )
                                 .build();
     }
 

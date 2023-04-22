@@ -58,69 +58,83 @@ public class CotacaoAcaoService implements BaseCotacaoService<Acao, AcaoCotacaoD
     @Transactional
     @Override
     public void addCotacaoAtivo(String line, Acao acao, String periodo) {
-        String[] array =  line.split(",");
+        try{
+            String[] array =  line.split(",");
 
-        if ( periodo.equals(PeriodoEnum.DIARIO.getLabel())){
-            CotacaoAcaoDiario cotacaoAcaoDiario = CotacaoAcaoDiario.toEntity(array, acao);
-            if ( cotacaoAcaoDiario != null){
-                this.createCotacaoDiario(cotacaoAcaoDiario);
+            if ( periodo.equals(PeriodoEnum.DIARIO.getLabel())){
+                CotacaoAcaoDiario cotacaoAcaoDiario = CotacaoAcaoDiario.toEntity(array, acao);
+                if ( cotacaoAcaoDiario != null){
+                    this.createCotacaoDiario(cotacaoAcaoDiario);
 
-                if (cotacaoAcaoDiario.getDividend().doubleValue() > 0.0d){
-                    DividendoAcao dividendoAcao = DividendoAcao.toEntity(cotacaoAcaoDiario);
-                    dividendoAcaoService.save(dividendoAcao);
+                    if (cotacaoAcaoDiario.getDividend().doubleValue() > 0.0d){
+                        DividendoAcao dividendoAcao = DividendoAcao.toEntity(cotacaoAcaoDiario);
+                        dividendoAcaoService.save(dividendoAcao);
+                    }
                 }
             }
+            else if ( periodo.equals(PeriodoEnum.SEMANAL.getLabel())){
+                CotacaoAcaoSemanal cotacaoAcaoSemanal = CotacaoAcaoSemanal.toEntity(array, acao);
+                if ( cotacaoAcaoSemanal != null )
+                    this.createCotacaoSemanal(cotacaoAcaoSemanal);
+            }
+            else if ( periodo.equals(PeriodoEnum.MENSAL.getLabel())){
+                CotacaoAcaoMensal cotacaoAcaoMensal = CotacaoAcaoMensal.toEntity(array, acao);
+                if ( cotacaoAcaoMensal != null)
+                    this.createCotacaoMensal(cotacaoAcaoMensal);
+            }
         }
-        else if ( periodo.equals(PeriodoEnum.SEMANAL.getLabel())){
-            CotacaoAcaoSemanal cotacaoAcaoSemanal = CotacaoAcaoSemanal.toEntity(array, acao);
-            if ( cotacaoAcaoSemanal != null )
-                this.createCotacaoSemanal(cotacaoAcaoSemanal);
+        catch (Exception e){
+            System.out.println("Erro no metodo addCotacaoAtivoPartial ");
+            System.out.println("Linha: " + line);
+            System.out.println("Periodo: " + periodo);
         }
-        else if ( periodo.equals(PeriodoEnum.MENSAL.getLabel())){
-            CotacaoAcaoMensal cotacaoAcaoMensal = CotacaoAcaoMensal.toEntity(array, acao);
-            if ( cotacaoAcaoMensal != null)
-                this.createCotacaoMensal(cotacaoAcaoMensal);
-        }
+
     }
 
     @Override
     @Transactional
     public void addCotacaoAtivoPartial(String line, Acao acao, String periodo) {
-        String[] array =  line.split(",");
 
-        if ( periodo.equals(PeriodoEnum.DIARIO.getLabel())){
-            CotacaoAcaoDiario cotacaoAcaoDiario = CotacaoAcaoDiario.toEntity(array, acao);
-            List<CotacaoAcaoDiario> listCotacao = cotacaoAcaoDiarioRepository.findByAcaoAndData(acao, cotacaoAcaoDiario.getData());
-            if ( listCotacao.isEmpty() && cotacaoAcaoDiario != null){
-                this.createCotacaoDiario(cotacaoAcaoDiario);
+        try{
+            String[] array =  line.split(",");
 
-                if (cotacaoAcaoDiario.getDividend().doubleValue() > 0.0d){
-                    DividendoAcao dividendoAcao = DividendoAcao.toEntity(cotacaoAcaoDiario);
-                    dividendoAcaoService.save(dividendoAcao);
+            if ( periodo.equals(PeriodoEnum.DIARIO.getLabel())){
+                CotacaoAcaoDiario cotacaoAcaoDiario = CotacaoAcaoDiario.toEntity(array, acao);
+                List<CotacaoAcaoDiario> listCotacao = cotacaoAcaoDiarioRepository.findByAcaoAndData(acao, cotacaoAcaoDiario.getData());
+                if ( listCotacao.isEmpty() && cotacaoAcaoDiario != null){
+                    this.createCotacaoDiario(cotacaoAcaoDiario);
+
+                    if (cotacaoAcaoDiario.getDividend().doubleValue() > 0.0d){
+                        DividendoAcao dividendoAcao = DividendoAcao.toEntity(cotacaoAcaoDiario);
+                        dividendoAcaoService.save(dividendoAcao);
+                    }
+                }
+            }
+            else if ( periodo.equals(PeriodoEnum.SEMANAL.getLabel())){
+                CotacaoAcaoSemanal cotacaoAcaoSemanal = CotacaoAcaoSemanal.toEntity(array, acao);
+                if ( cotacaoAcaoSemanal != null){
+                    List<CotacaoAcaoSemanal> listCotacao = cotacaoAcaoSemanalRepository.findByAcaoAndData(acao, cotacaoAcaoSemanal.getData());
+                    if ( listCotacao != null && listCotacao.isEmpty() && cotacaoAcaoSemanal != null){
+                        this.createCotacaoSemanal(cotacaoAcaoSemanal);
+                    }
+                }
+            }
+            else if ( periodo.equals(PeriodoEnum.MENSAL.getLabel())){
+                CotacaoAcaoMensal cotacaoAcaoMensal = CotacaoAcaoMensal.toEntity(array, acao);
+                if ( cotacaoAcaoMensal != null ){
+                    List<CotacaoAcaoMensal> listCotacao = cotacaoAcaoMensalRepository.findByAcaoAndData(acao, cotacaoAcaoMensal.getData());
+                    if ( listCotacao.isEmpty() && cotacaoAcaoMensal != null){
+                        this.createCotacaoMensal(cotacaoAcaoMensal);
+                    }
                 }
             }
         }
-        else if ( periodo.equals(PeriodoEnum.SEMANAL.getLabel())){
-            CotacaoAcaoSemanal cotacaoAcaoSemanal = CotacaoAcaoSemanal.toEntity(array, acao);
-            if ( cotacaoAcaoSemanal != null){
-                List<CotacaoAcaoSemanal> listCotacao = cotacaoAcaoSemanalRepository.findByAcaoAndData(acao, cotacaoAcaoSemanal.getData());
-                if ( listCotacao != null && listCotacao.isEmpty() && cotacaoAcaoSemanal != null){
-                    this.createCotacaoSemanal(cotacaoAcaoSemanal);
-                }
-            }
-        }
-        else if ( periodo.equals(PeriodoEnum.MENSAL.getLabel())){
-            CotacaoAcaoMensal cotacaoAcaoMensal = CotacaoAcaoMensal.toEntity(array, acao);
-            if ( cotacaoAcaoMensal != null ){
-                List<CotacaoAcaoMensal> listCotacao = cotacaoAcaoMensalRepository.findByAcaoAndData(acao, cotacaoAcaoMensal.getData());
-                if ( listCotacao.isEmpty() && cotacaoAcaoMensal != null){
-                    this.createCotacaoMensal(cotacaoAcaoMensal);
-                }
-            }
+        catch (Exception e){
+            System.out.println("Erro no metodo addCotacaoAtivoPartial ");
+            System.out.println("Linha: " + line);
+            System.out.println("Periodo: " + periodo);
         }
     }
-
-
 
     @Transactional
     @Override

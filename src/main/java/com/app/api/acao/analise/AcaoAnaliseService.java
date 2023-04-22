@@ -257,10 +257,28 @@ public class AcaoAnaliseService implements BaseAtivoAnaliseService {
             }
             else if ( orderFilter.equals(OrderFilterEnum.MARG_EBIT.getLabel())){
                 if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
-                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getMargemEbit)).collect(Collectors.toList());
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getMargemEbitFmt)).collect(Collectors.toList());
                 }
                 else {
-                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getMargemEbit).reversed()).collect(Collectors.toList());
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getMargemEbitFmt).reversed()).collect(Collectors.toList());
+                }
+            }
+
+            else if ( orderFilter.equals(OrderFilterEnum.LPA.getLabel())){
+                if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getLpaFmt)).collect(Collectors.toList());
+                }
+                else {
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getLpaFmt).reversed()).collect(Collectors.toList());
+                }
+            }
+
+            else if ( orderFilter.equals(OrderFilterEnum.VPA.getLabel())){
+                if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getVpaFmt)).collect(Collectors.toList());
+                }
+                else {
+                    listFinal = list.stream().sorted(Comparator.comparing(AtivoAnaliseDTO::getVpaFmt).reversed()).collect(Collectors.toList());
                 }
             }
         }

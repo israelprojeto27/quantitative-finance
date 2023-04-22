@@ -146,7 +146,7 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
             }
             fos.close();
 
-            Optional<FundoImobiliario> optFundo = repository.findBySigla(zipEntry.getName().replace(".csv", ""));
+            Optional<FundoImobiliario> optFundo = repository.findBySigla(zipEntry.getName().replace(".csv", "").replace("11.SA",""));
 
             if ( optFundo.isPresent()){
                 BufferedReader reader = new BufferedReader(new FileReader(newFile));
@@ -158,17 +158,12 @@ public class FudoImobiliarioService  implements BaseService<FundoImobiliario, Fu
                     System.out.println("Linha: " + line);
                     System.out.println("LinhaFmt: " + line.substring(0,12) + line.substring(13,line.length()-1));
 
+                    line = line.replace("[", "");
+                    line = line.replace("]", "");
+                    // ["2022-04-01", "0.5"]
                     String arr[] = line.split(",");
-                    if ( arr[1].length() == 10){
-                        line = line.substring(0,12) + line.substring(12,line.length()-1);
-                    }
-                    else{
-                        line = line.substring(0,12) + line.substring(13,line.length()-1);
-                    }
 
-                    line = line.replaceAll(".SA", "");
-                    dividendoFundoService.addDividendoFundoImobiliarioPartial(line.trim(), optFundo.get());
-
+                    dividendoFundoService.addDividendoFundoImobiliarioPartialV2(arr, optFundo.get());
                     line = reader.readLine();
                 }
                 reader.close();

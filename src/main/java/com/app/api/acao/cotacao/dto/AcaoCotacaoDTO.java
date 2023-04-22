@@ -38,6 +38,9 @@ public class AcaoCotacaoDTO {
     private String pEbit;
     private String margemEbit;
 
+    private String lpa;
+    private String vpa;
+
     private Integer quantCotacoesDiarias = 0;
     private Integer quantCotacoesSemanais = 0;
     private Integer quantCotacoesMensais = 0;
@@ -67,6 +70,11 @@ public class AcaoCotacaoDTO {
                 .pAtivos(entity.getPAtivos() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPAtivos()): "")
                 .pEbit(entity.getPEbit() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPEbit()): "")
                 .margemEbit(entity.getMargEbit() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getMargEbit()): "")
+
+                .lpa(entity.getLpa() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getLpa()): "")
+                .vpa(entity.getVpa() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getVpa()): "")
+
+
                 .listCotacaoDiario(listCotacaoDiario != null && !listCotacaoDiario.isEmpty() ? listCotacaoDiario.stream().map(CotacaoAcaoDiarioDTO::fromEntity).collect(Collectors.toList()) : null)
                 .listCotacaoSemanal(listCotacaoSemanal != null && !listCotacaoSemanal.isEmpty() ? listCotacaoSemanal.stream().map(CotacaoAcaoSemanalDTO::fromEntity).collect(Collectors.toList()) : null)
                 .listCotacaoMensal(listCotacaoMensal != null && !listCotacaoMensal.isEmpty() ? listCotacaoMensal.stream().map(CotacaoAcaoMensalDTO::fromEntity).collect(Collectors.toList()) : null)
@@ -89,6 +97,8 @@ public class AcaoCotacaoDTO {
                 .pAtivos(entity.getPAtivos() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPAtivos()): "")
                 .pEbit(entity.getPEbit() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPEbit()): "")
                 .margemEbit(entity.getMargEbit() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getMargEbit()): "")
+                .lpa(entity.getLpa() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getLpa()): "")
+                .vpa(entity.getVpa() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getVpa()): "")
                 .listCotacaoDiario(listCotacaoDiario != null && !listCotacaoDiario.isEmpty() ? listCotacaoDiario.stream().map(CotacaoAcaoDiarioDTO::fromEntity).collect(Collectors.toList()) : null)
                 .listCotacaoSemanal(listCotacaoSemanal != null && !listCotacaoSemanal.isEmpty() ? listCotacaoSemanal.stream().map(CotacaoAcaoSemanalDTO::fromEntity).collect(Collectors.toList()) : null)
                 .listCotacaoMensal(listCotacaoMensal != null && !listCotacaoMensal.isEmpty() ? listCotacaoMensal.stream().map(CotacaoAcaoMensalDTO::fromEntity).collect(Collectors.toList()) : null)
@@ -116,6 +126,8 @@ public class AcaoCotacaoDTO {
                 .pAtivos(entity.getPAtivos() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPAtivos()): "")
                 .pEbit(entity.getPEbit() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getPEbit()): "")
                 .margemEbit(entity.getMargEbit() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getMargEbit()): "")
+                .lpa(entity.getLpa() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getLpa()): "")
+                .vpa(entity.getVpa() != null ? Utils.converterDoubleQuatroDecimaisString(entity.getVpa()): "")
                 .listCotacaoDiario(listCotacaoDiario != null && !listCotacaoDiario.isEmpty() ? listCotacaoDiario.stream().map(CotacaoAcaoDiarioDTO::fromEntity).collect(Collectors.toList()) : null)
                 .listCotacaoSemanal(listCotacaoSemanal != null && !listCotacaoSemanal.isEmpty() ? listCotacaoSemanal.stream().map(CotacaoAcaoSemanalDTO::fromEntity).collect(Collectors.toList()) : null)
                 .listCotacaoMensal(listCotacaoMensal != null && !listCotacaoMensal.isEmpty() ? listCotacaoMensal.stream().map(CotacaoAcaoMensalDTO::fromEntity).collect(Collectors.toList()) : null)

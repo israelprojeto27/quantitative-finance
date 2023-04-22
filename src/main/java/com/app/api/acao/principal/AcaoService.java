@@ -214,6 +214,23 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
                         listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getMargEbitFmt).reversed()).collect(Collectors.toList());
                     }
                 }
+                else if ( orderFilter.equals(OrderFilterEnum.LPA.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getLpaFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getLpaFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+                else if ( orderFilter.equals(OrderFilterEnum.VPA.getLabel())){
+                    if ( typeOrderFilter.equals((TypeOrderFilterEnum.CRESCENTE.getLabel()))){
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getVpaFmt)).collect(Collectors.toList());
+                    }
+                    else {
+                        listFinal = list.stream().sorted(Comparator.comparing(AtivoInfoGeraisDTO::getVpaFmt).reversed()).collect(Collectors.toList());
+                    }
+                }
+
                 return listFinal;
             }
         }
@@ -314,6 +331,8 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
                         acao.setPAtivos(Double.parseDouble(formataParametroAnaliseFundamentalista(token[7])));
                         acao.setPEbit(Double.parseDouble(formataParametroAnaliseFundamentalista(token[8])));
                         acao.setMargEbit(Double.parseDouble(formataParametroAnaliseFundamentalista(token[9])));
+                        acao.setLpa(Double.parseDouble(formataParametroAnaliseFundamentalista(token[10])));
+                        acao.setVpa(Double.parseDouble(formataParametroAnaliseFundamentalista(token[11])));
                         repository.save(acao);
                     }
                     catch (Exception e){
@@ -419,9 +438,16 @@ public class AcaoService implements BaseService<Acao, AcaoDTO> {
                 i++;
                 System.out.println("Linha: " + line);
                 // read next line
-                if (Utils.isLineIgnored(line)){
-                    cotacaoAcaoService.addCotacaoAtivoPartial(line, acao, periodo);
+                try{
+                    if (Utils.isLineIgnored(line)){
+                        cotacaoAcaoService.addCotacaoAtivoPartial(line, acao, periodo);
+                    }
                 }
+                catch (Exception e){
+                    System.out.println("Problema na linha: " + line);
+                    System.out.println("Mensagem erro: " + e.getMessage());
+                }
+
 
                 line = reader.readLine();
             }

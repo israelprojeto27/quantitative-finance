@@ -103,6 +103,11 @@ public class AtivoAnaliseDTO {
     private String precoM2;
     private Double precoM2Fmt;
 
+    private String vpa;
+    private Double vpaFmt;
+
+    private String lpa;
+    private Double lpaFmt;
 
 
     public static AtivoAnaliseDTO from(AcaoAnalise acaoAnalise, LastCotacaoAtivoDiarioDTO lastCotacaoAtivoDiario, LastDividendoAtivoDTO lastDividendoAtivo, int quantidadeOcorrenciasDividendos, Double coeficienteRoiDividendo) {
@@ -142,6 +147,13 @@ public class AtivoAnaliseDTO {
 
                 .margemEbit(acaoAnalise.getAcao().getMargEbit() != null ? Utils.converterDoubleQuatroDecimaisString(acaoAnalise.getAcao().getMargEbit()): "" )
                 .margemEbitFmt(acaoAnalise.getAcao().getMargEbit() != null ? acaoAnalise.getAcao().getMargEbit() : 0d )
+
+                .vpa(acaoAnalise.getAcao().getVpa() != null ? Utils.converterDoubleQuatroDecimaisString(acaoAnalise.getAcao().getVpa()): "" )
+                .vpaFmt(acaoAnalise.getAcao().getVpa() != null ? acaoAnalise.getAcao().getVpa() : 0d )
+
+                .lpa(acaoAnalise.getAcao().getLpa() != null ? Utils.converterDoubleQuatroDecimaisString(acaoAnalise.getAcao().getLpa()): "" )
+                .lpaFmt(acaoAnalise.getAcao().getLpa() != null ? acaoAnalise.getAcao().getLpa() : 0d )
+
                 .build();
     }
 

@@ -30,7 +30,9 @@ public enum OrderFilterEnum {
     ALUGUEL_M2(9, "aluguelM2"),
     VACANCIA_MEDIA(9, "vacanciaMedia"),
     IMOVEIS_PL(9, "imoveisPl"),
-    PRECO_M2(9, "precoM2");
+    PRECO_M2(9, "precoM2"),
+    LPA(9, "lpa"),
+    VPA(9, "vpa");
 
 
     private int instrumentId;
